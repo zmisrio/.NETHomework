@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\obj\Debug\Toeplitz.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\obj\Debug\Toeplitz.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\bin\Debug\Toeplitz.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\bin\Debug\Toeplitz.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\bin\Debug\Toeplitz.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\obj\Debug\Toeplitz.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.7\Toeplitz\obj\Debug\Toeplitz.pdb

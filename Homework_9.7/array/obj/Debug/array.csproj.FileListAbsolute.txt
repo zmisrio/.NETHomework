@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\array\bin\Debug\array.exe.config
+C:\Users\zmx\source\repos\C#Homework\array\bin\Debug\array.exe
+C:\Users\zmx\source\repos\C#Homework\array\bin\Debug\array.pdb
+C:\Users\zmx\source\repos\C#Homework\array\obj\Debug\array.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\array\obj\Debug\array.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\array\obj\Debug\array.exe
+C:\Users\zmx\source\repos\C#Homework\array\obj\Debug\array.pdb

@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Sieve\bin\Debug\Sieve.exe.config
+C:\Users\zmx\source\repos\C#Homework\Sieve\bin\Debug\Sieve.exe
+C:\Users\zmx\source\repos\C#Homework\Sieve\bin\Debug\Sieve.pdb
+C:\Users\zmx\source\repos\C#Homework\Sieve\obj\Debug\Sieve.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Sieve\obj\Debug\Sieve.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Sieve\obj\Debug\Sieve.exe
+C:\Users\zmx\source\repos\C#Homework\Sieve\obj\Debug\Sieve.pdb

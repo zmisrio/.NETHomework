@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\prime\bin\Debug\prime.exe.config
+C:\Users\zmx\source\repos\C#Homework\prime\bin\Debug\prime.exe
+C:\Users\zmx\source\repos\C#Homework\prime\bin\Debug\prime.pdb
+C:\Users\zmx\source\repos\C#Homework\prime\obj\Debug\prime.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\prime\obj\Debug\prime.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\prime\obj\Debug\prime.exe
+C:\Users\zmx\source\repos\C#Homework\prime\obj\Debug\prime.pdb
