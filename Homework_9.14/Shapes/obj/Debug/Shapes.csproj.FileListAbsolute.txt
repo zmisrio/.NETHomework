@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\obj\Debug\Shapes.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\obj\Debug\Shapes.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\bin\Debug\Shapes.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\bin\Debug\Shapes.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\bin\Debug\Shapes.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\obj\Debug\Shapes.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Shapes\obj\Debug\Shapes.pdb
