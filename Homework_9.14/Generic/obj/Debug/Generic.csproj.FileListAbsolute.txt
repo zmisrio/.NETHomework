@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\bin\Debug\Generic.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\bin\Debug\Generic.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\bin\Debug\Generic.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\obj\Debug\Generic.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\obj\Debug\Generic.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\obj\Debug\Generic.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\Generic\obj\Debug\Generic.pdb

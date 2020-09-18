@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\obj\Debug\clock.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\obj\Debug\clock.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\bin\Debug\clock.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\bin\Debug\clock.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\bin\Debug\clock.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\obj\Debug\clock.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.14\clock\obj\Debug\clock.pdb
