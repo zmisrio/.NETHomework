@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSystem", "OrderSystem.csproj", "{5868EF29-7EEF-49C7-A7C8-31DECB07FD3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderSystemTests", "..\OrderSystemTests\OrderSystemTests.csproj", "{37BBDFFF-427A-4AAF-BB0D-E1D39DBF8BB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5868EF29-7EEF-49C7-A7C8-31DECB07FD3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5868EF29-7EEF-49C7-A7C8-31DECB07FD3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5868EF29-7EEF-49C7-A7C8-31DECB07FD3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5868EF29-7EEF-49C7-A7C8-31DECB07FD3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37BBDFFF-427A-4AAF-BB0D-E1D39DBF8BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37BBDFFF-427A-4AAF-BB0D-E1D39DBF8BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37BBDFFF-427A-4AAF-BB0D-E1D39DBF8BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37BBDFFF-427A-4AAF-BB0D-E1D39DBF8BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CBF17D34-7B51-4192-AB74-3260C9BA4F26}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,7 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\bin\Debug\Order.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\bin\Debug\Order.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\bin\Debug\Order.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\obj\Debug\OrderSystem.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\obj\Debug\OrderSystem.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\obj\Debug\Order.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_9.21\Order\obj\Debug\Order.pdb
