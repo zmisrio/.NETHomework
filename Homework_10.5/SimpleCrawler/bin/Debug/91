@@ -1,0 +1,422 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="本篇文章我们学习如何给 Book实体类添加校验规则。当用户进行创建或编辑书籍信息时，都会触发校验规则。&#xD;&#xA;&#xD;&#xA;       软件开发中有一个主要原则被称为 DRY（即“不要自我重复”）。 Razor " />
+    <meta property="og:description" content="本篇文章我们学习如何给 Book实体类添加校验规则。当用户进行创建或编辑书籍信息时，都会触发校验规则。&#xD;&#xA;&#xD;&#xA;       软件开发中有一个主要原则被称为 DRY（即“不要自我重复”）。 Razor " />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET Core Razor 编程系列十二——在页面中增加校验 - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2018-06-13 04:03';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/9178291.html">
+    <span>学习ASP.NET Core Razor 编程系列十二——在页面中增加校验</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        本篇文章我们学习如何给 Book实体类添加校验规则。当用户进行创建或编辑书籍信息时，都会触发校验规则。
+
+       软件开发中有一个主要原则被称为 DRY（即“不要自我重复”）。 Razor 页面鼓励进行只需要开发一次，这个功能就能在整个应用中使用，不需要重复开发，或复制粘贴。 DRY 有助于减少应用中的代码量。 DRY 使代码更加不易出错，且更易于测试和维护。
+
+       Razor 页面和 Entity Framework框架提供的校验是支持DRY 原则的极佳示例。 校验规则在实体类中的某处以声明方式指定，且在应用程序的所有位置强制执行。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="font-size: 16px"><strong><strong><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span class="postTitle2"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列目录</span></span></span></span></span></strong></strong></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl02_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8579777.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列一</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8622439.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列二——添加一个实体</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8651973.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列三——创建数据表及创建项目基本页面</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8717199.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列四——Asp.Net Core Razor列表模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8778379.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列五——Asp.Net Core Razor新建模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8872303.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列六——数据库初始化</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8968398.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列七——修改列表页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8986512.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列八——并发处理</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/9025896.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列九——增加查询功能</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9077466.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十——添加新字段</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9111862.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十一——把新字段更新到数据库</span></a></span></p>
+<p align="left"><span style="font-size: 16px"><strong>&nbsp;</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 本篇文章我们学习如何给 Book实体类添加校验规则。当用户进行创建或编辑书籍信息时，都会触发校验规则。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>一、校验</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 软件开发中有一个主要原则被称为 DRY（即“不要自我重复”）。 Razor 页面鼓励进行只需要开发一次，这个功能就能在整个应用中使用，不需要重复开发，或复制粘贴。 DRY 有助于减少应用中的代码量。 DRY 使代码更加不易出错，且更易于测试和维护。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Razor 页面和 Entity Framework框架提供的校验是支持DRY 原则的极佳示例。 校验规则在实体类中的某处以声明方式指定，且在应用程序的所有位置强制执行。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>二、在书籍实体类中添加校验规则</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在Visual Studio 2017的解决方案资源管理器中，打开 Models\Book.cs 文件。 DataAnnotations 提供一组内置的校验规则特性，我们可以通过声明的方式应用于类或属性之上。 DataAnnotations 还包含 DataType 等格式特性，有助于格式设置但不提供验证。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 现在我们来给Book 类使用 Required、StringLength、RegularExpression 和 Range 校验规则特性，代码如下所示。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.ComponentModel.DataAnnotations;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> RazorMvcBooks.Models
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Book
+    {  
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> ID { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+  [Required]
+        [StringLength(</span><span style="color: rgba(128, 0, 128, 1)">50</span>, MinimumLength = <span style="color: rgba(128, 0, 128, 1)">2</span><span style="color: rgba(0, 0, 0, 1)">)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Name { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        [Display(Name </span>= <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">出版日期</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        [DataType(DataType.Date)] 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DateTime ReleaseDate { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        [Range(</span><span style="color: rgba(128, 0, 128, 1)">1</span>,<span style="color: rgba(128, 0, 128, 1)">200</span><span style="color: rgba(0, 0, 0, 1)">)]
+        [DataType(DataType.Currency)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">decimal</span> Price { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        [RegularExpression(</span><span style="color: rgba(128, 0, 0, 1)">@"</span><span style="color: rgba(128, 0, 0, 1)">^[A-Z]+[a-zA-Z""'\s-]*$</span><span style="color: rgba(128, 0, 0, 1)">"</span>), Required, StringLength(<span style="color: rgba(128, 0, 128, 1)">30</span><span style="color: rgba(0, 0, 0, 1)">)]
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Author { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        [Required]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Publishing { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+    }
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 校验特性用在实体类的属性上，并且将前端强制执行。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp;&nbsp; &nbsp; Required 和 MinimumLength 特性表示属性必须具有一个值。 但是，用户可以随时输入空格对可以为 null 的类型进行校验约束。 从本质上来说，对于不能为 null 的值类型（如 decimal、int、float 和 DateTime），可以不添加 Required 特性。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp; &nbsp; &nbsp; RegularExpression 特性限制用户可以输入的字符。 在上述代码中， Rating 只能输入字母（禁用空格、数字和特殊字符）。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; Range 特性将值限制在指定范围内。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StringLength 特性设置字符串的最大长度，且可视情况设置最小长度。 <br></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 让 ASP.NET Core 强制自动执行校验规则有助于提升应用程序的可靠性。 在实体类上进行自动校验助于保护应用程序，因为添加新代码时无需手动修改旧代码。</span></p>
+<h2><span style="font-size: 16px">三、查看面中的校验信息</span></h2>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 在Visual Studio 2017中按F5运行应用程序，并在浏览器中浏览到书籍列表页面。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在书籍列表页面，使用鼠标左键点击“Create”链接。在新建页面中的输入框中输入一些无效值。当jQuery客户端校验检测到错误时，它会显示一条错误消息。 如下图。 <br></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201806/10343-20180613155117111-988141740.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">备注</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 你可能无法在 Price 字段中输入小数点或逗号。 若要使 jQuery 校验支持非英英语环境中使用逗号（“,”）表替小数点，以及使用非美式英语日期格式，你必须采取应用全球化设置来改变你的应用程序。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 请注意，表单在包含无效值的每个字段下自动呈现一个适当的校验错误消息。错误包括客户端（使用 JavaScript 和 jQuery ）和服务器端（当用户禁用JavaScript时）。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一项重要好处是，无需在“创建”或“编辑”页面中更改代码。 一量在在实体类上应用 DataAnnotations 后，即已启用校验UI。 本教程中自动创建的 Razor 页面自动选取了校验规则（使用Book类的属性上的校验特性）。 使用“编辑”页面测试验证后，所有应用这个Book类的页面都应用了相同校验规则。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 存在客户端验证错误时，不会将表单数据提交到后台服务器。 你可以使用以下一种或多种方法验证是否未发布表单数据：</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 1) 在 OnPostAsync 方法中放置一个断点。 提交表单（选择“Create”或“Save”）。 从未命中断点。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; 2) 使用 Fiddler 工具。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3)&nbsp; 使用浏览器开发人员工具监视网络流量。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px"><strong>四、服务器端验证</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先我们在浏览器中禁用 JavaScript，即不进行客户端校验，然后把有错误的数据提交到后台服务器。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 测试服务器端验证：</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; 1. 在浏览器中禁用 JavaScript。 如果你的浏览器中无法禁用 JavaScript，请试试其他浏览器。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; 2. 在“新建”或“编辑”页面的 OnPostAsync 方法中设置断点。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp; &nbsp; &nbsp; 3. 提交带有不符全校验规则的表单数据。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; 4. 查看一下OnPostAsync方法中是否有以下代码。 <br></span></p>
+<div class="cnblogs_code">
+<pre>     <span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 0, 1)">ModelState.IsValid)
+     {
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> Page();
+     }</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5. 结果如下图。<br></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="https://images2018.cnblogs.com/blog/10343/201806/10343-20180613160110725-2068752712.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 以下代码显示了之前在本教程中设定其基架的“Create.cshtml”的一部分。 它用于在“创建”和“编辑”页面中显示初始表单并在发生错误后重新显示表单。 <br></span></p>
+<div class="cnblogs_code">
+<pre>  &lt;form method=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">post</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+            &lt;div asp-validation-summary=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">ModelOnly</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/div&gt;
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt;</pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 输入辅助助手使用 DataAnnotations 特性并在客户端生成 jQuery 校验所需的 HTML 元素。 校验辅助助手用于显示校验错误。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; “创建”和“编辑”页面中没有校验规则。 校验规则和错误字符串仅可在BOOK 类中指定。 这些校验规则将自动应用于编辑页面。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当需要修改校验逻辑时，也只能在该Book实体类中修改。 校验将始终在整个应用程序中应用（校验逻辑在一处定义）。 在一个地方进行校验有助于保持代码干净，且更易于维护和更新。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px"><strong>五、使用DataType特性</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; 现在我们在Visual Studio 2017中修改Book类。 DataAnnotations除了提供一组内置的验证特性，System.ComponentModel.DataAnnotations 命名空间还提供格式特性。 我们来看一下DataType 特性应用于 ReleaseDate 和 Price 属性。代码如下。</span></p>
+<div class="cnblogs_code">
+<pre>        [Display(Name = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">出版日期</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        [DataType(DataType.Date)] 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DateTime ReleaseDate { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        [Range(</span><span style="color: rgba(128, 0, 128, 1)">1</span>,<span style="color: rgba(128, 0, 128, 1)">200</span><span style="color: rgba(0, 0, 0, 1)">)]
+
+        [DataType(DataType.Currency)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">decimal</span> Price { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span>; }</pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DataType 特性仅提供相关提示来帮助视图引擎设置数据格式（例如向 URL 提供 &lt;a&gt; 和向电子邮件提供 &lt;a href="mailto:test@163.com"&gt;）。 使用 正则表达式(RegularExpression)特性校验数据的格式。 DataType 特性用于指定比数据库内部类型更具体的数据类型。 DataType 特性不是校验特性。 示例应用程序中“出版日期”仅显示日期，不显示时间。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DtaType 枚举提供了多种数据类型，例如日期、时间、电话号码、货币、电子邮件地址等。 DataType特性的使用能够使应用程序自动提供特定数据类型的功能。 例如，可为 DataType.EmailAddress 创建 mailto: 链接。 如果浏览器支持 HTML5 ，DataType.Date类型浏览器将提供日期选择器，如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201806/10343-20180613160140375-1907496443.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DataType 特性发出 HTML 5 特性供 支持HTML 5 浏览器使用。 DataType 特性不提供任何校验。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DataType.Date 不指定显示日期的格式。 默认情况下，日期数据格式基于服务器的 CultureInfo 的默认格式进行显示。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DisplayFormat 特性用于显式指定日期格式：例如&nbsp;&nbsp;&nbsp; <br></span></p>
+<div class="cnblogs_code">
+<pre>    [DisplayFormat(DataFormatString = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">{0:yyyy-MM-dd}</span><span style="color: rgba(128, 0, 0, 1)">"</span>, ApplyFormatInEditMode = <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DateTime ReleaseDate { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span>; }</pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ApplyFormatInEditMode 设置用于指定在显示值进行编辑时需要显示的格式。 在某些场景中，您可能不希望某些字段具有此行为。 例如，在货币值中，可能不希望编辑 UI 中使用货币符号。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 可单独使用 DisplayFormat 特性，但通常建议使用 DataType 特性。 DataType 特性传递数据的语义而不是传递如何在前端界面上呈现数据，DataType具体 DisplayFormat 不具备的以下优势：</span></p>
+<ul>
+<li><span style="font-size: 16px">浏览器如果支持HTML5，则会自动显示相应的一些控件与功能（例如显示日期控件、区域设置适用的货币符号、电子邮件链接等）。</span></li>
+<li><span style="font-size: 16px">默认情况下，浏览器将根据您在区域设置中设置的区域采用正确的格式呈现数据。</span></li>
+<li><span style="font-size: 16px">DataType特性可以使ASP.NET Core框架可选择适当的字段模板来呈现数据。如果单独使用时，可以使用DisplayFormat 特性的显式的指定数据格式。</span></li>
+</ul>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 注：jQuery校验不能校验日期范围与日期时间。例如，在Book类中添加下面的代码，在浏览器中输入任何日期，都是显示校验错误，即使选择的日期是在指定的范围之内，如下图： <br></span></p>
+<div class="cnblogs_code">
+<pre>      [Display(Name = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">出版日期</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        [Range(</span><span style="color: rgba(0, 0, 255, 1)">typeof</span>(DateTime), <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">1980/1/1</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">2050/1/1</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DateTime ReleaseDate { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span>; }</pre>
+</div>
+<p align="left"><span style="font-size: 16px"><img src="https://images2018.cnblogs.com/blog/10343/201806/10343-20180613160232577-234709470.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 通常，在实体类中设置固定日期是不合适的，因此不推荐使用 Range 特性和 DateTime特性。</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2018-06-13 16:03</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">2303</span>)&nbsp;
+评论(<span id="post_comment_count">5</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=9178291" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(9178291);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 9178291, cb_entryCreatedDate = '2018-06-13 16:03', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

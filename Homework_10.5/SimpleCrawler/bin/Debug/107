@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="MVC全称是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范，用一种业务逻辑和数据显示分离的方法组织代码，将" />
+    <meta property="og:description" content="MVC全称是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范，用一种业务逻辑和数据显示分离的方法组织代码，将" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET MVC(二)——我的第一个ASP.NET MVC 控制器 - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2014-05-05 01:12';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/3708995.html">
+    <span>学习ASP.NET MVC(二)——我的第一个ASP.NET MVC 控制器</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        MVC全称是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范，用一种业务逻辑和数据显示分离的方法组织代码，将业务逻辑被聚集到一个部件里面，在界面和用户围绕数据的交互能被改进和个性化定制的同时而不需要重新编写业务逻辑。MVC是一种具有可测试性和易于维护的应用程序开发模式。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="font-size: 16px">MVC全称是Model View Controller，是模型(model)－视图(view)－控制器(controller)的缩写，是一种软件设计典范，用一种业务逻辑和数据显示分离的方法组织代码，将业务逻辑被聚集到一个部件里面，在界面和用户围绕数据的交互能被改进和个性化定制的同时而不需要重新编写业务逻辑。MVC是一种具有可测试性和易于维护的应用程序开发模式。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>基于MVC</strong><strong>的应用程序应该包含以下内容： <br>
+</strong>•模型：表示应用程序核心，是该应用程序中用来进行校验、执行业务逻辑的数据类，业务实体对象。 </span><br><span style="font-size: 16px">
+•视图：表示显示数据，是应用程序中处理数据显示的部分，是该应用程序动态生成HTML响应的模板文件。 </span><br><span style="font-size: 16px">
+•控制器：表示处理输入，是应用程序中处理用户交互的部分，是该应用程序处理浏览器传入的请求，从数据库中读取数据，然后指定视图模板返回给浏览器的响应。 </span><br>
+<br>
+</p>
+<p align="left"><span style="font-size: 16px"><strong>创建我的第一个控制器类</strong></span></p>
+<p align="left"><span style="font-size: 16px">首先，在Visual stdio中的“解决方案资源管理器”中，选中Controllers”文件夹，单击右键，在弹出菜单中选择“添加--&gt;控制器”。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051308045267498.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">其次，Visual Studio会弹出的“添加控制器”对话框，在对话框的“控制器名称”文本框中输入“HelloWorldController”，在“模板”下拉框中选择默认模板“空MVC控制器”，然后单击“添加”。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051308281671587.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">第三，当鼠标点击“添加”之后，Visual Studio会创建一个.cs文件
+，文件名为HelloWorldController.cs。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051308349793736.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">第四，用下面的代码替换文件中的默认代码。</span></p>
+<div>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> HelloWorldController : Controller
+    {
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span>
+        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> GET: /HelloWorld/</span>
+        <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Index()
+
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">这是我的一个欢迎您来到ASP.NET MVC世界的 &lt;b&gt;控制器&lt;/b&gt;的默认方法 ！！！</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+
+        } 
+
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span>
+        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> GET: /HelloWorld/Welcome/</span>
+        <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Welcome()
+
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">这是一个欢迎您来到ASP.NET MVC世界的控制器中的指定方法...</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+
+        }     
+    }</span></pre>
+</div>
+<p align="left"><span style="color: rgba(255, 0, 255, 1)">&nbsp;<span style="font-size: 16px">我的这个控制器中的Index与Welcom方法都只是返回一个字符串。</span></span></p>
+<p align="left"><span style="font-size: 16px"> <br></span></p>
+</div>
+<p align="left"><span style="font-size: 16px">第五，在填写完代码之后，运行应用程序（按F5或Ctrl+ F5）。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051309000736068.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">Visual Studio会启动IIS Express，同时运行Visual Studio中Web应用程序，然后Visual Studio会启动默认浏览器并打开应用程序的首页。在已启动的浏览器的地址栏中的地址后面加上“HelloWorld” （例如，如下图中，它的http://localhost:36878/HelloWorld）。浏览器就会去调用新的页面，页面中显示的内容如下图。由于我在Index方法中，直接返回的是字符串，所以浏览器中显示的就是我在代码中所写的一串中文。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051309324632865.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">ASP.NET MVC根据传入的不同的URL去调用不同的控制器类以及控制器类中的不同的方法。ASP.NET MVC默认的URL路由格式如下：</span></p>
+<div>
+<div class="cnblogs_code">
+<pre>/[Controller]/[ActionName]/[Parameters]</pre>
+</div>
+<p align="left">&nbsp;<span style="font-size: 16px"><br></span></p>
+</div>
+<p align="left"><span style="font-size: 16px">以上格式的URL，其中第一部分决定了由什么控制器类来执行，就本例来说HelloWorld映射到HelloWorldController类。 URL的第二部分决定了要执行的控制器类中的哪个方法，就本例来说HelloWorld/Index会让HelloWorldController类的Index方法执行。请注意，Index是ASP.NET MVC控制器类的默认方法，如果在没有指定具体方法的情况下使用，将调用控制器上的默认方法（Index）。 </span><br><span style="font-size: 16px">
+在浏览器地址栏中输入http://localhost:36878/HelloWorld/Welcome，浏览器会返回以下字符串“这是一个欢迎你来到ASP.NET MVC世界的控制器的指定方法......”。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051309460574218.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">第六，我要通过URL传递一些参数给控制器，来看我是如何修改的（例如，/HelloWorld/Welcome?name=dotnet菜园&amp;numtimes=9）。下面的方法是用参数来改变应用程序的输出内容。代码如下所示。请注意，该代码使用C＃可选参数的功能，当numTimes没有参数传递过来时，numTimes参数默认为1。 <br></span></p>
+<div>
+<div class="cnblogs_code">
+<pre>        <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Welcome(<span style="color: rgba(0, 0, 255, 1)">string</span> name, <span style="color: rgba(0, 0, 255, 1)">int</span> numTimes = <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">)
+
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> HttpUtility.HtmlEncode(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">欢迎 </span><span style="color: rgba(128, 0, 0, 1)">"</span> + name + <span style="color: rgba(0, 0, 255, 1)">string</span>.Format(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">，第{0}次来到ASP.NET MVC的世界！ </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)"> , numTimes));
+
+        }
+ </span></pre>
+</div>
+<p>&nbsp;</p>
+</div>
+<p align="left"><span style="font-size: 16px">直接运行程序，会报一个以下错误信息。如下图。原来在ASP.NET MVC的控制器类中默认是不支持方法重载的。如果希望方法重载要使用httpverbs或是重写actionexcuting方法</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051310137298237.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">我们把Welcome方法注释掉，然后按F5来运行应用程序并在浏览器中输入http://localhost:36878//HelloWorld/Welcome?name=dotnet菜园&amp;numtimes=9。您可以输入不同的name和numtimes值。ASP.NET MVC会自动从URL请求中获取相应的参数值。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/051310338075939.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">在这个例子中，控制器一直在做MVC中的“VC”部分 - 也就是，视图和控制器的工作。本示例中的控制器直接返回一个HTML字符串。按照MVC的理论来说，控制器不应该直接返回HTML字符串，因为这样做会让代码变得非常繁琐，具体的呈现方式应该由视图去做，而不应该由控制器去做，在下一次的文章中再来介绍视图。</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2014-05-05 13:12</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">8833</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=3708995" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(3708995);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 3708995, cb_entryCreatedDate = '2014-05-05 13:12', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

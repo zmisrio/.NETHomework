@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="原文链接：https://www.changxuan.top/?p=1109 简介 Redis 中自定义的字符串结构。 字符串是 Redis 中最常用的一种数据类型，在 Redis 中专门封装了一个字" />
+    <meta property="og:description" content="原文链接：https://www.changxuan.top/?p=1109 简介 Redis 中自定义的字符串结构。 字符串是 Redis 中最常用的一种数据类型，在 Redis 中专门封装了一个字" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>「Redis」字符串 - 壹言 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/chxuan/custom.css?v=7FV/8Es7AGTwMTwGEMkFJEQITqc=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/SimpleMemory/bundle-SimpleMemory-mobile.min.css" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chxuan/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chxuan/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chxuan/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 405529;
+        var currentBlogApp = 'chxuan';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleMemory';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 10:51';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chxuan/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chxuan/">壹言</a>
+</h1>
+<h2>
+changxuan.top | 公众号：Worldhello
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chxuan/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%A3%B9%E8%A8%80">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chxuan/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+194&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+0</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chxuan/p/13799992.html">
+    <span>「Redis」字符串</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <section id="nice" data-tool="mdnice编辑器" data-website="https://www.mdnice.com" style="font-size: 16px; color: rgba(0, 0, 0, 1); padding: 0 10px; line-height: 1.6; word-spacing: 0; letter-spacing: 0; word-wrap: break-word; text-align: left; font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, &quot;PingFang SC&quot;, Cambria, Cochin, Georgia, Times, &quot;Times New Roman&quot;, serif"><p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">原文链接：<a href="https://www.changxuan.top/?p=1109" style="text-decoration: none; color: rgba(30, 107, 184, 1); word-wrap: break-word; font-weight: bold; border-bottom: 1px solid rgba(30, 107, 184, 1)">https://www.changxuan.top/?p=1109</a></p>
+<h2 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 22px"><span class="prefix" style="display: none"></span><span class="content">简介</span><span class="suffix"></span></h2>
+<blockquote class="multiquote-1" data-tool="mdnice编辑器" style="border-top: none; border-right: none; border-bottom: none; border-left: 3px solid rgba(0, 0, 0, 0.4); display: block; font-size: 0.9em; overflow: auto; overflow-scrolling: touch; background: rgba(0, 0, 0, 0.05); color: rgba(106, 115, 125, 1); padding: 10px 10px 10px 20px; margin-bottom: 20px; margin-top: 20px">
+<p style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; color: rgba(0, 0, 0, 1); line-height: 26px">Redis 中自定义的字符串结构。</p>
+</blockquote>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">字符串是 Redis 中最常用的一种数据类型，在 Redis 中专门封装了一个字符串结构体——简单动态字符串（Simple Dynamic String, SDS）。其结构体如下：</p>
+<pre class="custom" data-tool="mdnice编辑器" style="margin-top: 10px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.55)"><span style="display: block; background: url(&quot;https://my-wechat.mdnice.com/point.png&quot;) 10px 10px / 40px no-repeat rgba(40, 44, 52, 1); height: 30px; width: 100%; margin-bottom: -7px; border-radius: 5px"></span><code class="hljs" style="overflow-x: auto; padding: 15px 16px 16px; color: rgba(171, 178, 191, 1); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; font-size: 12px; -webkit-overflow-scrolling: touch; background: rgba(40, 44, 52, 1); border-radius: 5px"><span class="hljs-class" style="line-height: 26px"><span class="hljs-keyword" style="color: rgba(198, 120, 221, 1); line-height: 26px">struct</span>&nbsp;<span class="hljs-title" style="color: rgba(230, 192, 123, 1); line-height: 26px">sdshdr</span>&nbsp;{</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="color: rgba(92, 99, 112, 1); font-style: italic; line-height: 26px">//&nbsp;记录&nbsp;buf&nbsp;数组中已使用字节的数量既&nbsp;SDS&nbsp;中所保存字符串的长度</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="color: rgba(198, 120, 221, 1); line-height: 26px">int</span>&nbsp;len;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="color: rgba(92, 99, 112, 1); font-style: italic; line-height: 26px">//&nbsp;记录&nbsp;buf&nbsp;数组中未使用字节的数量</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="color: rgba(198, 120, 221, 1); line-height: 26px">int</span>&nbsp;<span class="hljs-built_in" style="color: rgba(230, 192, 123, 1); line-height: 26px">free</span>;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment" style="color: rgba(92, 99, 112, 1); font-style: italic; line-height: 26px">//&nbsp;字节数组，用于保存字符串。</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword" style="color: rgba(198, 120, 221, 1); line-height: 26px">char</span>&nbsp;buf[];<br>}<br></code></pre>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">当 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len</code> 的值为 8 时，表示在 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 数组中保存了一个 8 字节长的字符串；当 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">free</code> 的值为 2 时，表示在 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 数组中还有两个字节的空间未使用。如果为 0 ，则表示当前 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 数组的空间已经全部分配完毕；<code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 则是一个 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">char</code> 类型的数组。SDS 遵循了C字符串以空字符结尾的惯例，即存储在 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 中的字符串末尾都会紧跟一个空字符 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">\0</code> ，这个空字符对于用户来说是透明的，它并不会被计入 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len</code> 中。</p>
+<h2 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 22px"><span class="prefix" style="display: none"></span><span class="content">优点</span><span class="suffix"></span></h2>
+<blockquote class="multiquote-1" data-tool="mdnice编辑器" style="border-top: none; border-right: none; border-bottom: none; border-left: 3px solid rgba(0, 0, 0, 0.4); display: block; font-size: 0.9em; overflow: auto; overflow-scrolling: touch; background: rgba(0, 0, 0, 0.05); color: rgba(106, 115, 125, 1); padding: 10px 10px 10px 20px; margin-bottom: 20px; margin-top: 20px">
+<p style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; color: rgba(0, 0, 0, 1); line-height: 26px">为什么要在 Redis 中要自定义字符串的数据结构？</p>
+</blockquote>
+<h3 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 20px"><span class="prefix" style="display: none"></span><span class="content">1 时间复杂度</span><span class="suffix" style="display: none"></span></h3>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">首先，由上面代码我们可以知道通过 SDS 获取字符串的长度的<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">时间复杂度为 O(1)</strong>。而如果使用 C 字符串每次获取字符串长度时的时间复杂度则为 O(N)。即当我们使用 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">STRLEN</code> 命令获取某个键值的长度时不用担心性能问题。</p>
+<h3 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 20px"><span class="prefix" style="display: none"></span><span class="content">2 缓冲区溢出</span><span class="suffix" style="display: none"></span></h3>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">其次，<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">可以避免缓冲区溢出问题</strong>。例如，两个C字符串在内存中紧挨着，如果没有提前给前一个字符串分配足够空间的情况下就使用 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">strcat</code> 函数在其末尾追加新的字符串。那么新拼接的字符串就会溢出到后一个字符串的空间中，从而导致后一个字符串的内容发生改变。但是在 SDS 中，对内容进行修改之前会先检查其内存空间是否满足要求，如果不满足要求，则会自动将空间扩展至所需要的大小。扩展空间大小的操作对于用户来说也是透明的。</p>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">另外，为了避免可能由于频繁的修改字符串内容，而导致产生较为耗时的内存重分配问题。SDS 通过以<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">空间换时间</strong>的方式即<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">未使用空间</strong>来尽量避免这种问题。在 SDS中实现了<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">空间预分配</strong>和<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">惰性空间释放</strong>两种优化策略。</p>
+<h4 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 18px"><span class="prefix" style="display: none"></span><span class="content">优化策略</span><span class="suffix" style="display: none"></span></h4>
+<h5 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 16px"><span class="prefix" style="display: none"></span><span class="content">空间预分配</span><span class="suffix" style="display: none"></span></h5>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">当 SDS 中的字符串<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">变长</strong>时，<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">程序先判断当前闲置空间是否满足需求</strong>。如果不满足，则按照<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">空间预分配</strong>的策略对空间进行扩展。Redis 不仅仅只分配所需要的空间大小，则是根据规则多分配一些空间。当 SDS 修改后的新值长度<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">小于 1MB</strong>（<code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len</code> 的长度）。那么程序将会分配和 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len</code> 同样大小的闲置空间，即 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len = free</code> 。<code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code> 数组的实际长度则是 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">len + free + 1</code> 字节。如果修改后的新值<strong style="font-weight: bold; color: rgba(0, 0, 0, 1)">大于等于 1MB</strong>，程序则会分配 1MB 的未使用空间。</p>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">如此一来，就不需要每次增加字符串长度时必须对内存重新分配，从而提高了系统性能。</p>
+<h5 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 16px"><span class="prefix" style="display: none"></span><span class="content">惰性空间释放</span><span class="suffix" style="display: none"></span></h5>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">当 SDS 中的字符串变短时，程序并不是直接进行内存重分配回收多余的空间，而是使用 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">free</code> 记录下来。如果将来再变长时，可以直接使用。</p>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">通过惰性空间释放，避免了缩短字符串时产生的内存重分配操作。</p>
+<h3 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 20px"><span class="prefix" style="display: none"></span><span class="content">3 二进制安全</span><span class="suffix" style="display: none"></span></h3>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">由于C字符串的特殊性，在一些场景中会出现问题。如，一个字符串中存在多个空字符，那么C字符串只能识别出第一个空字符之前的内容。且C字符串只能保存文本数据。</p>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">而 SDS 的 API 都是二进制安全的，所有的 API 都会以处理二进制的方式来处理 SDS 存放在 <code style="font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; color: rgba(30, 107, 184, 1); background-color: rgba(27, 31, 35, 0.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all">buf</code>  数组中的数据，以保证数据写入前与读取后的一致性。</p>
+<h3 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 20px"><span class="prefix" style="display: none"></span><span class="content">4 兼容部分C字符串函数</span><span class="suffix" style="display: none"></span></h3>
+<p data-tool="mdnice编辑器" style="font-size: 16px; padding-top: 8px; padding-bottom: 8px; margin: 0; line-height: 26px; color: rgba(0, 0, 0, 1)">避免了重复造轮子的问题。</p>
+<h2 data-tool="mdnice编辑器" style="margin-top: 30px; margin-bottom: 15px; padding: 0; font-weight: bold; color: rgba(0, 0, 0, 1); font-size: 22px"><span class="prefix" style="display: none"></span><span class="content">SDS API</span><span class="suffix"></span></h2>
+<section class="table-container" data-tool="mdnice编辑器" style="overflow-x: auto"><table style="display: table; text-align: left">
+<thead>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<th style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; font-weight: bold; background-color: rgba(240, 240, 240, 1); min-width: 85px">函数</th>
+<th style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; font-weight: bold; background-color: rgba(240, 240, 240, 1); min-width: 85px">作用</th>
+<th style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; font-weight: bold; background-color: rgba(240, 240, 240, 1); min-width: 85px">备注</th>
+</tr>
+</thead>
+<tbody style="border: 0">
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsnew</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">创建一个包含给定 C 字符串的 SDS</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsempty</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">创建一个不包含任何内容的空 SDS</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsfree</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">释放给定的 SDS</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdslen</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">返回 SDS 已使用的空间字节数</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsavail</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">返回SDS 未使用的空间字节数</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsdump</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">创建一个给定 SDS 的副本</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsclear</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">清空 SDS 保存的字符串内容</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdscat</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">将给定的C字符串拼接到 SDS字符串末尾</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdscatsds</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">将给定的SDS字符串拼接到另一个SDS字符串的末尾</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdscpy</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">将给定的C字符串复制到 SDS中，并覆盖SDS中原有的字符串</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsgrowzero</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">用空字符将SDS扩展至给定长度</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdsrange</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">保留SDS给定区间内的数据</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(255, 255, 255, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdstrim</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">接受一个 SDS 和一个 C字符串作为参数，从 SDS 中移除所有在C字符串中出现过的字符</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+<tr style="border-top: 1px solid rgba(204, 204, 204, 1); border-right: 0; border-bottom: 0; border-left: 0; background-color: rgba(248, 248, 248, 1)">
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">sdscmp</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px">对比两个 SDS 是否相同</td>
+<td style="font-size: 16px; border: 1px solid rgba(204, 204, 204, 1); padding: 5px 10px; text-align: left; min-width: 85px"></td>
+</tr>
+</tbody>
+</table>
+</section></section>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 22:51</span>&nbsp;
+<a href="https://www.cnblogs.com/chxuan/">壹言</a>&nbsp;
+阅读(<span id="post_view_count">0</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13799992" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13799992);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 405529, cb_blogApp = 'chxuan', cb_blogUserGuid = 'e93fc62e-ce38-4932-1979-08d54dbac325';
+    var cb_entryId = 13799992, cb_entryCreatedDate = '2020-10-11 22:51', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 壹言
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

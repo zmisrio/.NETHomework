@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="我们通过前面的二篇文章的学习，已经实现了文件上传的主要功能，这一篇文章我们来学习如何把上传文件的功能页面添加到首面上面，以及删除功能的实现 。" />
+    <meta property="og:description" content="我们通过前面的二篇文章的学习，已经实现了文件上传的主要功能，这一篇文章我们来学习如何把上传文件的功能页面添加到首面上面，以及删除功能的实现 。" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET Core Razor 编程系列十五——文件上传功能（三） - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2018-07-11 02:09';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/9294202.html">
+    <span>学习ASP.NET Core Razor 编程系列十五——文件上传功能（三）</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        我们通过前面的二篇文章的学习，已经实现了文件上传的主要功能，这一篇文章我们来学习如何把上传文件的功能页面添加到首面上面，以及删除功能的实现 。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="font-size: 16px"><strong><strong><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span class="postTitle2"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列目录</span></span></span></span></span></strong></strong></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl02_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8579777.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列一</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8622439.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列二——添加一个实体</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8651973.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列三——创建数据表及创建项目基本页面</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8717199.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列四——Asp.Net Core Razor列表模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8778379.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列五——Asp.Net Core Razor新建模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8872303.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列六——数据库初始化</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8968398.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列七——修改列表页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8986512.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列八——并发处理</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/9025896.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列九——增加查询功能</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9077466.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十——添加新字段</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9111862.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十一——把新字段更新到数据库</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9178291.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十二——在页面中增加校验</span></a></span></p>
+<p align="left"><span style="font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9243055.html">学习ASP.NET Core Razor 编程系列十三——文件上传功能（一）</a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/9273635.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列十四——文件上传功能（二）</span></a></span></p>
+<p align="left">&nbsp;</p>
+<p align="left"><span style="font-size: 16px"><strong>八、添加文件 Razor 页面的链接</strong></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 我们通过前面的二篇文章的学习，已经实现了文件上传的主要功能，这一篇文章我们来学习如何把上传文件的功能页面添加到首面上面，以及删除功能的实现 。</span></p>
+<ol>
+<li><span style="font-size: 16px">在Visual Studio 2017中按F5运行书籍管理应用程序，在浏览器浏览，如下图。但是没有发现上传页面的菜单。</span></li>
+</ol>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711135747274-1062647381.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp; &nbsp; &nbsp; 2.</span><span style="font-size: 16px">在Visual Studio 2017中打开“_Layout.cshtml”，然后向导航栏添加一个链接以访问文件上传页面，如下图：</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711135808949-1505535037.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.在Visual Studio 2017中按F5运行书籍管理应用程序，在浏览器浏览，如下图。此时你会发现上传页面的菜单。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711135828986-1964790846.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px"><strong>九、添加文件删除确认页面</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.&nbsp; 为了更好的用户体验，当用户单击删除上传文件时，要提供一个删除确认的操作。 在Visual Studio 2017的解决方案资源管理器中找到“Descri”文件夹，并添加删除确认页面 (Delete.cshtml),html代码如下:</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@page "{id:int}"
+@model RazorMvcBooks.Pages.Descri.DeleteModel
+@{
+    ViewData["Title"] = "删除上传文件";
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>删除上传文件<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+<span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h3</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>你是否确认要删除此文件?<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h3</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+<span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h4</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>上传文件<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h4</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">hr </span><span style="color: rgba(0, 0, 255, 1)">/&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dl </span><span style="color: rgba(255, 0, 0, 1)">class</span><span style="color: rgba(0, 0, 255, 1)">="dl-horizontal"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Describe.Name)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(model =&gt; model.Describe.Name)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Describe.PublicScheduleSize)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(model =&gt; model.Describe.PublicScheduleSize)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Describe.PrivateScheduleSize)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(model =&gt; model.Describe.PrivateScheduleSize)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Describe.UploadDateTime)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dt</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(model =&gt; model.Describe.UploadDateTime)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dd</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">dl</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">form </span><span style="color: rgba(255, 0, 0, 1)">method</span><span style="color: rgba(0, 0, 255, 1)">="post"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input </span><span style="color: rgba(255, 0, 0, 1)">type</span><span style="color: rgba(0, 0, 255, 1)">="hidden"</span><span style="color: rgba(255, 0, 0, 1)"> asp-for</span><span style="color: rgba(0, 0, 255, 1)">="Describe.ID"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input </span><span style="color: rgba(255, 0, 0, 1)">type</span><span style="color: rgba(0, 0, 255, 1)">="submit"</span><span style="color: rgba(255, 0, 0, 1)"> value</span><span style="color: rgba(0, 0, 255, 1)">="Delete"</span><span style="color: rgba(255, 0, 0, 1)"> class</span><span style="color: rgba(0, 0, 255, 1)">="btn btn-default"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span><span style="color: rgba(0, 0, 0, 1)"> |
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">a </span><span style="color: rgba(255, 0, 0, 1)">asp-page</span><span style="color: rgba(0, 0, 255, 1)">="./Index"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>Back to List<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">a</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">form</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. 在Visual Studio 2017的解决方案资源管理器中，打开Delete.cshtml.cs文件，修改Delete.cshtml.cs中的代码如下：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Microsoft.AspNetCore.Mvc;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Microsoft.AspNetCore.Mvc.RazorPages;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> RazorMvcBooks.Models;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Microsoft.EntityFrameworkCore; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> RazorMvcBooks.Pages.Descri
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> DeleteModel : PageModel
+    { 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span><span style="color: rgba(0, 0, 0, 1)"> RazorMvcBooks.Models.BookContext _context;
+ 
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> DeleteModel(RazorMvcBooks.Models.BookContext context)
+
+        {
+            _context </span>=<span style="color: rgba(0, 0, 0, 1)"> context;
+        }
+
+
+        [BindProperty]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> Describe Describe { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task&lt;IActionResult&gt; OnGetAsync(<span style="color: rgba(0, 0, 255, 1)">int</span>?<span style="color: rgba(0, 0, 0, 1)"> id)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id == <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NotFound();
+
+            } 
+
+            Describe </span>= <span style="color: rgba(0, 0, 255, 1)">await</span> _context.Describe.SingleOrDefaultAsync(m =&gt; m.ID ==<span style="color: rgba(0, 0, 0, 1)"> id); 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (Describe == <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NotFound();
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> Page();
+        } 
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> OnPostAsync 方法按 id 处理计划删除：</span>
+        <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task&lt;IActionResult&gt; OnPostAsync(<span style="color: rgba(0, 0, 255, 1)">int</span>?<span style="color: rgba(0, 0, 0, 1)"> id)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id == <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NotFound();
+            }
+            Describe </span>= <span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _context.Describe.FindAsync(id); 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (Describe != <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                _context.Describe.Remove(Describe);
+
+                </span><span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _context.SaveChangesAsync();
+
+            } 
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> RedirectToPage(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">./Index</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+        }
+
+    }
+}
+
+ </span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp; &nbsp; 3. 在Visual Studio 2017中按F5运行书籍管理应用程序，然后在浏览器中点击“上传文件”菜单，浏览上传文件页面，并上传文件。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140520124-762577187.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 4.&nbsp; 在已上传文件列表中，点击要删除的上传文件记录，按下图操作。用户可单击该表中的“删除”链接以访问删除确认视图，并在其中选择确认或取消删除操作。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<span style="font-size: 16px"><img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140351900-368636339.png" alt=""></span></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 5.&nbsp; 成功删除上传文件后，RedirectToPage 将返回到计划的上传文件（“Index.cshtml”）页面。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140608503-1117192715.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px"><strong>十、上传文件页面的说明</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 按初始加载所示计划 Razor 页面，其中不含验证错误和空字段</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp;&nbsp; 在不填充任何字段的情况下选择“上传”按钮会违反此模型上的 [Required] 特性。 ModelState 无效。 会向用户显示验证错误消息:</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140720704-261521361.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 验证错误消息显示在每个输入控件旁边</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140731359-1653284556.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在“文件名”字段中键入两个字母。 校验提示信息会提示文件名长度必须介于 3-60 个字符之间:</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140811083-573173458.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 文件名文本框中输入“image1”，则校验信息自动会消失,如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140818930-1324033428.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 上传一个或多个文本文件时，“已上传文件列表”部分会显示已经上传的文件信息，<span style="font-size: 16px">显示每个上传文件的文件名称、UTC 格式的上传时间、公共描述文件的大小和后台描述文件的大小</span>。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201807/10343-20180711140835160-811337830.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2018-07-11 14:09</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">1844</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=9294202" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(9294202);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 9294202, cb_entryCreatedDate = '2018-07-11 14:09', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

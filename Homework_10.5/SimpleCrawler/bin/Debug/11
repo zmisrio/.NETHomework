@@ -1,0 +1,341 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="掌握多一门编程语言，多一种选择，多一份机遇，更何况学的是人见人爱，花见花开的Python语言。它目前可占据编程语言排行榜的第3名，是名副其实的“探花郎”，无论用它做什么(网络爬虫、人工智能、Web应用" />
+    <meta property="og:description" content="掌握多一门编程语言，多一种选择，多一份机遇，更何况学的是人见人爱，花见花开的Python语言。它目前可占据编程语言排行榜的第3名，是名副其实的“探花郎”，无论用它做什么(网络爬虫、人工智能、Web应用" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>第1天 | 12天搞定Python，告诉你有什么用？ - 伴码 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/unlimitedsunlight/bundle-unlimitedsunlight.min.css?v=0PW-IbyD73rSsrHXyZPdWAdlgI9zvcQ6P3MLE4OIhi4" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/unlimitedsunlight/bundle-unlimitedsunlight-mobile.min.css?v=Pyoky-fugg2gCIuQEc7F0Nd9YqWnN4vxJjO4zFkS1NE" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/halfcode/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/halfcode/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/halfcode/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 573031;
+        var currentBlogApp = 'halfcode';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'UnlimitedSunlight';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 08:23';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/halfcode/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/halfcode/">伴码</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/halfcode/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E4%BC%B4%E7%A0%81">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/halfcode/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+21&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+19</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/halfcode/p/13799081.html">
+    <span>第1天 | 12天搞定Python，告诉你有什么用？</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        掌握多一门编程语言，多一种选择，多一份机遇，更何况学的是人见人爱，花见花开的Python语言。它目前可占据编程语言排行榜的第3名，是名副其实的“探花郎”，无论用它做什么(网络爬虫、人工智能、Web应用等) ，咱都不亏，开篇有益。
+
+有趣的话，多说两句，”无趣”的就总结概述。本章总结概述一下Python的发展历史和特点，详细介绍Python的运行和开发环境。
+很多程序员，都不太喜欢了解编程语言的来源和发展历史，觉得那个读起来索然无味，废话多多，
+但我还是建议你抽点时间看看，Python的来源确实有点意思。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p>掌握多一门编程语言，多一种选择，多一份机遇，更何况学的是人见人爱，花见花开的Python语言。它目前可占据编程语言排行榜的第3名，是名副其实的“探花郎”，无论用它做什么(网络爬虫、人工智能、Web应用等) ，咱都不亏，开篇有益。</p>
+<p>有趣的话，多说两句，”无趣”的就总结概述。本章总结概述一下Python的发展历史和特点，详细介绍Python的运行和开发环境。</p>
+<p>很多程序员，都不太喜欢了解编程语言的来源和发展历史，觉得那个读起来索然无味，废话多多，但我还是建议你抽点时间看看，Python的来源确实有点意思。</p>
+<h1 class="pgc-h-arrow-right">1.1 Python来源</h1>
+<p>1989年的圣诞节，一位来自荷兰，名叫Guidio van Rossum的年轻帅小伙子，为了打发无趣的时光，决定改善他参与设计，不是很满意的ABC语言，随着研究的深入和功能的完善，其特性超越了ABC。在给这个新的脚本语言命名时，他想起了喜爱的Monty Pythoh喜剧团体，于是取名为：Python。</p>
+<p>通过这个故事，终于知道咱们为什么发明不了一门编程语言了，对，那是因为我们无论在什么节假日，都没有无聊过，而且还丰富多彩。</p>
+<p>历经两年后，也就是在1991年2月份时,Python终于面向大众，发布了第一个公开版本，其版本号为0.9.0。它使用C语言开发实现，支持类、函数、异常处理，还有列表、字典等数据结构。</p>
+<p>随着更多程序员的加入，Python快马加鞭，在1994 年1月份发布了 Python 1.0；在2000年发布了Python 2.0；在2008 年 12 月时, 正式发布了Python 3.0，它也被称为 "Python 3000" 或 "Py3K。</p>
+<p>随着这几年 Python 3 的使用率急剧上升，作为新手建议直接从 Python 3 学起。没必从Python2入手，毕竟Python3和Python2是不兼容的，还有Python官方公布，会在 2020 年 1 月 1 日起，停止对 Python 2 的更新和官方支持。</p>
+<p>到这，你可能会问：Python怎么会获得那么多程序员的喜欢，它究竟有何特点？</p>
+<h1 class="pgc-h-arrow-right">1.2 有何特点</h1>
+<p>特点挺多的，咱只讲几处重点的。</p>
+<p>(1) 简单易学</p>
+<p>Python的语法就像在读英语一样，简单明了，一目了然，没有多余的边边角角，让你能够更专注于解决业务问题，而无须花费时间去研究语言本身。</p>
+<p>它是面向对象的高级语言，具有封装、继承、多态等特点，也就意味着你不用考虑如何管理程序内存使用等诸类底层细节。</p>
+<p>(2) 免费开源</p>
+<p>Python 是 FLOSS（自由/开放源码软件）之一。简单地说，你可以自由地发布这个软件的拷贝、阅读它的源代码、甚至对它做任何改动，都不用花一分钱。</p>
+<p>无论你是出于学习，还是开发商业软件，都不用担心授权问题。商业软件必然把客户绑定在产权上，无法自拔，而开源软件则可以让商业客户从这种折磨中解放出来。</p>
+<p>(3) 跨平台</p>
+<p>如果在某操作系统下开发的软件，也可在其他系统上运行，那是多么幸福的一件事呀，而Python就可以满足。</p>
+<p>如果你不使用依赖于系统特性的代码，那么你的Python 程序无需任何修改就可以运行在Linux、Windows、FreeBSD、macOS、Solaris、OS/2、Amiga、AROS、BeOS、Palm OS、VxWorks、PlayStation等平台上。</p>
+<p>(4) 丰富的库</p>
+<p>Python拥有众多标准库和第3方库，你想要的各种领域的库几乎都能找得到，那意味着你可以不用重复发明轮子，从而提高工作效率，加快开发进度。</p>
+<p>它有正则表达式、文档生成、单元测试、线程、数据库等标准库。也有网页浏览器、FTP、电子邮件、XML、密码系统、GUI（图形用户界面）、Tk 和其他与系统有关的操作。</p>
+<p>还有许多其他高质量的第3方库，如用于桌面系统开发的wxPython，用于科学计算或数值计算的Numpy和Matplotlib等等。</p>
+<p>(5) 解释性</p>
+<p>Python是一门解释性语言，这意味着它不需要在运行前编译，在运行程序的时候才翻译，专门的解释器负责在每个语句执行的时候解释程序代码。</p>
+<p>相对于编译型语言(如C++或Delphi)，Python运行效率会低一些,可好在它的开发效率高，以空间换时间。</p>
+<p>随着硬件的升级和设计思想的变革，编译型和解释型语言越来越笼统，而解释型语言的自身特点也使得编译器服务商愿意花费更多的时间和成本去优化解释器，解释型语言性能超过编译型语言是迟早问题。</p>
+<h1 class="pgc-h-arrow-right">1.3 应用领域</h1>
+<p>国外的Twitter、Google、Yahoo，Facebook，国内的豆瓣、果壳、春雨医生、知乎(Quora) 等知名企业都在使用Python，我们来看看它可应用在哪些领域里。</p>
+<p>(1) 人工智能</p>
+<p>各种人工智能算法、机器学习、神经网络、深度学习等大多基于Python编写，尤其在PyTorch推出后，更让其站在了AI时代的前端。</p>
+<p>PyTorch有许多优势，如动态图机制、网络构建灵活以及拥有强大的社群等。由于其灵活、动态的编程环境和用户友好的界面，受到AI研究人员的推崇。</p>
+<p>(2) 网络爬虫</p>
+<p>在爬虫领域，Python开源库众多，一搜一大把，而且还简单易用。其中最为突出的要数Scrapy框架。</p>
+<p>Scrapy是一个为了爬取网站数据，提取结构性数据而编写的应用框架，只需要实现少量代码，就能够快速的抓取到数据内容并进行分析和统计。</p>
+<p>(3) Web应用</p>
+<p>基于Python的Web开发框架比关键字还多，常见的有Django、Tornado、Flask、web.py、 Bottle等。</p>
+<p>其中Django架构，应用范围最广，开发速度非常快，学习门槛也低，能够帮助你快速的搭建起可用的Web应用程序。</p>
+<p>(4) 桌面软件</p>
+<p>开发了那么多年的程序，经常说跨平台，跨平台，只是真正跨过的应用有几个?大多数Web应用，从一开始定下来平台后，后期很少更改的。</p>
+<p>桌面系统就不同了，从一开始就希望它可以运行在多个平台上，提供给更多的人使用。Python在这方面也不含糊，提供了PyGTK、PySide、PyQT、WxPython等快速开发桌面统并可跨平台的框架。</p>
+<p>其中使用WxPython的企业最多，而它也是Python创始人，Guidio大哥的最爱。</p>
+<p>(5) 游戏开发</p>
+<p>在网络游戏开发中，Python有很多应用，相比于C++或 Lua,Python有更高阶的抽象能力，可以用更少的代码描述游戏业务逻辑。</p>
+<p>它非常适合编写1万行以上的项目，而且能够很好的把网游项目的规模控制在10万行代码以内。</p>
+<p>其中Pygame游戏框架，封装了图形、动画、文字、音频等操作，方便使用，是众多游戏开发工程师的福音。</p>
+<p>(6) 科学计算</p>
+<p>在早期的时候，NASA和Google就大量使用Python进行各种复杂的科学运算，积累了丰富的科学运算库。</p>
+<p>随着NumPy、SciPy、Matplotlib等众多程序库的开发，Python越来越适合做科学计算、绘制高质量的2D和3D图像。</p>
+<p>(7) 云计算开发</p>
+<p>如果了解过云计算相关的技术，应该知道目前很火的云计算框架OpenStack就是由Python开发的，如果使用它，就需要具备Python的相关技能。</p>
+<p>几乎每家云计算服务商，都提供了Python应用的相关接口，使用它，可很快的进行集成开发。</p>
+<p>(8) 金融分析</p>
+<p>数据分析已经深入到各个行业中，尤其在金融领域的应用是最广阔的。了解并掌握了Python金融数据分析，对于今后就业相当有吸引力。</p>
+<p>Python中的Numpy、Pandas、Scipy等数据分析模块，可以实现金融分析策略,如“双均线”、“周规则交易”、“羊驼策略”等。</p>
+<blockquote class="pgc-blockquote-abstract">
+<p>一个当了10年技术总监的老家伙，分享多年的编程经验。想学编程的朋友，可关注今日头条：老陈说编程。我将分享Python，前端(小程序)和App方面的编程知识。关注我，没错的。</p>
+</blockquote>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 20:23</span>&nbsp;
+<a href="https://www.cnblogs.com/halfcode/">伴码</a>&nbsp;
+阅读(<span id="post_view_count">69</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13799081" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13799081);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 573031, cb_blogApp = 'halfcode', cb_blogUserGuid = '231aab03-088a-4bf3-dddb-08d79458b333';
+    var cb_entryId = 13799081, cb_entryCreatedDate = '2020-10-11 20:23', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 伴码
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

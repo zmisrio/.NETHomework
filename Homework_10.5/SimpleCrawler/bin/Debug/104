@@ -1,0 +1,454 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="今天我将对前一篇文章中的示例进行修改，前一篇文章中并没有用到视图，这次将用到视图。对于前一个示例中的HelloWorldController类进行修改，使用视图模板文件生成HTML响应给浏览器。" />
+    <meta property="og:description" content="今天我将对前一篇文章中的示例进行修改，前一篇文章中并没有用到视图，这次将用到视图。对于前一个示例中的HelloWorldController类进行修改，使用视图模板文件生成HTML响应给浏览器。" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET MVC(三)——我的第一个ASP.NET MVC 视图 - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2014-05-14 01:04';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/3727487.html">
+    <span>学习ASP.NET MVC(三)——我的第一个ASP.NET MVC 视图</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        今天我将对前一篇文章中的示例进行修改，前一篇文章中并没有用到视图，这次将用到视图。对于前一个示例中的HelloWorldController类进行修改，使用视图模板文件生成HTML响应给浏览器。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left">&nbsp;</p>
+<p align="left"><span style="font-size: 16px">今天我将对前一篇文章中的示例进行修改，前一篇文章中并没有用到视图，这次将用到视图。对于前一个示例中的HelloWorldController类进行修改，使用视图模板文件生成HTML响应给浏览器。 </span><br>
+<br>
+</p>
+<p align="left"><span style="font-size: 16px"><strong>一、</strong><strong>创建视图文件 </strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">上一篇文章中的HelloWordController类中的Index方法返回了一串硬编码的字符串消息。而这一次，我将新建一个List方法，用来返回一个View对象，如下面的代码所示：</span></p>
+<p>&nbsp;</p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> ActionResult List()
+
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> View();
+
+}
+
+ </span></pre>
+</div>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">首先，创建一个使用Razor视图引擎的视图模板文件，Razor视图模板文件的扩展名为.cshtml，并提供一种比较优雅的方式使用C＃来创建HTML输出。Razor视图模板减少了编写程序所需要输入的字符数量和敲击键盘的次数，并实现了快速、流畅的编码工作。</span></p>
+<p align="left"><span style="font-size: 16px">如何来创建视图呢？在Visual Studio中为HelloWordController.cs的List控制器方法使用一个视图模板来生成一个HTML的响应给浏览器。</span></p>
+<p align="left"><span style="font-size: 16px">控制器方法（也称为动作方法），如上面的List方法，通常返回一个ActionResult（或是ActionResult的派生类），而不是基本类型，如字符串，整形。 </span><br><span style="font-size: 16px">
+下面就是添加一个视图方法的具体步骤：</span></p>
+<p align="left"><span style="font-size: 16px">1）先将光标置在List方法中，</span></p>
+<p align="left"><span style="font-size: 16px">2）单击鼠标右键，Visual studio会弹出一个右键菜单，然后在弹出的右键菜单中，用鼠标左键单击“添加视图”菜单。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141256028592555.png" alt=""> <br></span></p>
+<p align="left"><span style="font-size: 16px">其次，Visual Studio会弹出一个“添加视图”对话框。其中“视图名称”默认为List，其他设置可以修改，本文将保留默认设置，然后点击“添加”按钮：如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141256288283788.png" alt=""><br></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">这样会在MvcApplication1\Views\HelloWorld文件夹中创建一个List.cshtml文件。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141256408591098.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">下图显示了所创建的List.cshtml文件的内容： <br></span></p>
+<p align="left"><span style="font-size: 16px"><span style="font-size: 16px"><img src="https://images0.cnblogs.com/i/10343/201405/141257299374791.png" alt=""></span></span></p>
+<p align="left"><span style="font-size: 16px">添加&lt;H2&gt;HTML标记到以下文件(MvcApplication1\Views\HelloWord\List.cshtml)中。</span></p>
+<p align="left"><span style="font-size: 16px">代码如下。</span></p>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@{
+
+    ViewBag.Title = "List";
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>List<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+<span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>Hello from our View Template!<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p>&nbsp;</p>
+<span style="font-size: 16px">第三，</span><span style="font-size: 16px">在Visual studio中按“F5”运行之后，ASP.NET MVC默认调用的是Index方法，而实际需要浏览到HelloWorld控制器的List方法，（如：http://localhost:xxxx/HelloWorld/List）。再来看一下控制器中的List方法，只有一行代码return
+View()。由于我们没有明确指定的视图文件中使用的名称，ASP.NET MVC默认为使用<em>\Views\HelloWorld</em>\List.cshtml视图文件。结果如下图。</span></div>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141258226718602.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">程序运行起，效果如上图，看起来还不错。但是，请注意浏览器的标题栏显示“List——我的第一个ASP.NET MVC应用程序”和在页面顶部的“将你的徽标放置在此处”有些不协调，再进行一些改动。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>二、修改视图文件和页面布局 <br>
+</strong>首先，我们要修改在页面顶部的“将你的徽标放置在此处”这个标题。该文本每一页都是相同的，它放在一个共享的视图文件中，这个共享的视图文件又称为布局文件，它是一个公共布局页面，供其他页面使用。在解决方案资源管理器中打开/Views/Shared文件夹中的“_Layout.cshtml”文件。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141258377037726.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">布局模板文件允许你在一个地方填写网站的布局代码之后，可以在多个页面中使用。在布局模板文件中找到@ RenderBody（）行，
+RenderBody是一个占位符，是用来显示我们所创建特定网页视图。例如，当你在页面中击“关于”链接时，\Home\ About.cshtml视图文件就会显示在RenderBody位置处。如下图中的红色方框部分就是。 </span></p>
+<p align="left"><img src="https://images0.cnblogs.com/i/10343/201405/141300485935482.png" alt=""><br><span style="font-size: 16px">
+从“将你的徽标放置在此处”更改布局模板网站标题标题为“我的第一个ASP.NET MVC 应用程序”。</span></p>
+<div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; &nbsp;&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre>  <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">div </span><span style="color: rgba(255, 0, 0, 1)">class</span><span style="color: rgba(0, 0, 255, 1)">="float-left"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+                    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">p </span><span style="color: rgba(255, 0, 0, 1)">class</span><span style="color: rgba(0, 0, 255, 1)">="site-title"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>@Html.ActionLink("我的第一个ASP.NET MVC 应用程序", "Index", "Home")<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+                <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+</div>
+<p align="left"><span style="font-size: 16px">同时修改标题，把标题修改为如下内容：&nbsp;&nbsp;&nbsp; <br></span></p>
+<div>
+<div class="cnblogs_code">
+<pre>  <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">title</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>@ViewBag.Title - 我的第一个ASP.NET MVC 应用程序<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">title</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+
+
+
+</div>
+<p align="left"><span style="font-size: 16px">运行该应用程序，并注意浏览器中的标题，它会显示为“我的第一个ASP.NET
+MVC 应用程序”。点击页面上的所有链接，你会发现所有页面的标题都是“我的第一个ASP.NET
+MVC 应用程序”。这说明，我们只要对布局模板文件进行了修改，那么网站上的所有使用到布局模板的其他页面都会跟着变更。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141301133127000.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">现在，让我们改变List 视图的标题。 </span><br><span style="font-size: 16px">
+打开MvcApplication\Views\
+HelloWorld\List.cshtml文件，做以下修改：</span></p>
+<p align="left"><span style="font-size: 16px">第一，&nbsp;&nbsp;
+对于页面的标题进行修改</span></p>
+<p align="left"><span style="font-size: 16px">第二，对页面中的二级标头（&lt;h2&gt;元素）进行修改。注意两种的修改需要有点不同，以便能直观的发现，我们修改的是应用程序的哪一部分。</span></p>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@{
+
+    ViewBag.Title = "ASP.NET MVC 应用程序 List方法";
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>我的第一个ASP.NET MVC 应用程序 的方法 ——List<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+<span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>Hello from our View Template!<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p>&nbsp;</p>
+</div>
+<p align="left"><span style="font-size: 16px">“ViewBag.Title = "ASP.NET MVC 应用程序 List方法"”，上面的代码设置List.cshtml视图文件中的ViewBag对象的Title属性。为什么是ViewBag.Title属性呢，你可以打开_loyout.cshtml文件看看，你会发现在此文件中的&lt;title&gt;元素中会有ViewBag.Title。这样就可以方便的使用这种修改ViewBag属性的方法，轻松修改视图文件和布局文件中的参数。</span><br><span style="font-size: 16px">
+运行应用程序并浏览到http://localhost:36878/HelloWorld/list 。请注意，在浏览器中当前页面的标题，次级标题已经改变。
+（如果您浏览器中没有发生变化，可能是由于浏览器缓存了之前的内容。请按Ctrl + F5让浏览器强制从服务器加载响应。 ）浏览器页面中显示的标题与我们在List.cshtml文件中设定的ViewBag.Title属性的内容是一样的。如下图中的红色方框所标示的。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141301312182071.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">上面的示例当中，我们把所有要显示的数据都是硬编码在视图文件中的。虽然这个MVC应用程序有一个“V”
+（视图）
+，有一个“C” （控制器） ，但是却没有“M” （模型）。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px"><strong>三、从控制器传递数据到视图</strong></span></p>
+<p align="left"><span style="font-size: 16px">首先，从信息从控制器到视图说起，控制器类通过接收浏览器传入的URL请求，从数据库中检索数据，并最终决定以什么类型的响应发回浏览器，视图负责从一个控制器接收到的数据用于生成和格式化成HTML响应给浏览器。</span><br><span style="font-size: 16px">
+控制器负责提供数据或对象给视图模板，让视图模板来根据控制器提供的数据或对象呈现给浏览器。最佳的做法是：一个视图模板不会执行业务逻辑或与数据库直接交互。相反，一个视图模板是否能正确工作是由给它提供数据的控制器所决定的。保持这种“关注点分离”有助于保持代码干净，可测试，更易于维护。</span></p>
+<p align="left"><br><span style="font-size: 16px">
+下面的示例是，在HelloWorldController类中写了一个WelcomName方法，这个方法需要两个参数（name与numTimes），然后经过控制器处理之后直接输出结果到浏览器。不是让该控制器直接硬编码为一个字符串输出，而是使用一个视图模板来代替。该视图模板将生成一个动态的响应，这意味着你需要从控制器传递相应的数据给视图，以生成响应。</span></p>
+<p align="left"><span style="font-size: 16px">打开 HelloWorldController.cs文件并且修改WelcomName方法，将NumTimes与name值添加到ViewBag对象。 ViewBag是一个动态对象，这意味着你可以把任何数据类型添加到ViewBag里面。在ASP.NET MVC模型绑定系统会自动从地址栏中获取方法参数的字符串，并映射命名参数（name和numTimes ）
+。</span></p>
+<div>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre>        <span style="color: rgba(0, 0, 255, 1)">public</span> ActionResult WelcomeName(<span style="color: rgba(0, 0, 255, 1)">string</span> name, <span style="color: rgba(0, 0, 255, 1)">int</span> numTimes = <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">)
+        {
+
+            ViewBag.Message </span>= <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Hello </span><span style="color: rgba(128, 0, 0, 1)">"</span> +<span style="color: rgba(0, 0, 0, 1)"> name;
+            ViewBag.NumTimes </span>=<span style="color: rgba(0, 0, 0, 1)"> numTimes;
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> View();
+
+        }</span></pre>
+</div>
+<p>&nbsp;</p>
+</div>
+<p align="left"><span style="font-size: 16px">上面的代码中把要传递给视图的数据包含在了ViewBag对象中了。 </span><br><span style="font-size: 16px">
+然后，你需要一个WelcomeName视图模板​​！如下图，新建一个新的视图文件。
+</span><br>
+<img src="https://images0.cnblogs.com/i/10343/201405/141302207181594.png" alt=""><br>
+</p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">Visual Studio会弹出一个“添加视图”对话框。按下图所示，填写相应数据。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141302279211328.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">然后单击“添加”按钮，Visual Studio会添加一个新的WelcomeName.cshtml文件，在此文件的&lt;h2&gt;元素的下方添加以下代码。下面的完整WelcomeName.cshtml文件如下所示。</span></p>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@{
+
+    ViewBag.Title = "这是我的ASP.NET MVC世界的欢迎WelcomeName";
+
+}
+
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>WelcomeName<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+<span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">ul</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+
+   @for (int i=0; i </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)"> ViewBag</span><span style="color: rgba(255, 0, 0, 1)">.NumTimes; i++) {
+
+      &lt;li</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>@ViewBag.Message<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">li</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+
+   }
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">ul</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p>&nbsp;</p>
+</div>
+<p align="left"><span style="font-size: 16px">1）运行应用程序并使用浏览器浏览以下网址： </span><br><span style="font-size: 16px">
+http://localhost:xx/HelloWorld/WelcomeName?name=dotnet菜园&amp;numtimes=8</span><br><span style="font-size: 16px">
+2）URL中的数据是先从URL中传递给指定的控制器</span></p>
+<p align="left"><span style="font-size: 16px">3）指定的控制器将数据打包成一个ViewBag对象</span></p>
+<p align="left"><span style="font-size: 16px">4）控制器再把打包好的对象传递给视图，然后该视图显示数据给用户看。你会看到八条欢迎信息。</span></p>
+<p align="left"><span style="font-size: 16px">如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images0.cnblogs.com/i/10343/201405/141302499539657.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">关于ASP.NET MVC中的视图部分，就学习到这里，下次再继续。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left">&nbsp;</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2014-05-14 13:04</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">10392</span>)&nbsp;
+评论(<span id="post_comment_count">4</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=3727487" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(3727487);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 3727487, cb_entryCreatedDate = '2014-05-14 13:04', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

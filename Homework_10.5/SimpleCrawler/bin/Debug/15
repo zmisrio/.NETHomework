@@ -1,0 +1,482 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Consul简介： Consul是一种服务网格解决方案，提供具有服务发现，配置和分段功能的全功能控制平面。这些功能中的每一个都可以根据需要单独使用，也可以一起使用以构建完整的服务网格。Consul需要" />
+    <meta property="og:description" content="Consul简介： Consul是一种服务网格解决方案，提供具有服务发现，配置和分段功能的全功能控制平面。这些功能中的每一个都可以根据需要单独使用，也可以一起使用以构建完整的服务网格。Consul需要" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Consul 学习笔记-服务注册 - chaney1992 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/codinglife/bundle-codinglife.min.css?v=dij5UHLPkhCwoV5SpUeOW7BnKC0vZ5-8GYi-drRcxLA" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/codinglife/bundle-codinglife-mobile.min.css?v=JtOonyglmq10yOLdtvmh-WsVtFwm8HRB8mR_g_TGArQ" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/cwsheng/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/cwsheng/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/cwsheng/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 227421;
+        var currentBlogApp = 'cwsheng';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'CodingLife';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 09:59';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/cwsheng/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/cwsheng/">One To One</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/cwsheng/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/chaney1992">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/cwsheng/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+14&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+18</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/cwsheng/p/13783219.html">
+    <span>Consul 学习笔记-服务注册</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h2 id="sbTitle">Consul简介：</h2>
+<p>&nbsp;　<span>Consul是一种服务网格解决方案，提供具有服务发现，配置和分段功能的全功能控制平面。</span><span>这些功能中的每一个都可以根据需要单独使用，也可以一起使用以构建完整的服务网格。</span><span>Consul需要一个数据平面，并支持代理和本机集成模型。</span><span>Consul附带了一个简单的内置代理，因此开箱即用，但也支持Envoy等第三方代理集成。</span></p>
+<p><span style="font-size: 16px"><strong>　特点：</strong></span></p>
+<ul>
+<li><strong>服务发现：</strong>&nbsp;Consul的客户端可用提供一个服务,比如 api 或者mysql ,另外一些客户端可用使用Consul去发现一个指定服务的提供者.通过DNS或者HTTP应用程序可用很容易的找到他所依赖的服务.</li>
+<li><strong>健康检查：</strong>&nbsp;Consul客户端可用提供任意数量的健康检查,指定一个服务(比如:webserver是否返回了200 OK 状态码)或者使用本地节点(比如:内存使用是否大于90%). 这个信息可由operator用来监视集群的健康.被服务发现组件用来避免将流量发送到不健康的主机.</li>
+<li><strong>Key/Value存储：</strong>&nbsp;应用程序可用根据自己的需要使用Consul的层级的Key/Value存储.比如动态配置,功能标记,协调,领袖选举等等,简单的HTTP API让他更易于使用.</li>
+<li><strong>多数据中心</strong>： Consul支持开箱即用的多数据中心.这意味着用户不需要担心需要建立额外的抽象层让业务扩展到多个区域.</li>
+</ul>
+<h2>Consul安装运行：</h2>
+<p>　Consul支持各种平台的安装，可以前往https://www.consul.io/downloads.html下载相关安装包，也可以使用docker部署，本次采用docker部署方式实现：</p>
+<p>　1、拉取consul镜像　　</p>
+<div class="cnblogs_code" style="margin-left: 30px">
+<pre>docker pull consul</pre>
+</div>
+<p>　2、配置并运行Consul服务器　　</p>
+<div class="cnblogs_code" style="margin-left: 30px">
+<pre><span style="color: rgba(0, 0, 0, 1)">docker run \
+    </span>-<span style="color: rgba(0, 0, 0, 1)">d \
+    </span>-p <span style="color: rgba(128, 0, 128, 1)">8500</span>:<span style="color: rgba(128, 0, 128, 1)">8500</span><span style="color: rgba(0, 0, 0, 1)"> \
+    </span>-p <span style="color: rgba(128, 0, 128, 1)">8600</span>:<span style="color: rgba(128, 0, 128, 1)">8600</span>/<span style="color: rgba(0, 0, 0, 1)">udp \
+    </span>--name=<span style="color: rgba(0, 0, 0, 1)">badger \
+    consul agent </span>-server -ui -node=server -bootstrap-expect=<span style="color: rgba(128, 0, 128, 1)">1</span> -client=<span style="color: rgba(128, 0, 128, 1)">0.0</span>.<span style="color: rgba(128, 0, 128, 1)">0.0</span></pre>
+</div>
+<p>　3、打开地址http://localhost:8500/ui/dc1/services查看consului界面，基本运行效果如下图：</p>
+<p>　　<img src="https://img2020.cnblogs.com/blog/374428/202010/374428-20201011182854437-1629255881.png" alt="" width="834" height="304" loading="lazy"></p>
+<h2>简单使用</h2>
+<p>　添加Consul服务集群：使用 Docker 搭建 3个 server 节点 + 1 个 client 节点，API 服务通过 client 节点进行服务注册和发现　　</p>
+<div class="cnblogs_code" style="margin-left: 30px">
+<pre>version: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">3</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">
+
+services:
+  service_1:
+    image: consul
+    command: agent </span>-server -client=<span style="color: rgba(128, 0, 128, 1)">0.0</span>.<span style="color: rgba(128, 0, 128, 1)">0.0</span> -bootstrap-expect=<span style="color: rgba(128, 0, 128, 1)">3</span> -node=<span style="color: rgba(0, 0, 0, 1)">service_1
+    volumes:
+      </span>- /usr/local/docker/consul/data/service_1:/<span style="color: rgba(0, 0, 0, 1)">data
+  service_2:
+    image: consul
+    command: agent </span>-server -client=<span style="color: rgba(128, 0, 128, 1)">0.0</span>.<span style="color: rgba(128, 0, 128, 1)">0.0</span> -retry-join=service_1 -node=<span style="color: rgba(0, 0, 0, 1)">service_2
+    volumes:
+      </span>- /usr/local/docker/consul/data/service_2:/<span style="color: rgba(0, 0, 0, 1)">data
+    depends_on:
+      </span>-<span style="color: rgba(0, 0, 0, 1)"> service_1
+  service_3:
+    image: consul
+    command: agent </span>-server -client=<span style="color: rgba(128, 0, 128, 1)">0.0</span>.<span style="color: rgba(128, 0, 128, 1)">0.0</span> -retry-join=service_1 -node=<span style="color: rgba(0, 0, 0, 1)">service_3
+    volumes:
+      </span>- /usr/local/docker/consul/data/service_3:/<span style="color: rgba(0, 0, 0, 1)">data
+    depends_on:
+      </span>-<span style="color: rgba(0, 0, 0, 1)"> service_1
+  client_1:
+    image: consul
+    command: agent </span>-client=<span style="color: rgba(128, 0, 128, 1)">0.0</span>.<span style="color: rgba(128, 0, 128, 1)">0.0</span> -retry-join=service_1 -ui -node=<span style="color: rgba(0, 0, 0, 1)">client_1
+    ports:
+      </span>- <span style="color: rgba(128, 0, 128, 1)">8500</span>:<span style="color: rgba(128, 0, 128, 1)">8500</span><span style="color: rgba(0, 0, 0, 1)">
+    volumes:
+      </span>- /usr/local/docker/consul/data/client_1:/<span style="color: rgba(0, 0, 0, 1)">data
+    depends_on:
+      </span>- service_2</pre>
+</div>
+<p>　添加：docker-compose.yaml文件，执行docker-compose up命令</p>
+<p>　本次继续使用&nbsp;<a href="https://github.com/cwsheng/IdentityServer.Demo" target="_blank">IdentityServer.Demo</a>&nbsp;中，cz.Api.Goods、cz.Api.Order两个项目进行改造，实现服务注册和服务发现效果，首先调整两个接口方法返回结果：</p>
+<div class="cnblogs_code" style="margin-left: 30px">
+<pre><span style="color: rgba(51, 102, 255, 1)"><strong>cz.Api.Goods项目：
+</strong></span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> IActionResult Get()
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> result = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)">
+    {
+        Message </span>= $<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Name:{nameof(cz.Api.Goods)}，Time：{DateTime.Now}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+        LocalIp </span>=<span style="color: rgba(0, 0, 0, 1)"> Request.HttpContext.Connection.LocalIpAddress.ToString(),
+    };
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> Ok(result);
+}
+<span style="color: rgba(51, 102, 255, 1)">
+<strong>cz.Api.Order项目：</strong></span>
+[HttpGet]
+</span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> IActionResult Get()
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> result = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)">
+    {
+        Message </span>= $<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Name:{nameof(cz.Api.Order)}，Time：{DateTime.Now}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+        IP </span>=<span style="color: rgba(0, 0, 0, 1)"> Request.HttpContext.Connection.LocalIpAddress.ToString(),
+    };
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> Ok(result);
+}</span></pre>
+</div>
+<p>　　</p>
+<ul>
+<li>
+<h3>服务注册：</h3>
+</li>
+</ul>
+<p>　　　　1、添加Consul配置内容：</p>
+<div class="cnblogs_code" style="margin-left: 90px">
+<pre> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Consul</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">: {
+    </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Address</span><span style="color: rgba(128, 0, 0, 1)">"</span>: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">http://host.docker.internal:8500</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">HealthCheck</span><span style="color: rgba(128, 0, 0, 1)">"</span>: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">/healthcheck</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Name</span><span style="color: rgba(128, 0, 0, 1)">"</span>: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">cz.Api.Goods</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Ip</span><span style="color: rgba(128, 0, 0, 1)">"</span>: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">host.docker.internal</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">
+  }</span></pre>
+</div>
+<p>　　　　　<strong>因为会在docker中运行：使用host.docker.internal代替localhost</strong></p>
+<p>　　　　2、注册Consul组件：</p>
+<p>　　　　　A：在两个项目中添加Consul包：使用命令：<strong>Install-Package Consul、</strong></p>
+<p><strong>　　　　　</strong>B：添加心跳检查控制器：　　　　　　</p>
+<div class="cnblogs_code" style="margin-left: 90px">
+<pre>[Route(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">api/[controller]</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+[ApiController]
+</span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> HealthCheckController : ControllerBase
+{
+    </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+    <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 健康检查
+    </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+    <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+<span style="color: rgba(0, 0, 0, 1)">    [HttpGet]
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> IActionResult api()
+    {
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> Ok();
+    }
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p>　　　　　C：注册组件：在项目项目中添加ConsulExtensions方法类：</p>
+<div class="cnblogs_code" style="margin-left: 90px">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> ConsulExtensions
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> IApplicationBuilder UseConul(<span style="color: rgba(0, 0, 255, 1)">this</span><span style="color: rgba(0, 0, 0, 1)"> IApplicationBuilder app, IConfiguration configuration, IHostApplicationLifetime lifetime)
+    {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> client = <span style="color: rgba(0, 0, 255, 1)">new</span> ConsulClient(options =&gt;<span style="color: rgba(0, 0, 0, 1)">
+        {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> Consul客户端地址</span>
+            options.Address = <span style="color: rgba(0, 0, 255, 1)">new</span> Uri(configuration[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Consul:Address</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">]);
+        });
+
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> registration = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> AgentServiceRegistration
+        {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 唯一Id</span>
+            ID =<span style="color: rgba(0, 0, 0, 1)"> Guid.NewGuid().ToString(),
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 服务名</span>
+            Name = configuration[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Consul:Name</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">],
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 服务绑定IP</span>
+            Address = configuration[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Consul:Ip</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">],
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 服务绑定端口</span>
+            Port = Convert.ToInt32(configuration[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Consul:Port</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">]),
+            Check </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> AgentServiceCheck
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 服务启动多久后注册</span>
+                DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(<span style="color: rgba(128, 0, 128, 1)">5</span><span style="color: rgba(0, 0, 0, 1)">),
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 健康检查时间间隔</span>
+                Interval = TimeSpan.FromSeconds(<span style="color: rgba(128, 0, 128, 1)">10</span><span style="color: rgba(0, 0, 0, 1)">),
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 健康检查地址</span>
+                HTTP = $<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">http://{configuration[</span><span style="color: rgba(128, 0, 0, 1)">"</span>Consul:Ip<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">]}:{configuration[</span><span style="color: rgba(128, 0, 0, 1)">"</span>Consul:Port<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">]}{configuration[</span><span style="color: rgba(128, 0, 0, 1)">"</span>Consul:HealthCheck<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">]}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 超时时间</span>
+                Timeout = TimeSpan.FromSeconds(<span style="color: rgba(128, 0, 128, 1)">5</span><span style="color: rgba(0, 0, 0, 1)">)
+            }
+        };
+
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 注册服务</span>
+<span style="color: rgba(0, 0, 0, 1)">        client.Agent.ServiceRegister(registration).Wait();
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 应用程序终止时，取消服务注册</span>
+        lifetime.ApplicationStopping.Register(() =&gt;<span style="color: rgba(0, 0, 0, 1)">
+        {
+            client.Agent.ServiceDeregister(registration.ID).Wait();
+        });
+
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> app;
+    }
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p>　　　　　　在Startup文件中：使用该方法：　　　　　　</p>
+<div class="cnblogs_code" style="margin-left: 90px">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
+{
+   ……
+   app.UseConul(Configuration, lifetime);
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p>　　　　D：添加Docker操作，编译镜像；运行镜像</p>
+<p>　　　　　　在<span style="color: rgba(255, 0, 0, 1); background-color: rgba(255, 204, 0, 1)"><strong>解决方案所在目录</strong></span>执行docker命令：　　　　　　</p>
+<div class="cnblogs_code" style="margin-left: 90px">
+<pre><span style="color: rgba(51, 102, 255, 1)"><strong>编译镜像：</strong></span><br>docker build -t cz.api.goods:dev -<span style="color: rgba(0, 0, 0, 1)">f ./cz.Api.Goods/Dockerfile .
+docker build </span>-t cz.api.order:dev -f ./cz.Api.Order/Dockerfile .</pre>
+<pre>运行镜像</pre>
+<p>　docker run -d -p 5050:80 --name cz.api.goods_1 cz.api.goods:dev <br>　docker run -d -p 5051:80 --name cz.api.goods_2 cz.api.goods:dev <br>　docker run -d -p 5052:80 --name cz.api.goods_3 cz.api.goods:dev </p>
+<p>　docker run -d -p 5060:80 --name cz.api.order_1 cz.api.order:dev <br>　docker run -d -p 5061:80 --name cz.api.order_2 cz.api.order:dev <br>　docker run -d -p 5062:80 --name cz.api.order_3 cz.api.order:dev </p>
+
+
+
+
+</div>
+<p>&nbsp;</p>
+<p>　　　　　　&nbsp;<img src="https://img2020.cnblogs.com/blog/374428/202010/374428-20201011203620908-1053903034.png" alt="" loading="lazy">&nbsp;</p>
+<p>&nbsp;　　　E：进入Consul的UI界面查看服务注册情况，注册成功</p>
+<p>　　　　<img src="https://img2020.cnblogs.com/blog/374428/202010/374428-20201011215652338-1537242158.png" alt="" loading="lazy"></p>
+<p>　　　　<img src="https://img2020.cnblogs.com/blog/374428/202010/374428-20201011215432883-2092940390.png" alt="" loading="lazy"></p>
+<p>&nbsp;</p>
+<p>&nbsp;　　　　<img src="https://img2020.cnblogs.com/blog/374428/202010/374428-20201011215815629-2048071165.png" alt="" loading="lazy"></p>
+<h3><strong>后续：</strong></h3>
+<p>　　后续将进一步对Consul进行学习验证，以及对原理进一步了解。</p>
+<h2>参考：</h2>
+<p><strong>官方文档：</strong></p>
+<p style="margin-left: 30px">https://www.consul.io/docs</p>
+<p style="margin-left: 30px">https://www.consul.io/docs/guides/containers-guide　</p>
+<p><strong>源码github:&nbsp;</strong>https://github.com/cwsheng/Consul.Demo.git</p>
+<p>　</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 21:59</span>&nbsp;
+<a href="https://www.cnblogs.com/cwsheng/">chaney1992</a>&nbsp;
+阅读(<span id="post_view_count">18</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13783219" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13783219);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 227421, cb_blogApp = 'cwsheng', cb_blogUserGuid = 'c5e183f0-d553-e111-aa3f-842b2b196315';
+    var cb_entryId = 13783219, cb_entryCreatedDate = '2020-10-11 21:59', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 chaney1992
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

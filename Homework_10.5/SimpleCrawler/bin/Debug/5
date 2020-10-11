@@ -1,0 +1,493 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="never" />
+    <meta name="description" content="引言 javascript 是一门单线程的语言，在同一个时间只能做完成一件任务，如果有多个任务，就必须排队，前面一个任务完成，再去执行后面的任务。作为浏览器端的脚本语言，javascript 的主要功" />
+    <meta property="og:description" content="引言 javascript 是一门单线程的语言，在同一个时间只能做完成一件任务，如果有多个任务，就必须排队，前面一个任务完成，再去执行后面的任务。作为浏览器端的脚本语言，javascript 的主要功" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>事件循环详解 - 大芒果哇 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/custom/bundle-custom.min.css?v=1ssrnY3Il79Ok472qeVrpxlSprSXcHhYPgZC5S3wtVM" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/custom/bundle-custom-mobile.min.css?v=KtAK50iXMDcU4jOl_mm1P0j3gXUtdRHDhFdu7YlsVVg" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/shenggao/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/shenggao/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/shenggao/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 578708;
+        var currentBlogApp = 'shenggao';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'Custom';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 09:47';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="page_begin_html">
+          
+    </div>
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/shenggao/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/shenggao/">大芒果</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/shenggao/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+</li>
+<li>
+
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+14&nbsp; </span>
+<span id="stats_article_count">文章 - 
+1&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+4</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/shenggao/p/13799566.html">
+    <span>事件循环详解</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <p><strong>引言</strong></p>
+<p>javascript 是一门单线程的语言，在同一个时间只能做完成一件任务，如果有多个任务，就必须排队，前面一个任务完成，再去执行后面的任务。作为浏览器端的脚本语言，javascript 的主要功能是用来和用户交互以及操作 dom。假设 javascript 不是单线程语言，在一个线程里我们给某个 dom 节点增加内容的时候，另一个线程同时正在删除这个 dom 节点的内容，则会造成混乱。</p>
+<p>由于 js 单线程的设计，假设 js 程序的执行都是同步。如果执行一些耗时较长的程序，例如 ajax 请求，在请求开始至请求响应的这段时间内，当前的工作线程一直是空闲状态， ajax 请求后面的 js 代码只能等待请求结束后执行，因此会导致 js 阻塞的问题。</p>
+<p>javascript 单线程指的是浏览器中负责解释和执行 javascript 代码的只有一个线程，即为 js 引擎线程，但是浏览器的渲染进程是提供多个线程的，如下：</p>
+<ol>
+<li>js 引擎线程</li>
+<li>事件触发线程</li>
+<li>定时器触发线程</li>
+<li>异步 http 请求线程</li>
+<li>GUI 渲染线程</li>
+</ol>
+<h2 id="一、异步--同步">一、异步 &amp; 同步</h2>
+<p>为解决上述类似上述 js 阻塞的问题，js 引入了同步和异步的概念。</p>
+<h3 id="1、什么是同步？">1、什么是同步？</h3>
+<p>“同步”就是后一个任务等待前一个任务结束后再去执行。</p>
+<h3 id="2、什么是异步？">2、什么是异步？</h3>
+<p>“异步”与同步不同，每一个异步任务都有一个或多个回调函数。webapi 会在其相应的时机里将回调函数添加进入消息队列中，不直接执行，然后再去执行后面的任务。直至当前同步任务执行完毕后，再把消息队列中的消息添加进入执行栈进行执行。</p>
+<p>异步任务在浏览器中一般是以下：</p>
+<ol>
+<li>网络请求</li>
+<li>计时器</li>
+<li>DOM 监听事件</li>
+<li>...</li>
+</ol>
+<h2 id="二、什么是执行栈stack、堆heap、事件队列task-queue？">二、什么是执行栈(stack)、堆(heap)、事件队列(task queue)？</h2>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/10/data" alt="" loading="lazy"></p>
+<h3 id="1、执行栈">1、执行栈</h3>
+<blockquote>
+<p>“栈”是一种数据结构，是一种线性表。特点为 LIFO，即先进后出 （last in, first out）。</p>
+</blockquote>
+<p>利用数组的 push 和 shift 可以实现压栈和出栈的操作。</p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/09/stack.png" alt="stack" loading="lazy"></p>
+<p>在代码运行的过程中，函数的调用会形成一个由若干帧组成的栈。</p>
+<pre><code class="language-js">function foo(b) {
+  let a = 10;
+  return a + b + 11;
+}
+
+function bar(x) {
+  let y = 3;
+  return foo(x * y);
+}
+
+console.log(bar(7))
+</code></pre>
+<p>上面代码最终会在控制台打印42,下面梳理一下它的执行顺序。</p>
+<ol>
+<li>console.log 函数作为第一帧压入栈中。</li>
+<li>调用 bar，第二帧被压入栈中。帧中包含着 bar 的变量对象。</li>
+<li>bar 调用 foo，foo 做一位第三帧被压入栈中，帧中包含着 foo 的变量对象。</li>
+<li>foo 执行完毕然后返回。被弹出栈。</li>
+<li>bar 执行完毕然后返回，被弹出栈。</li>
+<li>log 函数接收到 bar 的返回值。执行完毕后，出栈。此时栈已空。</li>
+</ol>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/09/stackcall.png" alt="" loading="lazy"></p>
+<h3 id="2、堆">2、堆</h3>
+<blockquote>
+<p>对象被分配在堆中，堆是一个用来表示一大块（通常是非结构化的）内存区域的计算机术语。</p>
+</blockquote>
+<h4 id="堆和栈的区别">堆和栈的区别</h4>
+<p>首先，stack 是有结构的，每个区块按照一定次序存放，可以明确知道每个区块的大小；heap 是没有结构的，数据可以任意存放。因此，<br>
+stack 的寻址速度要快于 heap。</p>
+<p>其次，每个线程分配一个 stack，每个进程分配一个 heap，也就是说，stack 是线程独占的，heap 是线程共用的。</p>
+<p>此外，stack 创建的时候，大小是确定的，数据从超过这个大小，就发生 stack overflow 错误，而 heap 的大小是不确定的，<br>
+需要的话可以不断增加。</p>
+<pre><code class="language-java">
+public void Method1()
+{
+    int i=4;
+
+    int y=2;
+
+    class1 cls1 = new class1();
+}
+
+</code></pre>
+<p>上面代码这三个变量和一个对象实例在内存中的存放方式如下。</p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/09/stackCall.jpg" alt="" loading="lazy"></p>
+<p>从上图可以看到，i、y和cls1都存放在stack，因为它们占用内存空间都是确定的，而且本身也属于局部变量。但是，cls1指向的对象实例存放在heap，因为它的大小不确定。作为一条规则可以记住，所有的对象都存放在heap。</p>
+<p>接下来的问题是，当Method1方法运行结束，会发生什么事？</p>
+<p>回答是整个stack被清空，i、y和cls1这三个变量消失，因为它们是局部变量，区块一旦运行结束，就没必要再存在了。而heap之中的那个对象实例继续存在，直到系统的垃圾清理机制（garbage collector）将这块内存回收。因此，一般来说，内存泄漏都发生在heap，即某些内存空间不再被使用了，却因为种种原因，没有被系统回收。</p>
+<h3 id="3、事件队列和事件循环">3、事件队列和事件循环</h3>
+<blockquote>
+<p>队列是一种数据结构，也是一种特殊的线性表。特点为 FIFO，即先进先出（first in, first out）</p>
+</blockquote>
+<p>利用数组的 push 和 pop 可实现入队和出队的操作。</p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/09/queue.png" alt="" loading="lazy"></p>
+<p>事件循环和事件队列的维护是由事件触发线程控制的。</p>
+<p>事件触发线程线程同样是由浏览器渲染引擎提供的，它会维护一个事件队列。</p>
+<p>js 引擎遇到上文所列的异步任务后，会交个相应的线程去维护异步任务，等待某个时机，然后由事件触发线程将异步任务对应的回调函数加入到事件队列中，事件队列中的函数等待被执行。</p>
+<p>js 引擎在执行过程中，遇到同步任务，会将任务直接压入执行栈中执行，当执行栈为空（即 js 引擎线程空闲），<strong>事件触发线程</strong>会从事件队列中取出一个任务（即异步任务的回调函数）放入执行在栈中执行。</p>
+<p>执行完了之后，执行栈再次为空，事件触发线程会重复上一步的操作，再从事件队列中取出一个消息，这种机制就被称为<strong>事件循环</strong>（Event Loop）机制。</p>
+<p>为了更好地理解Event Loop，请看下图（转引自Philip Roberts的演讲《Help, I'm stuck in an event-loop》）。</p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/10/eventloop.png" alt="" loading="lazy"></p>
+<p>例子代码：</p>
+<pre><code class="language-js">console.log('script start')
+
+setTimeout(() =&gt; {
+  console.log('timer 1 over')
+}, 1000)
+
+setTimeout(() =&gt; {
+  console.log('timer 2 over')
+}, 0)
+
+console.log('script end')
+
+// script start
+// script end
+// timer 2 over
+// timer 1 over
+</code></pre>
+<p>模拟 js 引擎对其执行过程：</p>
+<p><strong>第一轮事件循环：</strong></p>
+<ol>
+<li>console.log 为同步任务，入栈，打印“script start”。出栈。</li>
+<li>setTimeout 为异步任务，入栈，交给定时器触发线程处理（在1秒后加入将回调加入事件队列）。出栈。</li>
+<li>setTimeout 为异步任务，入栈，交给定时器触发线程处理（在4ms之内将回调加入事件队列）。出栈。</li>
+<li>console.log 为同步任务，入栈，打印"script end"。出栈。</li>
+</ol>
+<p>此时，执行栈为空，js 引擎线程空闲。便从事件队列中读取任务，此时队列如下：</p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/10/%E6%89%A7%E8%A1%8C%E9%98%9F%E5%88%97.png" alt="" loading="lazy"></p>
+<p><strong>第二轮事件循环</strong></p>
+<ol start="5">
+<li>js 引擎线程从事件对列中读取 cb2 加入执行栈并执行，打印”time 2 over“。出栈。</li>
+</ol>
+<p><strong>第三轮事件循环</strong></p>
+<ol start="6">
+<li>js 引擎从事件队列中读取 cb1 加入执行栈中并执行，打印”time 1 over“ 。出栈。</li>
+</ol>
+<p>注意点：</p>
+<p>上面，timer 2 的延时为 0ms，HTML5标准规定 setTimeout 第二个参数不得小于4（不同浏览器最小值会不一样），不足会自动增加，所以 "timer 2 over" 还是会在 "script end" 之后。</p>
+<p>就算延时为0ms,只是 time 2 的回调函数会立即加入事件队列而已，回调的执行还是得等到执行栈为空时执行。</p>
+<h2 id="四、宏任务--微任务">四、宏任务 &amp; 微任务</h2>
+<p>在 ES6 新增 Promise 处理异步后，js 执行引擎的处理过程又发生了新的变化。</p>
+<p>看代码：</p>
+<pre><code class="language-js">console.log('script start')
+
+setTimeout(function() {
+    console.log('timer over')
+}, 0)
+
+Promise.resolve().then(function() {
+    console.log('promise1')
+}).then(function() {
+    console.log('promise2')
+})
+
+console.log('script end')
+
+// script start
+// script end
+// promise1
+// promise2
+// timer over
+</code></pre>
+<p>这里又新增了两个新的概念，<strong>macrotask</strong> （宏任务）和 <strong>microtask</strong>（微任务）。</p>
+<p>所有的任务都划分到宏任务和微任务下：</p>
+<ul>
+<li><strong>macrotask</strong>: script 主代码块、setTimeout、setInterval、requestAnimationFrame、node 中的setimmediate 等。</li>
+<li><strong>microtask</strong>: Promise.then catch finally、MutationObserver、node 中的process.nextTick 等。</li>
+</ul>
+<p>js 引擎首先执行主代码块。</p>
+<p>执行栈每次执行的代码就是一个宏任务，包括任务队列（宏任务队列）中的。执行栈中的任务执行完毕后，js 引擎会从宏任务队列中去添加任务到执行栈中，即同样是事件循环的机制。</p>
+<p>当在执行宏任务遇到微任务 Promise.then 时，会创建一个微任务，并加入到微任务队列中的队尾。</p>
+<p>微任务是在宏任务执行的时候创建的，而在下一个宏任务执行之前，浏览器会对页面重新渲染（task &gt;&gt; render &gt;&gt; task（任务队列中读取））。<strong>同时，在上一个宏任务执行完成后，页面渲染之前，会执行当前微任务队列中的所有微任务。</strong></p>
+<p><img src="https://shenggao.oss-cn-beijing.aliyuncs.com/blog/2020/10/task.png" alt="" loading="lazy"></p>
+<p>所以上述代码的执行过程就可以解释了。</p>
+<p>js 引擎执行 promise.then 时，promise1、promise2 被认为是两个微任务按照代码的先后顺序被加入到微任务队列中，script end执行后，栈空。</p>
+<p>此时当前宏任务（script 主代码块）执行完毕，并不从当前宏任务队列中读取任务。而是立马清空当前宏任务所产生的微任务队列。将两个微任务依次放入执行栈中执行。执行完毕，打印 promise1、promise2。栈空。<strong>此时，第一轮事件循环结束。</strong></p>
+<p>紧接着，再去读取宏任务队列中的任务，time over 被打印。栈空。</p>
+<p>因此，宏任务和微任务的执行机制如下：</p>
+<ol>
+<li>执行一个宏任务（栈中没有就从宏任务队列中获取）</li>
+<li>执行过程中遇到微任务，就将它添加到微任务的任务队列中</li>
+<li>宏任务执行完毕，立即执行当前微任务队列中的所有微任务（依次执行）</li>
+<li>当前所有微任务执行完毕后，开始检查渲染，GUI 线程接管渲染</li>
+<li>渲染完毕后，JS 引擎继续开始下一个宏任务，从宏任务队列中获取</li>
+</ol>
+<h3 id="async--await">async &amp; await</h3>
+<p>因为,async 和 await 本质上还是基于 Promise 的封装，而 Promise 是属于微任务的一种。所以使用 await 关键字与 Promise.then 效果类似：</p>
+<pre><code class="language-js">setTimeout(_ =&gt; console.log(4))
+
+async function main() {
+  console.log(1)
+  await Promise.resolve()
+  console.log(3)
+}
+
+main()
+
+console.log(2)
+// 1
+// 2
+// 3
+// 4
+</code></pre>
+<p>async 函数在 await 之前的代码都是同步执行的，<strong>可以理解为 await 之前的代码都属于 new Promise 时传入的代码，await 之后的所有代码都是 Promise.then 中的回调，即在微任务队列中。</strong></p>
+<h2 id="五、总结">五、总结</h2>
+<ol>
+<li>js 单线程实际上时解释执行 js 代码的只有一个线程，但是浏览器的渲染是多线程的。</li>
+<li>异步和同步的概念与区别，异步任务有哪些。</li>
+<li>栈、堆、队列的特点和使用场景。</li>
+<li>事件队列以及事件循环机制。</li>
+<li>es6 下，宏任务与微任务的执行过程。</li>
+</ol>
+<hr>
+<p>参考：</p>
+<ul>
+<li><a href="https://juejin.im/post/6844903711106400264#refetch">JavaScript 异步与事件循环</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/EventLoop">并发模型与事件循环</a></li>
+<li><a href="https://juejin.im/post/6844903657264136200">微任务、宏任务与Event-Loop</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2014/10/event-loop.html">JavaScript 运行机制详解：再谈Event Loop</a></li>
+<li><a href="https://juejin.im/post/6844903577052250119">JS事件循环</a></li>
+<li><a href="https://www.cnblogs.com/dong-xu/p/7000139.html">[译] 深入理解 JavaScript 事件循环（二）— task and microtask<br>
+</a></li>
+<li><a href="http://vimeo.com/96425312">Help, I'm stuck in an event-loop</a></li>
+</ul>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 21:47</span>&nbsp;
+<a href="https://www.cnblogs.com/shenggao/">大芒果哇</a>&nbsp;
+阅读(<span id="post_view_count">10</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13799566" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13799566);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 578708, cb_blogApp = 'shenggao', cb_blogUserGuid = 'e2ce4aca-78af-4afc-2f0e-08d7b205ed8e';
+    var cb_entryId = 13799566, cb_entryCreatedDate = '2020-10-11 21:47', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 大芒果哇
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

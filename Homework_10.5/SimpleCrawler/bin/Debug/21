@@ -1,0 +1,399 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="never" />
+    <meta name="description" content="利用 JS 脚本实现网页全自动秒杀抢购 倒计时页面： 倒计时未结束时，购买按钮还不能点击。 结束时，可以点击购买，点击后出现提示“付款成功” 展示效果 GIF 1.制作测试网页 首先我们来做一个简易的" />
+    <meta property="og:description" content="利用 JS 脚本实现网页全自动秒杀抢购 倒计时页面： 倒计时未结束时，购买按钮还不能点击。 结束时，可以点击购买，点击后出现提示“付款成功” 展示效果 GIF 1.制作测试网页 首先我们来做一个简易的" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>利用 JS 脚本实现网页全自动秒杀抢购 - CHAN_傑 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/simplememory/bundle-simplememory.min.css?v=uknaX_hejnSu-njQgx4Hj1R0JiPLwUhFPUlwWNmWyB4" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/SimpleMemory/bundle-SimpleMemory-mobile.min.css" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/Code-CHAN/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/Code-CHAN/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/Code-CHAN/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 625632;
+        var currentBlogApp = 'Code-CHAN';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleMemory';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 02:28';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/Code-CHAN/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/Code-CHAN/">CHAN_傑</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/Code-CHAN/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/CHAN_%E5%82%91">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/Code-CHAN/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+7&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+23</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/Code-CHAN/p/13797343.html">
+    <span>利用 JS 脚本实现网页全自动秒杀抢购</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h3 id="利用-js-脚本实现网页全自动秒杀抢购">利用 JS 脚本实现网页全自动秒杀抢购</h3>
+<p>倒计时页面：<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldk1xituj315a0u0qba.jpg" alt="截屏2020-10-11 13.26.18" loading="lazy"></p>
+<p>倒计时未结束时，购买按钮还不能点击。</p>
+<p>结束时，可以点击购买，点击后出现提示“付款成功”</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldk2gxs6j315a0u0471.jpg" alt="截屏2020-10-11 13.26.39" loading="lazy"></p>
+<p>展示效果 GIF<br>
+<img src="https://img2020.cnblogs.com/blog/2134418/202010/2134418-20201011142619286-1439248405.gif" alt="" loading="lazy"></p>
+<h4 id="1制作测试网页">1.制作测试网页</h4>
+<p>首先我们来做一个简易的抢购页面</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="zh_CN"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Apple&lt;/title&gt;
+    &lt;style type="text/css"&gt;
+        body {
+            background-color: black;
+        }
+
+        #hOne{
+            color: white;
+            font-size: 50px;
+            font-family: PingFangSC-Regular, sans-serif;
+            line-height: 1px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #hTwo{
+            color: #d01f2a;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        #hThree{
+            color: white;
+            font-size: 30px;
+            line-height: 30px;
+            font-family: PingFangSC-Regular, sans-serif;
+            text-align: center;
+        }
+
+        #div1 {
+            color: white;
+            margin: auto;
+        }
+
+        #endTime {
+            color: #2997ff;
+        }
+
+        img {
+            width: 228px;
+            height: 366px;
+            border: 0px;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;br /&gt;&lt;br /&gt;
+&lt;h1 id="hOne"&gt; WATCH&lt;/h1&gt;
+&lt;h2 id="hTwo"&gt;S E R I E S  6&lt;/h2&gt;
+&lt;h3 id="hThree"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;健康的未来，现在戴上。&lt;/h3&gt;
+&lt;div align="center" id="div1"&gt;
+    &lt;img src="apple%20watch.jpeg"&gt;
+    &lt;p id="time"&gt;预售倒计时 &lt;span id="endTime"&gt;&lt;/span&gt; 秒！&lt;/p&gt;
+    &lt;input type="button" id="btn" value="立即购买" disabled="disabled"&gt;&lt;br /&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>展示一下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldk1551lj315a0u046q.jpg" alt="截屏2020-10-11 13.40.16" loading="lazy"></p>
+<h4 id="2倒计时及购买功能的实现">2.倒计时及购买功能的实现</h4>
+<p>我们使用的是<code>jQuery</code>框架，<code>jQuery</code> 极大地简化了 JavaScript 编程。</p>
+<pre><code class="language-javascript">&lt;script type="text/javascript" src="script/jquery-1.7.2.js"&gt;&lt;/script&gt; // 导入jquery
+&lt;script type="text/javascript"&gt;
+        $(function () {
+            var timeElement = $("#endTime")[0]; // 获得倒计时dom对象
+            var  i = 10;
+            function remainTime() {
+                if (i &gt; 0) {
+                    timeElement.innerHTML = i--;
+                    setTimeout(function () {
+                        remainTime();
+                    }, 1000);
+                }
+                if (i == 0) {
+                    $("#time")[0].innerHTML = "在线选购开始";
+                    $("#time").css({color: "#2997ff"});
+                    $("#btn")[0].disabled = false; // 倒计时结束，按钮可以点击
+                }
+            }
+            remainTime();
+
+            $("#btn").click(function () { // 点击事件
+                alert("我们已收到您的付款，正在处理您的订单");
+            });
+        });
+&lt;/script&gt;
+</code></pre>
+<h4 id="3使用-js-脚本实现自动抢购功能">3.使用 JS 脚本实现自动抢购功能</h4>
+<h5 id="（1）在浏览器中打开开发者工具">（1）在浏览器中打开开发者工具</h5>
+<p>​	<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldk2ycbtj315a0u0wny.jpg" alt="截屏2020-10-11 13.51.38" loading="lazy"></p>
+<h5 id="（2）找到按钮元素标签所在位置">（2）找到按钮元素标签所在位置</h5>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldk3bzapj315a0u0k5y.jpg" alt="截屏2020-10-11 13.53.52" loading="lazy"></p>
+<h5 id="（3）js-抢购脚本">（3）JS 抢购脚本</h5>
+<pre><code class="language-javascript">var btnObj = document.getElementById("btn"); // 第二步中可知 id=“btn"
+var timer = setInterval(function () {
+                if (btnObj.disabled == false) { // 当按钮可以点击时
+                    btnObj.click();		//点击
+                    clearInterval(timer); // 选购完成后关闭timer，否则将一直购买，土豪随意
+                }
+            });
+</code></pre>
+<h5 id=""></h5>
+<h5 id="（4）在控制台中运行-js脚本">（4）在控制台中运行 JS脚本</h5>
+<p>看懂第三步的代码后，就可以在控制台中运行了</p>
+<p>将第三步的代码复制粘贴到控制台中</p>
+<p><img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjldjzvysoj315a0u0gw0.jpg" alt="截屏2020-10-11 14.09.42" loading="lazy"></p>
+<p><strong>注意：控制台中<code>Enter</code>为运行， <code>Enter + Shift</code>为换行， 脚本应在倒计时结束前注入</strong></p>
+<p><strong>最终结果 GIF</strong></p>
+<p><img src="https://img2020.cnblogs.com/blog/2134418/202010/2134418-20201011142647641-1325778476.gif" alt="" loading="lazy"></p>
+<p>可以参考学习，切勿拿来做有违道德，谋取利益的事。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 14:28</span>&nbsp;
+<a href="https://www.cnblogs.com/Code-CHAN/">CHAN_傑</a>&nbsp;
+阅读(<span id="post_view_count">150</span>)&nbsp;
+评论(<span id="post_comment_count">5</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13797343" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13797343);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 625632, cb_blogApp = 'Code-CHAN', cb_blogUserGuid = '30d4015f-d47f-4b1b-b7a7-08d8458257d5';
+    var cb_entryId = 13797343, cb_entryCreatedDate = '2020-10-11 14:28', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 CHAN_傑
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

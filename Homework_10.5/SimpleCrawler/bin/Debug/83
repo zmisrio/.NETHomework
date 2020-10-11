@@ -1,0 +1,1470 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之十(四十六) 的学习之后，我们已经实现了入库单的基本功能，增加，删除，修改。接下来，我们实现添加库位的功能" />
+    <meta property="og:description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之十(四十六) 的学习之后，我们已经实现了入库单的基本功能，增加，删除，修改。接下来，我们实现添加库位的功能" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十一(四十七)  - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-05-06 09:58';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/12839212.html">
+    <span> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十一(四十七) </span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上面文章abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十(四十六) 的学习之后，我们已经实现了入库单的基本功能，增加，删除，修改。接下来，我们实现添加库位的功能。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<div><span style="font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-family: Microsoft YaHei; font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11899403.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之一(二十七) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11975823.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之三(二十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12173698.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四)</span></a></span></div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 128, 1); font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12260841.html"><span style="color: rgba(0, 0, 128, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之十(三十六) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之一(三十七) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)">a</span></a><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12383343.html"><span style="color: rgba(0, 0, 255, 1)">bp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八)</span></a></span></span></span></span></div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 255, 1); font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12434052.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12506863.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之四(四十) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12571198.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之五(四十一) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12592265.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之六(四十二)</span></a></span></div>
+<div><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12637296.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之七(四十三) </span></a></span></div>
+<div><span style="font-size: 16px"><span style="font-family: 宋体"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12694244.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之八(四十四) </span></a>&nbsp;&nbsp; </span></span></div>
+<div><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12756289.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之九(四十五) </span></a></span></span></div>
+<div><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12811725.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十(四十六) </span></a></span></span></span></span></div>
+<div>&nbsp;</div>
+<p>&nbsp;</p>
+<p><span style="font-family: 宋体">&nbsp;&nbsp;&nbsp; 在上面文章<span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12811725.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十(四十六) </span></a></span></span></span></span>的学习之后，我们</span><span style="font-family: 宋体">已经实现了入库单的基本功能，增加，删除，修改</span><span style="font-family: 宋体">。</span><span style="font-family: 宋体">接下来，我们实现添加库位的功能</span><span style="font-family: 宋体">。</span></p>
+<p>&nbsp;</p>
+<h1><span style="font-size: 16px"><strong><span style="font-family: 宋体">十</span></strong><strong><span style="font-family: 宋体">五</span></strong><strong><span style="font-family: 宋体">、入库单</span></strong><strong><span style="font-family: 宋体">添加库位信息</span></strong></span></h1>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 入库单的每一条明细数据，会对应一个或多个库位。这就要求能够对某一行的数据进行子表嵌套。在这里通过采用</span>easyui的datagrid-detailview.js<span style="font-family: 方正仿宋_GBK">插件</span><span style="font-family: 宋体">创建子表格，大致的效果图如下所示：</span></span></p>
+<p class="pre"><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200506213501360-229333106.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<ol>
+<li><span style="font-size: 16px"><span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，<span style="font-family: 宋体">找到</span>“ABP.TPLMS.Web.Mvc”<span style="font-family: 宋体">项目的</span>“Views/InStock”文件夹<span style="font-family: 宋体">，然后</span><span style="font-family: 宋体">鼠标左键双击打开</span>“Index.cshtml”<span style="font-family: 宋体">文件。在</span>“@section scripts{”节中添加如下<span style="font-family: 宋体">代码。</span></span></li>
+</ol>
+<div class="cnblogs_code">
+<pre>  &lt;script src="~/lib/easyui-1.8/datagrid-detailview.js" asp-append-version="true"&gt;&lt;/script&gt;</pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. 在Visual Studio 2017的“解决方案资源管理器”中，找到<span style="font-family: 宋体">表示</span><span style="font-family: 宋体">层</span>“ABP.TPLMS.Web.Mvc”项目中的wwwroot\view-resources\InStock<span style="font-family: 宋体">目录。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3. 在InStock<span style="font-family: 宋体">目录中找到</span>Index.js文件。<span style="font-family: 宋体">在此文件的头部</span><span style="font-family: 宋体">我们要定义两个变量</span>mainIndex与editIndex<span style="font-family: 宋体">，用来定位当前我们选中了哪一行。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">var</span> editIndex =<span style="color: rgba(0, 0, 0, 1)"> undefined;
+</span><span style="color: rgba(0, 0, 255, 1)">var</span> mainIndex = undefined;</pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4. <span style="font-family: 宋体">我们在此文件中的</span>showDetail(no)方法中找到datagrid组件，并修改此组件的onClickRow事件中的相关代码。</span></p>
+<table border="0" cellspacing="2">
+<tbody>
+<tr>
+<td valign="center">
+<p><span style="font-size: 16px">onClickRow</span></p>
+</td>
+<td valign="center">
+<p><span style="font-size: 16px">rowIndex, rowData</span></p>
+</td>
+<td valign="center">
+<p><span style="font-size: 16px">当用户点击一行时触发，参数包括：</span><br><span style="font-size: 16px">rowIndex：被点击行的索引，从 0 开始</span><br><span style="font-size: 16px">rowData：被点击行对应的记录 </span></p>
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre> 
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> ShowDetail(no) {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span><span style="color: rgba(0, 0, 0, 1)"> lastIndex;
+    $(</span>"#dgINOD"<span style="color: rgba(0, 0, 0, 1)">).datagrid({
+        url: </span>"/InStock/GetDetail?no=" +<span style="color: rgba(0, 0, 0, 1)"> no,
+        title: </span>"入库单明细"<span style="color: rgba(0, 0, 0, 1)">,
+        pagination: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,     
+
+        fit: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        loadMsg: </span>"正在加载入库单明细信息..."<span style="color: rgba(0, 0, 0, 1)">,
+        toolbar: [
+            { text: </span>'添加明细', iconCls: 'icon-add', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { ShowCargoInfo(); } },
+            { text: </span>'添加库位', iconCls: 'icon-edit', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { SubGridAddRow(); } },
+            { text: </span>'删除', iconCls: 'icon-remove', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { deviceInfoDeleteClick(); } },
+            </span>'-'<span style="color: rgba(0, 0, 0, 1)">
+
+        ],
+
+        nowarp: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        border: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        idField: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortName: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortOrder: </span>"asc"<span style="color: rgba(0, 0, 0, 1)">,
+        singleSelect: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        iconCls: </span>'icon-edit'<span style="color: rgba(0, 0, 0, 1)">,      
+
+        columns: [[
+            { title: </span>"编号", field: "SeqNo", width: 50, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"入库单号", field: "InStockNo", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"HSCode", field: "HSCode", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货物代码", field: "CargoCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货物名称", field: "CargoName", width: 160, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"规格型号", field: "Spcf", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"数量", field: "Qty", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 4<span style="color: rgba(0, 0, 0, 1)">
+
+                    }
+                }
+            },
+            {
+                title: </span>"长", field: "Length", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            {
+                title: </span>"宽", field: "Width", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            {
+                title: </span>"高", field: "Height", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+
+            },
+
+            { title: </span>"产销国", field: "Country", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"单价", field: "Price", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },       
+
+            {
+                title: </span>"总价", field: "TotalAmt", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+
+            { title: </span>"包装", field: "Package", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"计量单位", field: "Unit", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"总体积", field: "Vol", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 4<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+           { title: </span>"品牌", field: "Brand", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> }
+
+        ]],
+        view: detailview,
+
+        detailFormatter: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, row) {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> '&lt;div style="padding:2px"&gt;&lt;table id="dgINODItem-' + index + '"&gt;&lt;/table&gt;&lt;/div&gt;'<span style="color: rgba(0, 0, 0, 1)">;
+        },
+
+        onExpandRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, row) {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> ddv = $('#dgINODItem-' +<span style="color: rgba(0, 0, 0, 1)"> index);
+            ddv.datagrid({
+                url: </span>'/InStock/GetLocs?Id=' +<span style="color: rgba(0, 0, 0, 1)"> row.Id,
+                fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+
+                singleSelect: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                rownumbers: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+
+                loadMsg: </span>''<span style="color: rgba(0, 0, 0, 1)">,
+                height: </span>'auto'<span style="color: rgba(0, 0, 0, 1)">,
+                columns: [[
+                    { field: </span>'SeqNo', title: '序号', width: 50<span style="color: rgba(0, 0, 0, 1)"> },
+                    {
+                        field: </span>'Qty', title: '数量', width: 120<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                            type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                                required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                            }
+                        }
+                    },
+                    {
+                        field: </span>'Loc', title: '库位', width: 150<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                            type: </span>'text'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                                required: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">
+                            }
+                        }
+                    },
+
+                    { field: </span>'CreationTime', title: '创建时间', hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> },
+
+                    { field: </span>'Id', title: 'Id', width: 50, hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> },
+                    { field: </span>'InStockOrderDetailId', title: 'InodId', width: 50, hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> }
+                ]],
+
+                onResize: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                    $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+                },
+                onLoadSuccess: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                    setTimeout(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                        $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+
+                    }, </span>0<span style="color: rgba(0, 0, 0, 1)">);
+                    editIndex </span>= undefined;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">主网格换行</span>
+<span style="color: rgba(0, 0, 0, 1)">                },
+                onAfterEdit: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (rowIndex, rowData, changes) {
+                    editIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> undefined;
+                },
+
+                onClickRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index1, row1) {
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (editIndex !=<span style="color: rgba(0, 0, 0, 1)"> index1) {
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (endEditing(ddv)) {
+                            ddv.datagrid(</span>'selectRow', index1).datagrid('beginEdit'<span style="color: rgba(0, 0, 0, 1)">, index1);
+                            editIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index1;
+
+                        }
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> { ddv.datagrid('selectRow'<span style="color: rgba(0, 0, 0, 1)">, editIndex); }
+                    }
+                }
+            });
+            $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+        }, 
+
+        onClickRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, rowData) {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (mainIndex!=<span style="color: rgba(0, 0, 0, 1)">undefined) {
+                $(</span>'#dgINOD').datagrid('collapseRow'<span style="color: rgba(0, 0, 0, 1)">, mainIndex);
+
+            }           
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (lastIndex !=<span style="color: rgba(0, 0, 0, 1)"> index) {
+                $(</span>'#dgINOD').datagrid('endEdit'<span style="color: rgba(0, 0, 0, 1)">, lastIndex);
+                editrow(index);
+            }
+            lastIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index;
+            mainIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index;
+        },       
+
+        onBeginEdit: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (rowIndex, rowData) {  
+            setEditing(rowIndex);
+        }
+    });
+}
+
+ </span></pre>
+</div>
+<p><span style="font-size: 16px">5. 除了要修改上面的函数之外，我们还需要添加一些函数方法。下面就给出Index.js的全部代码：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">-----------------------系统管理--&gt;入库单管理-----------------------//</span>
+
+<span style="color: rgba(0, 0, 255, 1)">var</span> editIndex =<span style="color: rgba(0, 0, 0, 1)"> undefined;
+</span><span style="color: rgba(0, 0, 255, 1)">var</span> mainIndex =<span style="color: rgba(0, 0, 0, 1)"> undefined;
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">刷新数据</span>
+
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> initable() {
+    $(</span>"#dgINSO"<span style="color: rgba(0, 0, 0, 1)">).datagrid({
+        url: </span>"/InStock/List"<span style="color: rgba(0, 0, 0, 1)">,
+        title: </span>"入库单管理"<span style="color: rgba(0, 0, 0, 1)">,
+        pagination: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        pageSize: </span>10<span style="color: rgba(0, 0, 0, 1)">,
+        pageList: [</span>10, 20, 30<span style="color: rgba(0, 0, 0, 1)">],
+        fit: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+
+        loadMsg: </span>"正在加载入库单信息..."<span style="color: rgba(0, 0, 0, 1)">,
+
+        nowarp: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        border: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        idField: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortName: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortOrder: </span>"asc"<span style="color: rgba(0, 0, 0, 1)">,
+
+        frozenColumns: [[</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">冻结列</span>
+            { field: "ck", checkbox: <span style="color: rgba(0, 0, 255, 1)">true</span>, align: "left", width: 50<span style="color: rgba(0, 0, 0, 1)"> }           
+
+        ]],
+        columns: [[
+            { title: </span>"编号", field: "Id", width: 50, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"入库单号", field: "No", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },           
+
+            {title: </span>"状态", field: "Status", width: 50<span style="color: rgba(0, 0, 0, 1)">            },
+            { title: </span>'到货日期', field: 'ReceiveTime',  width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货主", field: "OwnerCode", width: 150, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"预计到货时间", field: "PreDeliveryTime", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'客户', field: 'CustomerName', width: 120, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'收货人',field: 'Oper', width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'审核人',field: 'Checker', width: 120, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'件数', field: 'PackageQty', width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'创建时间', field: 'CreationTime', width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> }
+        ]]
+    }); 
+
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">显示送货单数据</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> ShowCargo() {
+    abp.log.warn(</span>'货物信息列表日志...'<span style="color: rgba(0, 0, 0, 1)">);
+
+    $(</span>"#dgCargo"<span style="color: rgba(0, 0, 0, 1)">).datagrid({
+        url: </span>"/Cargo/List"<span style="color: rgba(0, 0, 0, 1)">,
+        title: </span>"货物管理管理"<span style="color: rgba(0, 0, 0, 1)">,
+        pagination: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        pageSize: </span>10<span style="color: rgba(0, 0, 0, 1)">,
+        pageList: [</span>10, 20, 30<span style="color: rgba(0, 0, 0, 1)">],
+
+        fit: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        loadMsg: </span>"正在加载货物信息..."<span style="color: rgba(0, 0, 0, 1)">,
+        nowarp: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        border: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+
+        idField: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortName: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortOrder: </span>"asc"<span style="color: rgba(0, 0, 0, 1)">,
+
+        frozenColumns: [[</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">冻结列</span>
+            { field: "ck", checkbox: <span style="color: rgba(0, 0, 255, 1)">true</span>, align: "left", width: 50<span style="color: rgba(0, 0, 0, 1)"> }
+        ]],
+
+        columns: [[
+            { title: </span>"编号", field: "Id", width: 50, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"供应商", field: "SupplierId", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"HSCode", field: "HSCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+
+            { title: </span>"货物代码", field: "CargoCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货物名称", field: "CargoName", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+
+            { title: </span>"规格型号", field: "Spcf", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"产销国", field: "Country", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"计量单位", field: "Unit", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"包装", field: "Package", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"单价", field: "Price", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"币制", field: "Curr", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"长宽高", field: "Length", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span>, formatter: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (value, row, index) {
+                    </span><span style="color: rgba(0, 0, 255, 1)">return</span> row.Length + '*' + row.Width + '*' +<span style="color: rgba(0, 0, 0, 1)"> row.Height;
+                }
+            },
+            { title: </span>"体积", field: "Vol", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"备注", field: "Remark", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'创建时间', field: 'CreationTime', width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> }
+
+        ]]
+    });
+
+    abp.log.warn(</span>'3货物信息列表日志...'<span style="color: rgba(0, 0, 0, 1)">);
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> ShowCargoInfo() {  
+    $(</span>"#divImportCargo"<span style="color: rgba(0, 0, 0, 1)">).dialog({
+            closed: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+            title: </span>"选择货物信息"<span style="color: rgba(0, 0, 0, 1)">,
+            modal: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            width: </span>820<span style="color: rgba(0, 0, 0, 1)">,
+            height: </span>550<span style="color: rgba(0, 0, 0, 1)">,
+            collapsible: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            minimizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            maximizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            resizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">
+        });
+       ShowCargo();
+       $(</span>"#dgCargo").datagrid("clearChecked"<span style="color: rgba(0, 0, 0, 1)">);
+       $(</span>"#dgCargo").datagrid("clearSelections"<span style="color: rgba(0, 0, 0, 1)">);
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span> reloaded() {   <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">reload</span>
+    $("#reload").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        </span><span style="color: rgba(0, 128, 0, 1)">//
+</span>        $('#dgINSO').datagrid('reload'<span style="color: rgba(0, 0, 0, 1)">);
+    });}
+ 
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">修改点击按钮事件</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> updInSOInfo() {  
+    $(</span>"#edit").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {      
+
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">判断选择的中</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> row = $("#dgINSO").datagrid('getSelected'<span style="color: rgba(0, 0, 0, 1)">);        
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (row) {         
+            $.messager.confirm(</span>'编辑', '您想要编辑吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {                
+
+                     </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">打开对话框编辑</span>
+                    $("#divAddUpdINO"<span style="color: rgba(0, 0, 0, 1)">).dialog({
+                        closed: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+                        title: </span>"修改入库单"<span style="color: rgba(0, 0, 0, 1)">,
+                        modal: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        width: </span>820<span style="color: rgba(0, 0, 0, 1)">,
+                        height: </span>550<span style="color: rgba(0, 0, 0, 1)">,
+                        collapsible: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        minimizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        maximizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        resizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+
+                    });    
+                    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">先绑定                  </span>
+<span style="color: rgba(0, 0, 0, 1)">
+                    showINO(row);
+                    defaultTab();
+                    ShowDetail(row.No);
+                }               
+
+            });
+
+            SetEnabled(row.Status);
+        } </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+            $.messager.alert(</span>'提示', ' 请选择要编辑的行！', 'warning'<span style="color: rgba(0, 0, 0, 1)">);
+        }
+    });   
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">删除</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> deleteInSO() {
+    $(</span>"#del").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> rows = $("#dgINSO").datagrid("getSelections"<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (rows.length &gt; 0<span style="color: rgba(0, 0, 0, 1)">) {
+            $.messager.confirm(</span>"提示", "确定要删除吗?", <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (res) {
+
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (res) {
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> codes = []; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">重要不是{}</span>
+                    <span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; rows.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+                        codes.push(rows[i].Id);
+                    }
+
+                    $.post(</span>"/InStock/Delete", { "ids": codes.join(',') }, <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (data == "OK"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "删除成功！"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>"#dgINSO").datagrid("clearChecked"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>"#dgINSO").datagrid("clearSelections"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>"#dgINSO").datagrid("load"<span style="color: rgba(0, 0, 0, 1)">, {});
+                        }                       
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (data == "NO"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "删除失败！"<span style="color: rgba(0, 0, 0, 1)">);
+
+                            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+                        }
+                    });
+                }
+            });
+        }
+    })
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">清空文本框</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> clearAll() {    
+    $(</span>"#divAddUpdINO input").each(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            $(</span><span style="color: rgba(0, 0, 255, 1)">this</span>).val(""<span style="color: rgba(0, 0, 0, 1)">);
+
+        });
+    $(</span>"#PreDeliveryTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(getNowFormatDate());    
+
+    $(</span>"#StatusUpdate").val("0"<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>"#NwtUpdate").val("0"<span style="color: rgba(0, 0, 0, 1)">); 
+
+    $(</span>"#GwtUpdate").val("0"<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>"#PackageQtyUpdate").val("0"<span style="color: rgba(0, 0, 0, 1)">);
+  
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> GetNo() {
+    $.get(abp.appPath </span>+ "api/services/app/InStockOrder/GetNo", <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+        $(</span>"#UpdNO"<span style="color: rgba(0, 0, 0, 1)">).val(data);
+    });
+
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取当前时间，格式YYYY-MM-DD</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> getNowFormatDate() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> date = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> Date();
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> seperator1 = "-"<span style="color: rgba(0, 0, 0, 1)">;
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> year =<span style="color: rgba(0, 0, 0, 1)"> date.getFullYear();
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> month = date.getMonth() + 1<span style="color: rgba(0, 0, 0, 1)">;
+
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> strDate =<span style="color: rgba(0, 0, 0, 1)"> date.getDate();
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (month &gt;= 1 &amp;&amp; month &lt;= 9<span style="color: rgba(0, 0, 0, 1)">) {
+        month </span>= "0" +<span style="color: rgba(0, 0, 0, 1)"> month;
+    }
+
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (strDate &gt;= 0 &amp;&amp; strDate &lt;= 9<span style="color: rgba(0, 0, 0, 1)">) {
+        strDate </span>= "0" +<span style="color: rgba(0, 0, 0, 1)"> strDate;
+    }
+
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> currentdate = year + seperator1 + month + seperator1 +<span style="color: rgba(0, 0, 0, 1)"> strDate;
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> currentdate;
+}
+
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">将表单数据转为json</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> form2Json(id) {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> arr = $("#" +<span style="color: rgba(0, 0, 0, 1)"> id).serializeArray()
+
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> jsonStr = ""<span style="color: rgba(0, 0, 0, 1)">; 
+
+    jsonStr </span>+= '{'<span style="color: rgba(0, 0, 0, 1)">;
+    </span><span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; arr.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+        jsonStr </span>+= '"' + arr[i].name + '":"' + arr[i].value + '",'<span style="color: rgba(0, 0, 0, 1)">
+
+    }
+    jsonStr </span>= jsonStr.substring(0, (jsonStr.length - 1<span style="color: rgba(0, 0, 0, 1)">));
+
+    jsonStr </span>+= '}' 
+
+    <span style="color: rgba(0, 0, 255, 1)">var</span> json =<span style="color: rgba(0, 0, 0, 1)"> JSON.parse(jsonStr)
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> json
+
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> SetEnabled(status) {
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (status == "提交"<span style="color: rgba(0, 0, 0, 1)">) {
+        $(</span>"#btnSave").prop('disabled', <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">);
+    }
+
+    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+        $(</span>"#btnSave").removeAttr("disabled"<span style="color: rgba(0, 0, 0, 1)">);
+
+    }
+}
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> defaultTab() {
+    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">默认显示第一个tab</span>
+    $('#box').tabs('select', "入库单"<span style="color: rgba(0, 0, 0, 1)">);
+
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">弹出 导入送货单的的对话框</span>
+
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> showInSODialog() {
+    $(</span>"#add").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {     
+
+            $.messager.confirm(</span>'编辑', '您想要创建入库单吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">打开对话框编辑</span>
+                    $("#divAddUpdINO"<span style="color: rgba(0, 0, 0, 1)">).dialog({
+                        closed: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+                        title: </span>"新增入库单"<span style="color: rgba(0, 0, 0, 1)">,
+                        modal: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        width: </span>820<span style="color: rgba(0, 0, 0, 1)">,
+                        height: </span>550<span style="color: rgba(0, 0, 0, 1)">,
+                        collapsible: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        minimizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        maximizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        resizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+
+                    });                  
+
+                }
+                defaultTab();
+                GetNo();
+                clearAll();
+                ShowDetail(</span>""<span style="color: rgba(0, 0, 0, 1)">);
+            });       
+
+    });  
+
+    $(</span>"#btnSave").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {    
+
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">保存</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> id = $("#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val();
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id == "" || id ==<span style="color: rgba(0, 0, 0, 1)"> undefined) {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">验证</span>
+            $.messager.confirm('确认', '您确认要保存吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {                   
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)"> GetINO();                    
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (postData.No == "" || postData.CustomerCode == "" || postData.CustomerName=="" || postData.OwnerName==""<span style="color: rgba(0, 0, 0, 1)">) {
+                        $.messager.alert(</span>'提示', ' 请填写相关必填项！', 'warning'<span style="color: rgba(0, 0, 0, 1)">);
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+                    }                   
+
+                    $.post(</span>"/InStock/Add", postData, <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (data == "OK"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "保存成功！"<span style="color: rgba(0, 0, 0, 1)">);
+
+                            initable();
+                            collapseRows();
+                        }
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (data == "NO"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "保存失败！"<span style="color: rgba(0, 0, 0, 1)">);
+                            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+
+                        }
+
+                    });
+                }
+            })
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+            saveDetail();
+            initable();
+            collapseRows();
+
+        }
+
+    });
+}
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">添加明细</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> ShowDetail(no) {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span><span style="color: rgba(0, 0, 0, 1)"> lastIndex;
+    $(</span>"#dgINOD"<span style="color: rgba(0, 0, 0, 1)">).datagrid({
+        url: </span>"/InStock/GetDetail?no=" +<span style="color: rgba(0, 0, 0, 1)"> no,
+        title: </span>"入库单明细"<span style="color: rgba(0, 0, 0, 1)">,
+        pagination: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,      
+        fit: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">
+
+        fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        loadMsg: </span>"正在加载入库单明细信息..."<span style="color: rgba(0, 0, 0, 1)">,
+        toolbar: [
+            { text: </span>'添加明细', iconCls: 'icon-add', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { ShowCargoInfo(); } },
+            { text: </span>'添加库位', iconCls: 'icon-edit', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { SubGridAddRow(); } },
+            { text: </span>'删除', iconCls: 'icon-remove', handler: <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { deviceInfoDeleteClick(); } },
+            </span>'-'<span style="color: rgba(0, 0, 0, 1)">
+        ],
+
+        nowarp: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+
+        border: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+
+        idField: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+
+        sortName: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+
+        sortOrder: </span>"asc"<span style="color: rgba(0, 0, 0, 1)">,
+        singleSelect: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        iconCls: </span>'icon-edit'<span style="color: rgba(0, 0, 0, 1)">,      
+
+        columns: [[
+            { title: </span>"编号", field: "SeqNo", width: 50, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"入库单号", field: "InStockNo", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+
+            { title: </span>"HSCode", field: "HSCode", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货物代码", field: "CargoCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"货物名称", field: "CargoName", width: 160, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"规格型号", field: "Spcf", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"数量", field: "Qty", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 4<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            {
+                title: </span>"长", field: "Length", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            {
+                title: </span>"宽", field: "Width", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            {
+                title: </span>"高", field: "Height", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            { title: </span>"产销国", field: "Country", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"单价", field: "Price", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+
+                    }
+                }
+            },       
+
+            {
+                title: </span>"总价", field: "TotalAmt", width: 100, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                    }
+                }
+            },
+            { title: </span>"包装", field: "Package", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"计量单位", field: "Unit", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> },
+            {
+                title: </span>"总体积", field: "Vol", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)">, editor: {
+
+                    type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                        required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 4<span style="color: rgba(0, 0, 0, 1)">
+
+                    }
+                }
+            },
+            { title: </span>"品牌", field: "Brand", width: 70, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> }
+
+        ]],
+
+        view: detailview,
+
+        detailFormatter: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, row) {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> '&lt;div style="padding:2px"&gt;&lt;table id="dgINODItem-' + index + '"&gt;&lt;/table&gt;&lt;/div&gt;'<span style="color: rgba(0, 0, 0, 1)">;
+
+        },
+
+        onExpandRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, row) {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> ddv = $('#dgINODItem-' +<span style="color: rgba(0, 0, 0, 1)"> index);
+            ddv.datagrid({
+                url: </span>'/InStock/GetLocs?Id=' +<span style="color: rgba(0, 0, 0, 1)"> row.Id,
+                fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+                singleSelect: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                rownumbers: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                loadMsg: </span>''<span style="color: rgba(0, 0, 0, 1)">,
+                height: </span>'auto'<span style="color: rgba(0, 0, 0, 1)">,
+                columns: [[                   </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">[{"InStockOrderDetailId":24,"SeqNo":1,"Loc":"A121","Qty":121.00,"CreationTime":"2020-02-17 16:37:05","Id":1}]</span>
+                    { field: 'SeqNo', title: '序号', width: 50<span style="color: rgba(0, 0, 0, 1)"> },
+                    {
+                        field: </span>'Qty', title: '数量', width: 120<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                            type: </span>'numberbox'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                                required: </span><span style="color: rgba(0, 0, 255, 1)">true</span>, min: 0, precision: 2<span style="color: rgba(0, 0, 0, 1)">
+                            }
+                        }
+                    },
+                    {
+                        field: </span>'Loc', title: '库位', width: 150<span style="color: rgba(0, 0, 0, 1)">, editor: {
+                            type: </span>'text'<span style="color: rgba(0, 0, 0, 1)">, options: {
+                                required: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">
+                            }
+                        }
+                    },
+
+                    { field: </span>'CreationTime', title: '创建时间', hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> }, 
+
+                    { field: </span>'Id', title: 'Id', width: 50, hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> },
+                    { field: </span>'InStockOrderDetailId', title: 'InodId', width: 50, hidden: 'true'<span style="color: rgba(0, 0, 0, 1)"> }
+                ]],
+
+                onResize: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                    $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+                },
+
+                onLoadSuccess: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                    setTimeout(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                        $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+
+                    }, </span>0<span style="color: rgba(0, 0, 0, 1)">);
+                    editIndex </span>= undefined;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">主网格换行</span>
+<span style="color: rgba(0, 0, 0, 1)">                },
+                onAfterEdit: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (rowIndex, rowData, changes) {
+
+                    editIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> undefined;
+                },
+
+                onClickRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index1, row1) {
+                    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (editIndex !=<span style="color: rgba(0, 0, 0, 1)"> index1) {
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (endEditing(ddv)) {
+                       ddv.datagrid(</span>'selectRow', index1).datagrid('beginEdit'<span style="color: rgba(0, 0, 0, 1)">, index1);
+                            editIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index1;
+
+                        }
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> { ddv.datagrid('selectRow'<span style="color: rgba(0, 0, 0, 1)">, editIndex); }
+
+                    }
+                }
+            });
+            $(</span>'#dgINOD').datagrid('fixDetailRowHeight'<span style="color: rgba(0, 0, 0, 1)">, index);
+
+        },
+
+        onClickRow: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (index, rowData) {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (mainIndex!=<span style="color: rgba(0, 0, 0, 1)">undefined) {
+                $(</span>'#dgINOD').datagrid('collapseRow'<span style="color: rgba(0, 0, 0, 1)">, mainIndex);
+
+            }          
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (lastIndex !=<span style="color: rgba(0, 0, 0, 1)"> index) {
+                $(</span>'#dgINOD').datagrid('endEdit'<span style="color: rgba(0, 0, 0, 1)">, lastIndex);
+                editrow(index);
+            }
+
+            lastIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index;
+            mainIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> index;
+        },        
+
+        onBeginEdit: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (rowIndex, rowData) { 
+            setEditing(rowIndex);
+        }
+    });
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">计算报价小计</span>
+
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> setEditing(rowIndex) {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> editors = $('#dgINOD').datagrid('getEditors'<span style="color: rgba(0, 0, 0, 1)">, rowIndex);
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> priceEditor = editors[4<span style="color: rgba(0, 0, 0, 1)">];
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> qtyEditor = editors[0<span style="color: rgba(0, 0, 0, 1)">];
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> lengthEditor = editors[1<span style="color: rgba(0, 0, 0, 1)">];
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> widthEditor = editors[2<span style="color: rgba(0, 0, 0, 1)">];
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> heightEditor = editors[3<span style="color: rgba(0, 0, 0, 1)">];
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> totalVolEditor = editors[6<span style="color: rgba(0, 0, 0, 1)">];
+
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> totalAmtEditor = editors[5<span style="color: rgba(0, 0, 0, 1)">];
+    priceEditor.target.numberbox({
+        onChange: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { calculate();}
+
+    });
+
+    qtyEditor.target.numberbox({
+        onChange: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            calculate();
+            calculateVol();
+        }
+
+    });
+
+    lengthEditor.target.numberbox({
+        onChange: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { calculateVol(); }
+    });
+
+    widthEditor.target.numberbox({
+        onChange: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { calculateVol(); }
+
+    });
+
+    heightEditor.target.numberbox({
+        onChange: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () { calculateVol(); }
+    });
+
+    </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> calculate() {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> cost = (priceEditor.target.val()) *<span style="color: rgba(0, 0, 0, 1)"> (qtyEditor.target.val());
+
+        console.log(cost);
+        totalAmtEditor.target.numberbox(</span>"setValue"<span style="color: rgba(0, 0, 0, 1)">, cost);
+    }
+
+    </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> calculateVol() {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> vol = (lengthEditor.target.val() / 100.0) * (widthEditor.target.val() / 100.0) * (heightEditor.target.val() / 100.0)*<br><span style="color: rgba(0, 0, 0, 1)"> (qtyEditor.target.val());
+        console.log(vol);
+        totalVolEditor.target.numberbox(</span>"setValue"<span style="color: rgba(0, 0, 0, 1)">, vol);
+    }
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> editrow(index) {
+    $(</span>'#dgINOD').datagrid('selectRow'<span style="color: rgba(0, 0, 0, 1)">, index)
+        .datagrid(</span>'beginEdit'<span style="color: rgba(0, 0, 0, 1)">, index);
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> endEdit() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> rows = $('#dgINOD').datagrid('getRows'<span style="color: rgba(0, 0, 0, 1)">);
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (rows==<span style="color: rgba(0, 0, 0, 1)">undefined) {
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+    }
+    </span><span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; rows.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+
+        $(</span>'#dgINOD').datagrid('endEdit'<span style="color: rgba(0, 0, 0, 1)">, i);
+    }
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取入库单明细的库位数据</span>
+
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> setSubGridLoc(effectRow) {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> ddv = $('#dgINODItem-' +<span style="color: rgba(0, 0, 0, 1)"> mainIndex);
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> dgcnt =<span style="color: rgba(0, 0, 0, 1)"> ddv.datagrid().length;
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (mainIndex != undefined &amp;&amp; dgcnt&gt;0<span style="color: rgba(0, 0, 0, 1)">) {
+
+        endEditSub(ddv);
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> changes = ddv.datagrid('getChanges'<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (changes.length) {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> insed = ddv.datagrid('getChanges', "inserted"<span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> deled = ddv.datagrid('getChanges', "deleted"<span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> upded = ddv.datagrid('getChanges', "updated"<span style="color: rgba(0, 0, 0, 1)">);
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (insed.length) {
+                effectRow[</span>"locsInserted"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(insed);
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (deled.length) {
+                effectRow[</span>"locsDeleted"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(deled);
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (upded.length) {
+                effectRow[</span>"locsUpdated"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(upded);
+            }
+        }
+    }
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> effectRow;
+
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">设置入库单明细数据</span>
+
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> setGridDetail(effectRow) { 
+
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> ($('#dgINOD').datagrid('getChanges'<span style="color: rgba(0, 0, 0, 1)">).length) { 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> inserted = $('#dgINOD').datagrid('getChanges', "inserted"<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> deleted = $('#dgINOD').datagrid('getChanges', "deleted"<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> updated = $('#dgINOD').datagrid('getChanges', "updated"<span style="color: rgba(0, 0, 0, 1)">);      
+
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (inserted.length) {
+            effectRow[</span>"inserted"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(inserted);
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (deleted.length) {
+            effectRow[</span>"deleted"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(deleted);
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (updated.length) {
+            effectRow[</span>"updated"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(updated);
+        }
+     }
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> effectRow;
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> endEditSub(ddv) {    
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (mainIndex !=<span style="color: rgba(0, 0, 0, 1)"> undefined) {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> rows = ddv.datagrid('getRows'<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (rows!=<span style="color: rgba(0, 0, 0, 1)">undefined) {
+            </span><span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; rows.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+                ddv.datagrid(</span>'endEdit'<span style="color: rgba(0, 0, 0, 1)">, i);
+            }  
+        }          
+
+    }
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> saveDetail() {
+    endEdit();
+    $.messager.confirm(</span>'确认', '您确认要修改吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> effectRow = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> Object();
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)"> GetINO();
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (postData.Id) {
+            effectRow[</span>"postdata"] =<span style="color: rgba(0, 0, 0, 1)"> JSON.stringify(postData);
+        }
+
+        effectRow </span>=<span style="color: rgba(0, 0, 0, 1)"> setSubGridLoc(effectRow);
+        effectRow </span>=<span style="color: rgba(0, 0, 0, 1)"> setGridDetail(effectRow);
+        $.post(</span>"/InStock/Update", effectRow, <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+           </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">  alert(data);</span>
+            <span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (data.success) {
+                $.messager.alert(</span>"提示"<span style="color: rgba(0, 0, 0, 1)">, data.result);
+                $(</span>'#dgINOD').datagrid('acceptChanges'<span style="color: rgba(0, 0, 0, 1)">);
+               }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+                $.messager.alert(</span>"提示"<span style="color: rgba(0, 0, 0, 1)">, data.result);
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+            }
+
+        }, </span>"JSON"<span style="color: rgba(0, 0, 0, 1)">) ;      
+
+        })    
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> init() {
+    $(</span>"#PreDeliveryTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(getNowFormatDate());
+    $(</span>"#CreationTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(getNowFormatDate());
+    $(</span>"#btnCancle").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {      
+        $(</span>"#divAddUpdINO").dialog("close"<span style="color: rgba(0, 0, 0, 1)">);  
+        $(</span>'#dgINSO').datagrid('reload'<span style="color: rgba(0, 0, 0, 1)">);
+
+    });
+
+    $(</span>"#btnCancleDO").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        $(</span>"#divImportCargo").dialog("close"<span style="color: rgba(0, 0, 0, 1)">);
+        $(</span>'#dgINSO').datagrid('reload'<span style="color: rgba(0, 0, 0, 1)">);
+
+    });
+
+ 
+
+    $(</span>"#btnImportDO").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">保存</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> rows = $('#dgCargo').datagrid('getSelections'<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (rows.length &gt; 0<span style="color: rgba(0, 0, 0, 1)">) {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">验证</span>
+            $.messager.confirm('确认', '您确认要保存所选择的货物信息吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> obj_No = $("#UpdNO"<span style="color: rgba(0, 0, 0, 1)">).val();
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> ids = [];<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">重要不是{}</span>
+                    <span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; rows.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+                        ids.push(rows[i].Id);
+                    }
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)"> {
+                        </span>"Ids": ids.join(','<span style="color: rgba(0, 0, 0, 1)">),
+                        </span>"No"<span style="color: rgba(0, 0, 0, 1)">: obj_No
+                    };
+
+                    $.post(</span>"/InStock/ImportCargo", postData, <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (data == "OK"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "保存货物信息成功！"<span style="color: rgba(0, 0, 0, 1)">);
+                            ShowDetail(obj_No);
+                        }
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (data == "NO"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "保存货物信息失败！"<span style="color: rgba(0, 0, 0, 1)">);
+                            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+                        }
+                    }); 
+
+                }
+            })
+        } 
+
+    });
+
+    $(</span>"#btnSubmit").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">保存</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> id = $("#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val();
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id == "" || id ==<span style="color: rgba(0, 0, 0, 1)"> undefined) {
+            $.messager.alert(</span>"提示", "入库单没有保存，请先保存！"<span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+        }
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">验证</span>
+            $.messager.confirm('确认', '您确认要提交入库单吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {                  
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)"> {
+                        </span>"Id"<span style="color: rgba(0, 0, 0, 1)">: id                       
+
+                    };
+
+                    $.post(</span>"/InStock/Submit", postData, <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (data) {
+                        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (data == "OK"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "入库单已经提交成功！"<span style="color: rgba(0, 0, 0, 1)">);                          
+
+                            $(</span>"#StatusUpdate").val("提交"<span style="color: rgba(0, 0, 0, 1)">);
+                            SetEnabled(</span>"提交"<span style="color: rgba(0, 0, 0, 1)">);
+                        }
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(0, 0, 255, 1)">if</span> (data == "NO"<span style="color: rgba(0, 0, 0, 1)">) {
+                            $.messager.alert(</span>"提示", "入库单提交失败！"<span style="color: rgba(0, 0, 0, 1)">);
+                            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+                        }
+                    });
+                }
+            })
+    });
+}
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> SubGridAddRow() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> ddv = $('#dgINODItem-' +<span style="color: rgba(0, 0, 0, 1)"> mainIndex);
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> row = $('#dgINOD').datagrid('getSelected'<span style="color: rgba(0, 0, 0, 1)">);
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (mainIndex != undefined &amp;&amp; editIndex!=<span style="color: rgba(0, 0, 0, 1)">undefined) {
+
+        ddv.datagrid(</span>'endEdit'<span style="color: rgba(0, 0, 0, 1)">, editIndex);
+    }
+
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (editIndex ==<span style="color: rgba(0, 0, 0, 1)"> undefined) {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> seqno = ddv.datagrid("getRows").length + 1<span style="color: rgba(0, 0, 0, 1)">;
+        ddv.datagrid(</span>'insertRow'<span style="color: rgba(0, 0, 0, 1)">, {
+            index: </span>0<span style="color: rgba(0, 0, 0, 1)">,
+            row: { InStockOrderDetailId: row.Id, SeqNo: seqno}
+        });
+        ddv.datagrid(</span>'beginEdit', 0<span style="color: rgba(0, 0, 0, 1)">);
+        editIndex </span>= 0<span style="color: rgba(0, 0, 0, 1)">;
+    }
+
+}
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> endEditing(ddv) {
+
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> changes = ddv.datagrid('getChanges'<span style="color: rgba(0, 0, 0, 1)">);
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (editIndex == undefined) { <span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> }
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (ddv.datagrid('validateRow'<span style="color: rgba(0, 0, 0, 1)">, editIndex)) {
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">验证前一行</span>
+        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">返回编辑器，结束编辑</span>
+        ddv.datagrid('endEdit'<span style="color: rgba(0, 0, 0, 1)">, editIndex);
+        editIndex </span>=<span style="color: rgba(0, 0, 0, 1)"> undefined;
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">;
+
+    } </span><span style="color: rgba(0, 0, 255, 1)">else</span> { <span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">; }
+}
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> collapseRows() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> rows = $('#dgINOD').datagrid('getRows'<span style="color: rgba(0, 0, 0, 1)">);
+    $.each(rows, </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (i, k) {
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取当前所有展开的子网格</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> expander = $('#dgINOD').datagrid('getExpander'<span style="color: rgba(0, 0, 0, 1)">, i);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (expander.length &amp;&amp; expander.hasClass('datagrid-row-collapse'<span style="color: rgba(0, 0, 0, 1)">)) {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (k.id !=<span style="color: rgba(0, 0, 0, 1)"> row.id) {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">折叠上一次展开的子网格</span>
+                $('#dgINOD').datagrid('collapseRow'<span style="color: rgba(0, 0, 0, 1)">, i);
+            }
+        }
+    });
+
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> GetINO() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)"> {
+        </span>"No": $("#UpdNO"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"DeliveryNo": ""<span style="color: rgba(0, 0, 0, 1)">,
+        </span>"PreDeliveryTime": $("#PreDeliveryTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"CustomerCode": $("#CustomerCodeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"OwnerName": $("#OwnerNameUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"OwnerCode": $("#OwnerCodeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"CustomerName": $("#CustomerNameUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+
+        </span>"CreationTime": $("#CreationTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"CheckTime": $("#CheckTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"WarehouseType": $("#WarehouseTypeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+
+        </span>"WarehouseNo": $("#WarehouseNoUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"Oper": $("#OperUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"Receiver": $("#ReceiverUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+
+        </span>"Nwt": $("#NwtUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"Remark": $("#RemarkUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"ReceiveTime": $("#ReceiveTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),      
+
+        </span>"Status": $("#StatusUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"Gwt": $("#GwtUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"Checker": $("#CheckerUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+        </span>"PackageQty": $("#PackageQtyUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(),
+
+        </span>"LastUpdateTime": ""<span style="color: rgba(0, 0, 0, 1)">,
+        </span>"LastOper":""<span style="color: rgba(0, 0, 0, 1)">
+
+    };
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> id = $("#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val();
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!(id=="" || id==<span style="color: rgba(0, 0, 0, 1)">undefined)) {
+        postData.Id </span>=<span style="color: rgba(0, 0, 0, 1)"> id;
+    }
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> postData;
+
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> showINO(row) {     
+
+    $(</span>"#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Id);
+    $(</span>"#UpdNO"<span style="color: rgba(0, 0, 0, 1)">).val(row.No);
+    $(</span>"#PreDeliveryTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.PreDeliveryTime);
+    $(</span>"#CustomerCodeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.CustomerCode);
+
+    $(</span>"#PackageQtyUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.PackageQty);
+    $(</span>"#CustomerNameUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.CustomerName);
+    $(</span>"#OwnerCodeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.OwnerCode);
+    $(</span>"#OwnerNameUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.OwnerName);
+
+    $(</span>"#CreationTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.CreationTime);
+    $(</span>"#CheckTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.CheckTime);
+    $(</span>"#WarehouseTypeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.WarehouseType);
+
+    $(</span>"#WarehouseNoUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.WarehouseNo);
+    $(</span>"#OperUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Oper);
+
+    $(</span>"#ReceiverUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Receiver);
+    $(</span>"#NwtUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Nwt);
+
+    $(</span>"#RemarkUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Remark);
+    $(</span>"#ReceiveTimeUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.ReceiveTime);
+    $(</span>"#StatusUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Status);   
+
+    $(</span>"#GwtUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Gwt);
+    $(</span>"#CheckerUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Checker);
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">------------------------系统管理--&gt;入库单管理结束------------------------//</span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-05-06 21:58</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">679</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=12839212" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(12839212);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 12839212, cb_entryCreatedDate = '2020-05-06 21:58', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

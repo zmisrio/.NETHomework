@@ -1,0 +1,358 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="最近打算把Java网络编程相关的知识深入一下（IO、NIO、Socket编程、Netty) Java NIO主要需要理解缓冲区、通道、选择器三个核心概念，作为对Java I/O的补充， 以提升大批量数" />
+    <meta property="og:description" content="最近打算把Java网络编程相关的知识深入一下（IO、NIO、Socket编程、Netty) Java NIO主要需要理解缓冲区、通道、选择器三个核心概念，作为对Java I/O的补充， 以提升大批量数" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Java NIO:缓冲区 - 油多坏不了菜 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/simpleblue/bundle-simpleblue.min.css?v=Bz6eufLWGVsWJjKcjfFVp12zhnPfKDi7i7Z6x00pOIo" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/simpleblue/bundle-simpleblue-mobile.min.css?v=xbzzau3Jqgjmy0hPlKp75vATFEb2H-hCGf6MOx4l_3g" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/pepper-0611/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/pepper-0611/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/pepper-0611/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 629008;
+        var currentBlogApp = 'pepper-0611';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-05 02:39';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <div id="home">
+    <div id="header">
+        <div id="blogTitle">
+            
+<div class="title"><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/pepper-0611/">油多坏不了菜</a>
+</div>
+<div class="subtitle">
+
+</div>
+
+        </div>
+        <div id="navigator">
+            
+<ul id="navList">
+    <li id="nav_sitehome"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+    <li id="nav_myhome">
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/pepper-0611/">
+首页</a>
+</li>
+    <li id="nav_newpost">
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+    <li id="nav_contact">
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E6%B2%B9%E5%A4%9A%E5%9D%8F%E4%B8%8D%E4%BA%86%E8%8F%9C">
+联系</a></li>
+    <li id="nav_rss">
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/pepper-0611/rss/">
+订阅</a></li>
+    <li id="nav_admin">
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+            <div class="blogStats">
+                
+<span id="stats_post_count">随笔 - 
+5&nbsp;</span>
+<span id="stats_article_count">文章 - 
+0&nbsp;</span>
+<!-- <span id="stats-comment_count"></span> -->
+<span id="stats_comment_count">评论 - 
+0</span>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        <div id="mainContent">
+            <div class="forFlow">
+                <div id="post_detail">
+    <div id="topics">
+        <div class="post">
+            <h1 class="postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/pepper-0611/p/13767775.html">
+    <span>Java NIO:缓冲区</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <p>最近打算把Java网络编程相关的知识深入一下（IO、NIO、Socket编程、Netty)</p>
+<p>Java NIO主要需要理解缓冲区、通道、选择器三个核心概念，作为对Java I/O的补充， 以提升大批量数据传输的效率。</p>
+<p>学习NIO之前最好能有基础的网络编程知识</p>
+<p><a href="https://www.cnblogs.com/pepper-0611/p/13735018.html">Java I/O流</a></p>
+<p><a href="https://www.cnblogs.com/pepper-0611/p/13767359.html">Java 网络编程</a></p>
+<h2 id="基础">基础</h2>
+<p>除了需要对 Java 网络编程有一定了解，还需要对用户空间、内核空间、内存空间多重映射等知识有一定了解</p>
+<h3 id="用户空间与内核空间">用户空间与内核空间</h3>
+<p>为了提供操作系统的稳定性，操作系统将虚拟地址空间分为用户空间和内核空间</p>
+<p>其中用户进程（我们自己的程序）只能操作用户空间</p>
+<h3 id="io过程中的数据流向">I/O过程中的数据流向</h3>
+<p>假设我们需要从磁盘中某个文件读取数据。进程发起read()系统调用，进入内核态，内核随即向磁盘控制硬件发出命令， 要求其从磁盘读取数据，磁盘控制器将数据直接写入到内核内存缓冲区中（这一步DMA完成，不需要CPU参与），随后内核把数据从内核空间的临时缓冲区拷贝到用户缓冲区（需要CPU参与），进程切换回用户态继续执行。</p>
+<p>总结起来的数据流向是： 磁盘 ---&gt; 内核缓冲区 ---&gt; 用户缓冲区</p>
+<p>那么问题来了：内核缓冲区的数据拷贝到用户缓冲区的这一步显得有点多余，是否可以避免？</p>
+<h3 id="内存空间多重映射">内存空间多重映射</h3>
+<p>我们知道对于虚拟地址空间，一个以上的虚拟地址可指向同一个物理内存地址</p>
+<p>如果把用户空间的虚拟地址和内核空间的虚拟地址映射到同一个物理地址，那么这块物理地址代表的空间就对内核和用户进程都可见了！！ 便可省去数据在内核缓冲区和用户缓冲区来回复制的开销。（<strong>这便是直接缓冲区的思想</strong>）</p>
+<h2 id="缓冲区buffer">缓冲区(Buffer)</h2>
+<p>Java NIO数据传输过程： 数据先放到发送缓冲区  --&gt;  通过通道发送到接收端 ---&gt;  接受端通道接受数据并填充到接受缓冲区</p>
+<p>所以缓冲区的作用其实是连接通道作为数据传输的目标或者来源（或者说缓冲区是通道的输入或者输出）</p>
+<h3 id="核心概念">核心概念</h3>
+<h4 id="属性">属性</h4>
+<p>要理解Buffer的工作机制，首先要了解几个属性的意义</p>
+<ul>
+<li>
+<p>capacity（容量） 缓冲区的容量，创建缓冲区时指定</p>
+</li>
+<li>
+<p>position（位置）<strong>下一个要被读取或者写入的元素的索引</strong></p>
+</li>
+<li>
+<p>limit（上界） <strong>缓冲区中第一个不能被读或者写的位置</strong></p>
+</li>
+<li>
+<p>mark（标记）一个备忘位置</p>
+<p>其中 mark &lt;= position &lt;= limit &lt;= capacity，对limit和position两个属性的理解非常重要</p>
+</li>
+</ul>
+<h4 id="存取">存取</h4>
+<p>缓冲区的核心就在于存取操作，Buffer提供了相对位置存取和绝对位置存取两种方式</p>
+<ul>
+<li>
+<p>相对位置存取：在当前position位置写入或者读取数据， 然后增加position的值</p>
+</li>
+<li>
+<p>绝对位置存取：在指定的位置写入或者读取数据，不改变position的值</p>
+</li>
+</ul>
+<pre><code class="language-java"> //相对位置存取
+ public abstract ByteBuffer put(byte b);
+ public abstract byte get();
+
+ //绝对位置存取
+ public abstract ByteBuffer put(int index, byte b);
+ public abstract byte get(int index);
+</code></pre>
+<h4 id="翻转flip">翻转(flip)</h4>
+<p>翻转是Buffer的核心概念，我们可以理解Buffer有两种模式：写模式和读模式</p>
+<p>写模式下，我们分配一个缓冲区，然后直接填充数据(position的值从0开始递增)；读模式下， 我们也从头开始读取数据（position从0开始递增）</p>
+<p>那么我们怎么从写模式切换到读模式呐？翻转！！ 翻转的时候我们用limit记录待读取数据的长度， 然后将position置为0 就可以开始读取数据了</p>
+<p>下为翻转的源码</p>
+<pre><code class="language-java">public final Buffer flip() {
+  	//记录待读取数据的长度
+    limit = position;
+  	//从头开始读取数据
+    position = 0;
+    mark = -1;
+    return this;
+}
+</code></pre>
+<h4 id="demo">demo</h4>
+<p>一个完整的例子</p>
+<pre><code class="language-java">//创建一个缓冲区 
+ByteBuffer buffer = ByteBuffer.allocate(100);
+//写数据
+for (char c : "hello".toCharArray()) {
+  buffer.put((byte) c);
+}
+//翻转
+buffer.flip();//等价于 buffer.limit(buffer.position()).position(0);
+//读数据
+while (buffer.hasRemaining()) {
+  char c = (char) buffer.get();
+  System.out.println(c);
+}
+</code></pre>
+<h3 id="创建缓冲区">创建缓冲区</h3>
+<p>Buffer不能直接通过构造函数实例化，都是通过<strong>静态工厂方法</strong>来创建。下为ByteBuffer的静态工厂方法</p>
+<pre><code class="language-java">//创建内存缓冲区
+public static ByteBuffer allocate(int capacity);
+//创建直接缓冲区
+public static ByteBuffer allocateDirect(int capacity) ;
+
+public static ByteBuffer wrap(byte[] array, int offset, int length)
+</code></pre>
+<h3 id="直接缓冲区directbytebuffer">直接缓冲区(DirectByteBuffer)</h3>
+<p>对于一般的I/O过程，数据的流向总是：磁盘或者网络 --&gt; 内核临时缓冲区 --&gt; 用户空间缓冲区，其中内核空间临时缓冲区到用户空间缓冲区复制这一步显得有点多余！！</p>
+<p>直接缓冲区解决了这个问题， 直接缓冲区对内核和用户空间都可见，这样就可以避免"内核临时缓冲区到用户空间缓冲区"复制的开销</p>
+<p>虽然直接缓冲区是I/O的最佳选择，但是其比创建非直接缓冲区花费更大的成本，所以我们对直接缓冲区一般都会重复使用（每次使用都创建的话成本就太高了）。</p>
+<h2 id="总结">总结</h2>
+<p>本文主要讲解NIO学习需要掌握的一些基础知识以及缓冲区的使用，重点是对直接缓冲区的理解。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-05 14:39</span>&nbsp;
+<a href="https://www.cnblogs.com/pepper-0611/">油多坏不了菜</a>&nbsp;
+阅读(<span id="post_view_count">85</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13767775" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13767775);return false;">收藏</a></div>
+        </div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 629008, cb_blogApp = 'pepper-0611', cb_blogUserGuid = '316d49b4-3808-4ab5-2d12-08d850c2b691';
+    var cb_entryId = 13767775, cb_entryCreatedDate = '2020-10-05 14:39', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>    </div>
+</div>
+            </div>
+        </div>
+
+        <div id="sideBar">
+            <div id="sideBarMain">
+                
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+                <div id="calendar"><div id="blog-calendar" style="display:none"></div></div>                
+                <script>loadBlogDefaultCalendar();</script>
+                <div id="leftcontentcontainer">
+                    <!-- begin:SingleColumn -->
+                    <div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+                    <!-- end:  SingleColumn -->
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    <div id="footer">
+        <!--done-->
+Copyright &copy; 2020 油多坏不了菜
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+    </div>
+</div>
+
+    
+</body>
+</html>

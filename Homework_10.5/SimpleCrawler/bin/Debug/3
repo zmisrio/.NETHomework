@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Spring Cloud 是目前最火的微服务框架，Feign 作为基础组件之一，在 Spring Cloud 体系中发挥了重要的作用。 一、FeignClient注解 FeignClient注解被@T" />
+    <meta property="og:description" content="Spring Cloud 是目前最火的微服务框架，Feign 作为基础组件之一，在 Spring Cloud 体系中发挥了重要的作用。 一、FeignClient注解 FeignClient注解被@T" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@FeignClient注解详解 - 且吃茶去 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/starn/custom.css?v=uRgoSLGypPOxrtukj/LkKU0L4PA=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/custom/bundle-custom-mobile.min.css?v=KtAK50iXMDcU4jOl_mm1P0j3gXUtdRHDhFdu7YlsVVg" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/starn/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/starn/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/starn/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 587178;
+        var currentBlogApp = 'starn';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'Custom';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 11:00';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="page_begin_html">
+         <div id="set_btn_box">
+    <div class="set_btn fly_top fadeIn animated">
+        <svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhiding"></use></svg>
+    </div>
+    <div class="set_btn article_icon_btn catalogue_btn">
+        <svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-dagang"></use></svg>
+    </div>
+    <div class="set_btn article_icon_btn comment">
+        <a href="#comment_form_container"><svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-linedesign-01"></use></svg></a>
+    </div>
+    <div class="set_btn skin_btn">
+        <svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-pifu"></use></svg>
+    </div>
+    <div class="set_btn gratuity">
+        <svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-dashang"></use></svg>
+    </div>
+    <div class="set_btn article_icon_btn artice_recommend">
+        <svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-tuijian2"></use></svg>
+    </div>
+     <canvas id="thumsCanvas" width="200" height="400" style="width:100px;height:200px"></canvas>
+    <div class="set_btn catalogue">
+        <svg class="icon" aria-hidden="true" style="color:#97A1A7"><use xlink:href="#icon-cebianlan-"></use></svg>
+    </div>
+</div>
+<script src='https://blog-static.cnblogs.com/files/miluluyo/canvas2.js'></script>
+<!--
+<link href="//files.cnblogs.com/files/linianhui/lnh.cnblogs.css" rel="stylesheet"/>-->
+    </div>
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/starn/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/starn/">且吃茶去</a>
+</h1>
+<h2>
+仙不仙兮凡不凡，剑气随风任自然，奇梦曾惊三秋雨，侠魂如度万里山
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/starn/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E4%B8%94%E5%90%83%E8%8C%B6%E5%8E%BB">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/starn/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+3&nbsp; </span>
+<span id="stats_article_count">文章 - 
+1&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+5</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/starn/p/13800040.html">
+    <span>@FeignClient注解详解</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <p>Spring Cloud 是目前最火的微服务框架，Feign 作为基础组件之一，在 Spring Cloud 体系中发挥了重要的作用。</p>
+<p><strong>一、FeignClient注解</strong></p>
+<p>FeignClient注解被@Target(ElementType.TYPE)修饰，表示FeignClient注解的作用目标在<strong>接口上</strong></p>
+<pre><code class="language-java">//@FeignClient(value = "fast-maindata-service",contextId = "MaindataServiceClient")
+@FeignClient(url = "47.100.79.142:30041",name = "MaindataServiceClient")
+public interface MaindataServiceClient extends IMaindataPharmacyController {
+
+}
+
+</code></pre>
+<p>声明接口之后，在代码中通过@Resource注入之后即可使用。@FeignClient标签的常用属性如下：</p>
+<ul>
+<li>name：指定FeignClient的名称，如果项目使用了Ribbon，name属性会作为微服务的名称，用于服务发现</li>
+<li>url: url一般用于调试，可以手动指定@FeignClient调用的地址</li>
+<li>decode404:当发生http 404错误时，如果该字段位true，会调用decoder进行解码，否则抛出FeignException</li>
+<li>configuration: Feign配置类，可以自定义Feign的Encoder、Decoder、LogLevel、Contract</li>
+<li>fallback: 定义容错的处理类，当调用远程接口失败或超时时，会调用对应接口的容错逻辑，fallback指定的类必须实现@FeignClient标记的接口</li>
+<li>fallbackFactory: 工厂类，用于生成fallback类示例，通过这个属性我们可以实现每个接口通用的容错逻辑，减少重复的代码</li>
+<li>path: 定义当前FeignClient的统一前缀</li>
+</ul>
+<pre><code class="language-java">@FeignClient(name = "github-client",
+        url = "https://api.github.com",
+        configuration = GitHubExampleConfig.class,
+        fallback = GitHubClient.DefaultFallback.class)
+public interface GitHubClient {
+    @RequestMapping(value = "/search/repositories", method = RequestMethod.GET)
+    String searchRepo(@RequestParam("q") String queryStr);
+ 
+    /**
+     * 容错处理类，当调用失败时，简单返回空字符串
+     */
+    @Component
+    public class DefaultFallback implements GitHubClient {
+        @Override
+        public String searchRepo(@RequestParam("q") String queryStr) {
+            return "";
+        }
+    }
+}
+</code></pre>
+<p>在使用fallback属性时，需要使用@Component注解，保证fallback类被Spring容器扫描到,GitHubExampleConfig内容如下：</p>
+<pre><code class="language-java">@Configuration
+public class GitHubExampleConfig {
+    @Bean
+    Logger.Level feignLoggerLevel() {
+        return Logger.Level.FULL;
+    }
+}
+</code></pre>
+<p>　在使用FeignClient时，Spring会按name创建不同的ApplicationContext，通过不同的Context来隔离FeignClient的配置信息，在使用配置类时，不能把配置类放到Spring App Component scan的路径下，否则，配置类会对所有FeignClient生效.</p>
+<p><strong>关于调用目前有两种：</strong></p>
+<p>1、接口提供方在注册中心。</p>
+<p>如果服务提供方已经注册到注册中心了，那么name或者value的值为：服务提供方的服务名称。必须为所有客户端指定一个name或者value<br>
+@FeignClient(value="run-product",fallback = ProductClientServiceFallBack.class)</p>
+<p>2、单独的一个http接口，接口提供方没有注册到注册中心。<br>
+@FeignClient(name="runClient11111",url="localhost:8001")<br>
+此处name的值为:调用客户端的名称。</p>
+<p>以上两种方式都能正常调用。name可以为注册中心的实例名称，加上url属性时，name的值就与注册中心实例名称无关。至于url属性和name属性的关系请指导的大佬们留言呀。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 23:00</span>&nbsp;
+<a href="https://www.cnblogs.com/starn/">且吃茶去</a>&nbsp;
+阅读(<span id="post_view_count">0</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13800040" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13800040);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 587178, cb_blogApp = 'starn', cb_blogUserGuid = '8f7d26c6-9b6b-4efc-485d-08d7c9936a85';
+    var cb_entryId = 13800040, cb_entryCreatedDate = '2020-10-11 23:00', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 且吃茶去
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    <div id="page_end_html">
+          <style id="ceshicss">
+@media (max-width: 767px){
+#set_btn_box {width: 100vw;left: 0;right: 0;bottom: 0;background: hsla(0,0%,100%,.6);height: 49px;display: flex;justify-content: space-between;align-items: center;padding: 12px 40px;border-top: 1px solid #e8e8e8;box-sizing: border-box;}
+.set_btn {margin-top: 0;}
+.set_btn.fly_top.fadeIn.animated {position: absolute;right: 10px;bottom: 60px;}
+.container{bottom:50px}}
+#mainContent{width:90%}
+</style>
+<link href="https://blog-static.cnblogs.com/files/miluluyo/tippy.min.css" rel="stylesheet">
+<script src="https://unpkg.com/@popperjs/core@2.4.2/dist/umd/popper.min.js"></script>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/tippy.js"></script>
+<link rel='stylesheet' href='https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css'>
+<script src="https://at.alicdn.com/t/font_1825850_klax1ao4o6.js"></script>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/three.min.js"></script>
+<script src='https://blog-static.cnblogs.com/files/miluluyo/star.js'></script>
+<link rel="stylesheet" href="https://blog-static.cnblogs.com/files/miluluyo/OwO.min.css" />
+<script src="https://blog-static.cnblogs.com/files/miluluyo/OwO2.min.js"></script>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/cute-cnblogs2.js"></script>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/monitoring2.js"></script>
+
+<script>
+
+miluframe({
+  Youself:'https://www.cnblogs.com/miluluyo/', /*个人的博客园链接*/
+  /*博客园导航信息*/
+    custom:[{
+      name:'首页',
+      link:'https://www.cnblogs.com/starn/',
+      istarget:false
+    },{
+      name:'联系',
+      link:'https://msg.cnblogs.com/send/%E4%B8%94%E5%90%83%E8%8C%B6%E5%8E%BB',
+      istarget:true
+    },{
+      name:'技能树',
+      link:'https://miluluyo.github.io/',
+      istarget:true
+    },{
+      name:'留言板',
+      link:'https://www.cnblogs.com/sstarn/p/',
+      istarget:false
+    },{
+      name:'相册',
+      link:'https://www.cnblogs.com/starn/gallery.html',
+      istarget:false
+    },{
+      name:'友链',
+      link:'https://www.cnblogs.com/starn/p/11633791.html',
+      istarget:false
+    },{
+      name:'维护',
+      link:'https://www.cnblogs.com/miluluyo/p/12092009.html',
+      istarget:false
+    },{
+      name:'投喂',
+      link:'https://www.cnblogs.com/starn/p/gratuity.html',
+      istarget:false
+    },{
+      name:'管理',
+      link:'https://i.cnblogs.com/',
+      istarget:true
+    }],
+    /*向别人展示自己的友链信息*/
+    resume:{
+        "name":"麋鹿鲁哟",
+        "link":"https://www.cnblogs.com/miluluyo/",
+        "headurl":"https://images.cnblogs.com/cnblogs_com/elkyo/1558759/o_o_my.jpg",
+        "introduction":"大道至简，知易行难。"
+    },
+    /*友链信息*/
+    unionbox:[{
+        "name":"麋鹿鲁哟",
+        "introduction":"生活是没有标准答案的。",
+        "url":"https://www.cnblogs.com/miluluyo",
+        "headurl":"https://images.cnblogs.com/cnblogs_com/elkyo/1558759/o_o_my.jpg"
+      },{
+        "name":"麋鹿鲁哟的技能树",
+        "introduction":"大道至简，知易行难。",
+        "url":"https://miluluyo.github.io/",
+        "headurl":"https://images.cnblogs.com/cnblogs_com/elkyo/1558759/o_o_my.jpg"
+      }],
+    /*友链表格头信息，这个可以忽略*/
+    details:[{
+        field: 'name',
+        literal: '昵称',
+      },{
+        field: 'introduction',
+        literal: '标语',
+      },{
+        field: 'url',
+        literal: '链接地址',
+      },{
+        field: 'headurl',
+        literal: '头像地址',
+      }],
+    /*浏览器顶部小图标*/
+    logoimg:'https://images.cnblogs.com/cnblogs_com/miluluyo/1765646/o_200519070633f12.png',
+    /*文章页面标题前的图标，此处图标有扩展，下面会提到图标*/
+    cuteicon:['icon-caomei','icon-boluo','icon-huolongguo','icon-chengzi','icon-hamigua','icon-lizhi','icon-mangguo','icon-liulian','icon-lizi','icon-lanmei','icon-longyan','icon-shanzhu','icon-pingguo','icon-mihoutao','icon-niuyouguo','icon-xigua','icon-putao','icon-xiangjiao','icon-ningmeng','icon-yingtao','icon-taozi','icon-shiliu','icon-ximei','icon-shizi'],
+    /*赞赏，若true则显示此按钮，false则不显示*/
+    isGratuity:true,
+    /*赞赏按钮焦点显示赞赏内容，内容可自行更改*/
+    gratuity:'<div class="popper_box"><p><b>要请我喝奶茶吗  (づ｡◕ᴗᴗ◕｡)づ</b> </p><div class="popper_box_con"><div class="popper_box_con_li"><img src="https://isgg.oss-cn-beijing.aliyuncs.com/blog_picture/20201009010845.jpg" alt="">微信扫码</div><div class="popper_box_con_li"><img src="https://isgg.oss-cn-beijing.aliyuncs.com/blog_picture/20201009010818.jpg" >支付宝扫码</div></div><p><b>留下一句你觉得很励志与美的话给我吧~</b>&nbsp;&nbsp;<b><a href="https://www.cnblogs.com/miluluyo/p/12930946.html">GO</a></b></div>'
+})
+</script>
+<!-- 点赞 -->
+<canvas width="1777" height="841" style="position: fixed; left: 0px; top: 0px; z-index: 2147483647; pointer-events: none;"></canvas><script src="https://blog-static.cnblogs.com/files/miluluyo/mouse-click.js"></script>
+
+<!-- 以下内容是否添加你随意 -->
+
+<script>
+  /*在文章页面添加古诗词*/
+  $("#navigator").after('<div class="poem-wrap"><div class="poem-border poem-left"></div><div class="poem-border poem-right"></div><h1>念两句诗</h1><div id="poem_sentence"></div><div id="poem_info"></div></div>')
+</script>
+<script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+<script type="text/javascript">
+  jinrishici.load(function(result) {
+    var sentence = document.querySelector("#poem_sentence")
+    var info = document.querySelector("#poem_info")
+    sentence.innerHTML = result.data.content
+    info.innerHTML = '【' + result.data.origin.dynasty + '】' + result.data.origin.author + '《' + result.data.origin.title + '》'
+  });
+</script>
+
+<script type="text/javascript">
+/* 鼠标特效，我觉得太花哨了就注释了，喜欢的自己打开注释就可以 */
+/*var a_idx = 0;
+jQuery(document).ready(function($) {
+    $("body").click(function(e) {
+        var a = new Array("❤去活出你自己。❤","❤今天的好计划胜过明天的完美计划。❤","❤不要轻言放弃，否则对不起自己。❤","❤紧要关头不放弃，绝望就会变成希望。❤","❤如果不能改变结果，那就完善过程。❤","❤好好活就是干有意义的事，有意义的事就是好好活！❤","❤你真正是谁并不重要，重要的是你的所做所为。❤","❤你不想为你的信仰冒一下险吗?难道想等你老了，再后悔莫及吗?❤","❤有些鸟儿是关不住的，它的每一根羽毛都闪耀着自由的光辉。❤","❤决定我们成为什么样人的，不是我们的能力，而是我们的选择。❤","❤掉在水里你不会淹死，呆在水里你才会淹死，你只有游，不停的往前游。❤","❤有些路，只能一个人走。❤","❤希望你眼眸有星辰，心中有山海。❤","❤从此以梦为马，不负韶华。❤","❤人的成就和差异决定于其业余时间。❤","❤佛不要你皈依，佛要你欢喜。❤","❤ダーリンのこと　大好きだよ❤","❤小猫在午睡时，地球在转。❤","❤我，混世大魔王，申请做你的小熊软糖。❤","❤决定好啦，要暗暗努力。❤","❤呐，做人呢最紧要开心。❤","❤好想邀请你一起去云朵上打呼噜呀。❤","❤永远年轻，永远热泪盈眶。❤","❤我生来平庸，也生来骄傲。❤","❤我走得很慢，但我从不后退。❤","❤人间不正经生活手册。❤","❤我是可爱的小姑娘，你是可爱。❤","❤数学里，有个温柔霸道的词，有且仅有。❤","❤吧唧一口，吃掉难过。❤","❤你头发乱了哦。❤","❤健康可爱，没有眼袋。❤","❤日月星辰之外，你是第四种难得。❤","❤你是否成为了了不起的成年人？❤","❤大家都是第一次做人。❤","❤何事喧哗？！❤","❤人间有味是清欢。❤","❤你笑起来真像好天气。❤","❤风填词半句，雪斟酒一壶。❤","❤除了自渡，他人爱莫能助。❤","❤昨日种种，皆成今我。❤","❤一梦入混沌 明月撞星辰❤","❤保持独立 适当拥有❤","❤谢谢你出现 这一生我很喜欢❤","❤做自己就好了 我会喜欢你的❤","❤太严肃的话，是没办法在人间寻欢作乐的❤","❤愿你余生可随遇而安，步步慢。❤","❤黄瓜在于拍，人生在于嗨❤","❤奇变偶不变，符号看象限。❤","❤从来如此，便对么？❤","❤今天我这儿的太阳，正好适合晒钙 你呢❤","❤未来可期，万事胜意。❤","❤星光不问赶路人 时光不负有心人❤","❤我当然不会试图摘月，我要月亮奔我而来❤","❤女生要修炼成的五样东西： 扬在脸上的自信，长在心底的善良， 融进血里的骨气，刻进命里的坚强，深到骨子里的教养❤","❤燕去燕归，沧海桑田。纵此生不见，平安惟愿❤","❤我想认识你 趁风不注意❤","❤我一直想从你的窗子里看月亮❤","❤长大应该是变温柔，对全世界都温柔。❤","❤别在深夜做任何决定❤","❤山中何事，松花酿酒，春水煎茶。❤","❤桃李春风一杯酒，江湖夜雨十年灯。❤","❤欲买桂花同载酒，终不似，少年游。❤");
+        var le = Math.ceil(Math.random()*a.length); 
+        var $i = $("<span></span>").text(a[le]);/*a[a_idx]*/
+        /*a_idx = (a_idx + 1) % a.length;
+        var x = e.pageX,
+        y = e.pageY;
+        $i.css({
+            "z-index": 999999999999999999999999999999999999999999999999999999999999999999999,
+            "top": y - 20,
+            "left": x,
+            "position": "absolute",
+            "font-weight": "bold",
+            "color": "rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"
+        });
+        $("body").append($i);
+        $i.animate({
+            "top": y - 180,
+            "opacity": 0
+        },
+        2000,
+        function() {
+            $i.remove();
+        });
+    });
+});*/
+</script>
+
+
+<!--音乐，只在PC端宽度>1000px时显示-->
+<link rel="stylesheet" href="https://blog-static.cnblogs.com/files/miluluyo/APlayer.min.css">
+<div id="player" class="aplayer aplayer-withlist aplayer-fixed" data-id="2418067153" data-server="netease" data-type="playlist" data-order="random" data-fixed="true" data-listfolded="true" data-theme="#2D8CF0"></div>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/APlayer.min.js"></script>
+<script src="https://blog-static.cnblogs.com/files/miluluyo/Meting.min.js"></script>
+
+<!--猫，只在PC端显示，移动端不加载了，因为会卡顿页面-->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+  var mobile_flag = isMobile();
+  if(mobile_flag){
+    //console.info("移动端")
+  }else{
+    //console.info("PC端")
+    L2Dwidget.init({
+        "model": {
+            "jsonPath": "https://unpkg.com/live2d-widget-model-hijiki/assets/hijiki.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "left",
+            "width": 100,
+            "height": 200,
+            "hOffset": 70,
+            "vOffset": 0
+        },
+        "mobile": {
+            "show": true,
+            "scale": 0.5
+        },
+        "react": {
+            "opacityDefault": 0.7,
+            "opacityOnHover": 0.2
+        }
+    });
+    window.onload = function(){
+      $("#live2dcanvas").attr("style","position: fixed; opacity: 0.7; left: 70px; bottom: 0px; z-index: 1; pointer-events: none;")
+    }
+  }
+
+</script>
+
+<script>
+
+/*记录访问数据，我用了两个，一个是这个在 https://clustrmaps.com/ 网站，另一个是 https://www.noscript.cnitblog.com/ 这个网站*/
+/*
+	第一种：https://clustrmaps.com/
+	注册账号，添加自己博客园的链接，选择自定义Customize,
+	选择 Image based (basic version for websites that don't support javascript)，调整到你喜欢的样式，然后复制
+	：这个我插入在了侧边栏的最底部，把生成的代码粘贴到append内，这就完事了
+*/
+$('#sideBarMain').append('')
+
+/*
+	第二种：https://www.noscript.cnitblog.com/
+	注册账号，点控制台，添加统计ID，统计图标显示我是不显示的
+	这个目前插入的js好像报错，我的是很早之前生成的，还能用，因此还是推荐用第一种吧
+
+	别的地方也有这种很多统计访问数据的，可以自己找找看呢
+
+*/
+</script>
+    </div>
+</body>
+</html>

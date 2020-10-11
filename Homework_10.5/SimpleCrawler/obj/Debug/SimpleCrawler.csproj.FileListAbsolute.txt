@@ -1,0 +1,10 @@
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\bin\Debug\SimpleCrawler.exe.config
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\bin\Debug\SimpleCrawler.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\bin\Debug\SimpleCrawler.pdb
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.csprojAssemblyReference.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.MainForm.resources
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.Properties.Resources.resources
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.csproj.GenerateResource.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.csproj.CoreCompileInputs.cache
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.exe
+C:\Users\zmx\source\repos\C#Homework\Homework_10.5\SimpleCrawler\obj\Debug\SimpleCrawler.pdb

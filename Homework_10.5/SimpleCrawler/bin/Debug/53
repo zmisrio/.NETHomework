@@ -1,0 +1,567 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之十一(四十七) 的学习之后，我们已经实现了入库单前端的关于实现库位的功能，今天我们来学习如何在后台实现添加" />
+    <meta property="og:description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之十一(四十七) 的学习之后，我们已经实现了入库单前端的关于实现库位的功能，今天我们来学习如何在后台实现添加" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十二(四十八)  - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-05-17 10:45';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/12907499.html">
+    <span> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十二(四十八) </span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上面文章abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十一(四十七) 的学习之后，我们已经实现了入库单前端的关于实现库位的功能，今天我们来学习如何在后台实现添加库位的功能。接上文。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<div><span style="font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-family: Microsoft YaHei; font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11899403.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之一(二十七) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11975823.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之三(二十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12173698.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四)</span></a></span></div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 128, 1); font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12260841.html"><span style="color: rgba(0, 0, 128, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之十(三十六) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之一(三十七) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)">a</span></a><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12383343.html"><span style="color: rgba(0, 0, 255, 1)">bp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八)</span></a></span></span></span></span></div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 255, 1); font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12434052.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12506863.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之四(四十) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: Microsoft YaHei"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12571198.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之五(四十一) </span></a></span></div>
+<div><span style="font-size: 16px; font-family: Microsoft YaHei; color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12592265.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之六(四十二)</span></a></span></div>
+<div><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12637296.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之七(四十三) </span></a></span></div>
+<div><span style="font-size: 16px"><span style="font-family: 宋体"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12694244.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之八(四十四) </span></a>&nbsp;&nbsp; </span></span></div>
+<div><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12756289.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之九(四十五) </span></a></span></span></div>
+<div><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12811725.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十(四十六)</span></a></span></span></span> </span><br>
+<div><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12839212.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十一(四十七) </span></a></span></div>
+</div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp;&nbsp; 在上面文章</span><span style="font-family: 宋体"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12839212.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之十一(四十七) </span></a><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)">的学习之后，我们<span style="font-family: 宋体">已经实现了入库单前端的关于实现库位的功能，今天我们来学习如何在后台实现<span style="font-family: 宋体"><span style="font-family: 宋体">添加库位的功能<span style="font-family: 宋体">。接上文。</span></span></span></span></span></span></span></span></span></p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6. 在Visual Studio 2017的“解决方案资源管理器”中，<span style="font-family: 宋体">左</span><span style="font-family: 宋体">键单击</span>“ABP.TPLMS.Application”项目，<span style="font-family: 宋体">打开</span>“InStocks\Dto”文件夹，<span style="font-family: 宋体">找到</span>InStockOrderDto<span style="font-family: 宋体">与</span>CreateUpdateInStockOrderDto<span style="font-family: 宋体">两个类，分别添加一行代码。</span><span style="font-family: 宋体">代码如下。</span>&nbsp;&nbsp;&nbsp;&nbsp; <br></span></p>
+<div class="cnblogs_code">
+<pre>  <span style="color: rgba(0, 0, 255, 1)">public</span> List&lt;InStockOrderDetailLocDto&gt; InStockOrderDetailLoc { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span>; }</pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 7. <span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击<span style="font-family: 宋体">在领域层</span>“ABP.TPLMS.Web.Mvc”项目中的Controller目录。 <span style="font-family: 宋体">找到</span>InStockController.cs文件中输入如下代码，<span style="font-family: 宋体">通过构造函数注入对应</span><span style="font-family: 宋体">的</span><span style="font-family: 宋体">服务</span><span style="font-family: 宋体">类实例</span><span style="font-family: 宋体">。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Web.Controllers
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> InStockController : TPLMSControllerBase
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span><span style="color: rgba(0, 0, 0, 1)"> IInStockOrderAppService _inSOAppService;
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span><span style="color: rgba(0, 0, 0, 1)"> IInStockOrderDetailAppService _inSODAppService;
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span><span style="color: rgba(0, 0, 0, 1)"> IInStockOrderDetailLocAppService _inSODLAppService;
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">const</span> <span style="color: rgba(0, 0, 255, 1)">int</span> MAX_COUNT = <span style="color: rgba(128, 0, 128, 1)">1000</span><span style="color: rgba(0, 0, 0, 1)">;
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> InStockController(IInStockOrderAppService InSOAppService,IInStockOrderDetailAppService InSODAppService,
+
+            IInStockOrderDetailLocAppService InSODLAppService)
+        {
+
+            _inSOAppService </span>=<span style="color: rgba(0, 0, 0, 1)"> InSOAppService;
+            _inSODAppService </span>=<span style="color: rgba(0, 0, 0, 1)"> InSODAppService;
+            _inSODLAppService </span>=<span style="color: rgba(0, 0, 0, 1)"> InSODLAppService;
+        }
+
+       </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">省略见前文</span>
+<span style="color: rgba(0, 0, 0, 1)">
+
+ [HttpPost]
+        [DisableValidation]
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Update(InStockOrderDto iso)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> result = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">NO</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+            List</span>&lt;InStockOrderDetailDto&gt; list = <span style="color: rgba(0, 0, 255, 1)">new</span> List&lt;InStockOrderDetailDto&gt;<span style="color: rgba(0, 0, 0, 1)">();
+            List</span>&lt;InStockOrderDetailLocDto&gt; listLoc = <span style="color: rgba(0, 0, 255, 1)">new</span> List&lt;InStockOrderDetailLocDto&gt;<span style="color: rgba(0, 0, 0, 1)">();
+            </span><span style="color: rgba(0, 0, 255, 1)">try</span><span style="color: rgba(0, 0, 0, 1)">
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">string</span> head = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">postdata</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(head))
+                {
+
+                    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                    iso = JsonHelper.Instance.Deserialize&lt;InStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)">(head);
+                }
+
+                list </span>=<span style="color: rgba(0, 0, 0, 1)"> GetDetailDtos();
+                listLoc </span>=<span style="color: rgba(0, 0, 0, 1)"> GetDetailLocDtos();
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (iso == <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">没有表头！</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+                }
+
+                        
+
+                iso.InStockOrderDetail </span>=<span style="color: rgba(0, 0, 0, 1)"> list;
+                iso.InStockOrderDetailLoc </span>=<span style="color: rgba(0, 0, 0, 1)"> listLoc;
+                result </span>=<span style="color: rgba(0, 0, 0, 1)"> _inSOAppService.Save(iso);
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)">
+            { 
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (result == <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">OK</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">更新成功！</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">else</span>
+                <span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">更新失败！</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> List&lt;InStockOrderDetailDto&gt;<span style="color: rgba(0, 0, 0, 1)"> GetDetailDtos()
+        {
+            List</span>&lt;InStockOrderDetailDto&gt; list = <span style="color: rgba(0, 0, 255, 1)">new</span> List&lt;InStockOrderDetailDto&gt;<span style="color: rgba(0, 0, 0, 1)">();
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> deleted = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">deleted</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> inserted = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">inserted</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> updated = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">updated</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];          
+
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> TODO: Add update logic here</span>
+            <span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(deleted))
+            {
+
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailDto&gt; listDeleted = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(deleted);
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">TODO 下面就可以根据转换后的对象进行相应的操作了</span>
+                <span style="color: rgba(0, 0, 255, 1)">if</span> (listDeleted != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listDeleted.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    list.AddRange(listDeleted.ToArray());
+                }
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(inserted))
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailDto&gt; listInserted = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(inserted);
+
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (listInserted != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listInserted.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    list.AddRange(listInserted.ToArray());
+                }
+
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(updated))
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailDto&gt; listUpdated = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(updated);
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (listUpdated != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listUpdated.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    list.AddRange(listUpdated.ToArray());
+                }
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> list;
+        }
+
+         </span><span style="color: rgba(0, 0, 255, 1)">private</span> List&lt;InStockOrderDetailLocDto&gt;<span style="color: rgba(0, 0, 0, 1)"> GetDetailLocDtos()
+        {
+            List</span>&lt;InStockOrderDetailLocDto&gt; listLoc = <span style="color: rgba(0, 0, 255, 1)">new</span> List&lt;InStockOrderDetailLocDto&gt;<span style="color: rgba(0, 0, 0, 1)">(); 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> locDel = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">locsDeleted</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> locIns = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">locsInserted</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">];
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> locUpd = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">locsUpdated</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">]; 
+
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> TODO: Add update logic here</span>
+            <span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(locDel))
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailLocDto&gt; listLocDeleted = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailLocDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(locDel);
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">TODO 下面就可以根据转换后的对象进行相应的操作了</span>
+                <span style="color: rgba(0, 0, 255, 1)">if</span> (listLocDeleted != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listLocDeleted.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    listLoc.AddRange(listLocDeleted.ToArray());
+                }
+
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(locIns))
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailLocDto&gt; listLocInserted = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailLocDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(locIns);
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (listLocInserted != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listLocInserted.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    listLoc.AddRange(listLocInserted.ToArray());
+                }
+            } 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(locUpd))
+            {
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">把json字符串转换成对象</span>
+                List&lt;InStockOrderDetailLocDto&gt; listLocUpdated = JsonHelper.Instance.Deserialize&lt;List&lt;InStockOrderDetailLocDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(locUpd);
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span> (listLocUpdated != <span style="color: rgba(0, 0, 255, 1)">null</span> &amp;&amp; listLocUpdated.Count &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                {
+                    listLoc.AddRange(listLocUpdated.ToArray());
+                }
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> listLoc;
+        }
+
+ 
+
+[DontWrapResult]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> GetLocs(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Id)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> inodId;
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span>.TryParse(Id, <span style="color: rgba(0, 0, 255, 1)">out</span><span style="color: rgba(0, 0, 0, 1)"> inodId); 
+
+            PagedInStockDetailLocResultRequestDto paged </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> PagedInStockDetailLocResultRequestDto();
+            paged.MaxResultCount </span>=<span style="color: rgba(0, 0, 0, 1)"> MAX_COUNT;
+            paged.InStockOrderDetailId </span>=<span style="color: rgba(0, 0, 0, 1)"> inodId;
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> iodlList =<span style="color: rgba(0, 0, 0, 1)"> _inSODLAppService.GetAll(paged).GetAwaiter().GetResult().Items; ;
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> json =<span style="color: rgba(0, 0, 0, 1)"> JsonEasyUI(iodlList);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> json; 
+        }
+    }
+}
+
+ </span></pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.<span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击<span style="font-family: 宋体">在领域层</span>“ABP.TPLMS.Application”项目中的InStocks<span style="font-family: 宋体">目录。</span> <span style="font-family: 宋体">找到</span>InStockOrderAppService.cs文件中<span style="font-family: 宋体">的</span>Save方法，修改如下。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre> <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Save(InStockOrderDto iso)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">try</span><span style="color: rgba(0, 0, 0, 1)">
+            {
+
+                CreateUpdateInStockOrderDto order </span>= ObjectMapper.Map&lt;CreateUpdateInStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)">(iso);
+                </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> item <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> order.InStockOrderDetail)
+                {
+                    CreateUpdateInStockOrderDetailDto isod </span>= ObjectMapper.Map&lt;CreateUpdateInStockOrderDetailDto&gt;<span style="color: rgba(0, 0, 0, 1)">(item);
+                    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (isod.Id &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                    {
+                        isodApp.Update(isod);
+                    }
+                    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+                        isodApp.Create(isod);                 
+
+                  
+                }
+                </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> loc <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> iso.InStockOrderDetailLoc)
+                {
+                    CreateUpdateInStockOrderDetailLocDto isodLoc </span>= ObjectMapper.Map&lt;CreateUpdateInStockOrderDetailLocDto&gt;<span style="color: rgba(0, 0, 0, 1)">(loc);
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (isodLoc.Id &gt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+                    {
+                        isodLocApp.Update(isodLoc);
+                    }
+                    </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+                        isodLocApp.Create(isodLoc);
+
+                }
+
+                order.InStockOrderDetail </span>= <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+                order.InStockOrderDetail </span>= <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+                order.Status </span>= <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)"> ;                
+                Update(order);
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception ex)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">throw</span><span style="color: rgba(0, 0, 0, 1)"> ex;
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">OK</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        }</span></pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.<span style="font-family: 宋体">在</span>Visual Studio 2017的按F5运行。<span style="font-family: 宋体">在主界面的菜单中，选择</span>“Business-&gt;<span style="font-family: 宋体">入库</span><span style="font-family: 宋体">管理</span>”菜单项，浏览器中呈现一个组织信息列表与<span style="font-family: 宋体">五</span><span style="font-family: 宋体">个按钮。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 10.<span style="font-family: 宋体">在</span>“<span style="font-family: 宋体">入库单管理</span>”<span style="font-family: 宋体">列表中选择一条入库单记录，然后点击</span>“修改”按钮。弹出一个入库单修改<span style="font-family: 宋体">界</span><span style="font-family: 宋体">面，在界面中选择</span>“入库单明细”，选中一条入库单明细。如下图。</span></p>
+<p><span style="font-size: 16px"><span style="font-size: 16px"><img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517223950067-1310740998.png" alt=""></span></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 11.选中序号为1的库位信息，我们发现库位这个单元格的数据不可见。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224042121-1144491646.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 12. <span style="font-family: 方正仿宋_GBK">在单元格上，点击鼠标右键，在弹出菜单中选择“查看元素”。如下图。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224055622-2057678591.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 13.<span style="font-family: 方正仿宋_GBK">在修改文本框的样式，添加颜色。单元格中的数字立即可见。如下图。</span></span></p>
+<p><span style="font-size: 16px"><span style="font-family: 方正仿宋_GBK"><img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224119688-232957415.png" alt=""></span></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.<span style="font-family: 宋体">我们找到</span>“easyui-1.8\themes\bootstrap\easyui.css”文件，找到1879行，在这个样式中添加颜色（“color:#100”<span style="font-family: 宋体">）。</span><span style="font-family: 宋体">如下图。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224135644-809188311.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 15.<span style="font-family: 宋体">使用鼠标左键点击</span>“添加库位”按钮。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224150220-1165478461.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16.对于<span style="font-family: 宋体">入库单的库位</span><span style="font-family: 宋体">信息进行修改完成之后，点击</span>“保存”按钮，弹出一个“您确认要<span style="font-family: 宋体">修改</span><span style="font-family: 宋体">吗？</span>”对话框。点击对话框中的“确定”按钮。<span style="font-family: 宋体">然后会出现修改入库单界面，如下图。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224202993-1874301063.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 17.如果修改成功，会有一个“<span style="font-family: 宋体">更新</span><span style="font-family: 宋体">成功</span>”的提示信息，同时更新<span style="font-family: 宋体">入库单管理</span><span style="font-family: 宋体">列表。如下图。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224219142-522629814.png" alt=""> </span></p>
+<p style="text-align: left"><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 最后，我发现一个</span>bug，偶尔出现，或是在第一次点保存按钮时出现。我暂时没找到原因。如果有知道如何解决的请留言。具体情况如下面三张图。图1，我添加了一条库位信息，点击保存按钮。见图2，实际上并没有把这个库位信息的数据传递到后台。最后的结果如图3。</span></p>
+<p style="text-align: center"><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224309271-617668768.png" alt=""></span></p>
+<p style="text-align: center"><span style="font-size: 16px"><span style="font-family: 方正仿宋_GBK">图</span>1</span></p>
+<p style="text-align: center"><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224320742-1846826599.png" alt=""></span></p>
+<p style="text-align: center"><span style="font-size: 16px"><span style="font-family: 方正仿宋_GBK">图</span>2</span></p>
+<p style="text-align: center"><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202005/10343-20200517224329343-1778305397.png" alt=""></span></p>
+<p style="text-align: center"><span style="font-size: 16px"><span style="font-family: 方正仿宋_GBK">图</span>3</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-05-17 22:45</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">601</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=12907499" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(12907499);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 12907499, cb_entryCreatedDate = '2020-05-17 22:45', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

@@ -1,0 +1,549 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="1、数据库底层 MySQL数据库的底层是B&#x2B;树。说到B&#x2B;树，先说下B树，B树也叫多路平衡查找树，所有的叶子节点位于同一层，具有以下特点：1）一个节点可以容纳多个值；2）除非数据已满，不会增加新的层，B" />
+    <meta property="og:description" content="1、数据库底层 MySQL数据库的底层是B&#x2B;树。说到B&#x2B;树，先说下B树，B树也叫多路平衡查找树，所有的叶子节点位于同一层，具有以下特点：1）一个节点可以容纳多个值；2）除非数据已满，不会增加新的层，B" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>数据库基础知识整理与复习总结 - Chiakiiii - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/custom/bundle-custom.min.css?v=1ssrnY3Il79Ok472qeVrpxlSprSXcHhYPgZC5S3wtVM" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/custom/bundle-custom-mobile.min.css?v=KtAK50iXMDcU4jOl_mm1P0j3gXUtdRHDhFdu7YlsVVg" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chiaki/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chiaki/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chiaki/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 620159;
+        var currentBlogApp = 'chiaki';
+        var cb_enable_mathjax = true;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'Custom';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 07:01';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: {
+        equationNumbers: { autoNumber: ['AMS'], useLabelIds: true },
+        extensions: ['extpfeil.js', 'mediawiki-texvc.js'],
+        Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script>
+    <script src="https://mathjax.cnblogs.com/2_7_5/MathJax.js?config=TeX-AMS-MML_HTMLorMML&amp;v=20200504"></script>
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chiaki/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chiaki/">随便写写</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chiaki/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/Chiakiiii">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chiaki/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+33&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+11</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chiaki/p/13798711.html">
+    <span>数据库基础知识整理与复习总结</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h3 id="1、数据库底层">1、数据库底层</h3>
+<p>MySQL数据库的底层是B+树。说到B+树，先说下B树，B树也叫多路平衡查找树，所有的叶子节点位于同一层，具有以下特点：1）一个节点可以容纳多个值；2）除非数据已满，不会增加新的层，B树追求最少的层数；3）子节点中的值与父节点的值有严格的大小对应关系。一般来说，如果父节点有a个值，那么就有a+1个子节点；4）关键字集合分布在整棵树中；5）任何一个关键字出现且只出现在一个节点中；6）搜索可能在叶子结点结束，其搜索性能等价于在关键字全集做一次二分查找。</p>
+<p>B+树是基于B树和叶子节点顺序访问指针进行实现，它具有B树的平衡性，并且通过顺序访问指针来提高区间查询的性能，一个叶子节点中的key从左至右非递减排列。特点在于：1）非叶子节点中含有n个关键字，关键字不保存数据，只作为索引，所有数据都保存在叶子结点；2）有的叶子节点中包含了全部关键字的信息及只想这些关键字记录的指针，即叶子节点包含链表结构，能够方便进行区间查询；3）所有的非叶子结点可以看成是索引部分，节点中仅包含其子树中的最大（或最小）关键字；4）同一个数字会在不同节点中重复出现，根节点的最大元素就是B+树的最大元素。</p>
+<p>MySQL中的InnoDB引擎是以主键ID为索引的数据存储引擎。InnoDB通过B+树结构对ID建立索引，在叶子节点存储数据。若建索引的字段不是主键ID，则对该字段建索引，然后再叶子节点中存储的是该记录的主键，然后通过主键索引找到对应的记录。因为不再需要全表扫描，只需要对树进行搜索即可，所以查找速度很快，还可以用于排序和分组。</p>
+<p>InnoDB和MyISAM引擎都是基于B+树，InnoDB是聚簇索引，数据域存放的是完整的数据记录；MyISAM是非聚簇索引，数据域存放的是数据记录的地址。InnoDB支持表锁、行锁、间隙锁、外键以及事务，MyISAM仅支持表锁，同时不支持外键和事务。InnoDB注重事务，MyISAM注重性能。</p>
+<h3 id="2、sql语言之dql、dml、ddl和dcl">2、SQL语言之DQL、DML、DDL和DCL</h3>
+<p>DQL指的是Data Query Language，数据库查询语言，主要是select命令；</p>
+<p>DML指的是Data Manipulation Language，数据库操作语言，主要有insert、delete、update等命令；</p>
+<p>DDL指的是Data Defined Language，数据库定义语言，主要是对数据库的某些对象，如database和table进行管理，主要有create、alter、drop等命令，比如创建数据库和表格、更改表结构和设置约束、删除表和数据库；</p>
+<p>DCL指的是Data Control Language，数据库控制语言，主要是用于授予或回收访问数据库的某种特权，并控制数据库操纵事务发生的时间及效果，主要有grant、rollback等命令。</p>
+<p>DML和DDL的区别：DML操作可以手动控制事务的开启、提交和回滚，而DDL是隐形提交不能回滚。</p>
+<h3 id="3、数据库连接协议">3、数据库连接协议</h3>
+<p>JDBC驱动协议：默认TCP协议</p>
+<p>客户端和Oracle服务器之间通信协议是TCP的，但是一个数据库连接也会其一个UDP端口。</p>
+<p>MySQL的连接方式有两种：Socket和TCP/IP</p>
+<pre><code class="language-mysql">-- Socket连接方式
+mysql -uroot -padmin -S/application/mysql/tmp/mysql.sock
+-- TCP/IP连接方式
+mysql -uoot -padmin -h192.1.1.20
+</code></pre>
+<h3 id="4、索引和主键的区别">4、索引和主键的区别</h3>
+<p>主键用于标识数据库记录的唯一性，不允许记录重复且键值不能为空。主键是特殊索引，但索引不一定是主键。</p>
+<p>索引可以提高查询速度，可以不需要进行全表扫描而快速查询到结果。</p>
+<p>使用主键，数据库会自动创建主键索引，同时也可以再非主键上创建索引。</p>
+<p>数据表中只能由一个主键，但可以有多个索引。</p>
+<h3 id="5、数据库四范式">5、数据库四范式</h3>
+<p>范式：创建数据库的过程中必须遵循的准则。其作用在于减少数据库中的数据冗余，以增加数据的一致性。</p>
+<p>候选键：唯一识别该表的属性或属性表。</p>
+<p>第一范式（1NF）：属性不可拆分或无重复的列；</p>
+<p>第二范式（2NF）：数据库中的每一行必须被唯一地区分，即表中字段必须完全依赖于全部主键而非部分主键；</p>
+<p>第三范式（3NF）：消除传递依赖，数据库非主键外的所有字段仅能以来于候选键，不存在与其他非主键关联；</p>
+<p>第四范式（4NF）：一个表的主键只对应一个多值，即消除多值依赖。</p>
+<h3 id="6、sql基础">6、SQL基础</h3>
+<p>数据库的创建与使用：</p>
+<pre><code class="language-mysql">create database test;
+use test;
+</code></pre>
+<p>创建表：</p>
+<pre><code class="language-mysql">create table mytable (
+id int not null auto_increment,
+name varchar(20)
+);
+</code></pre>
+<p>修改表：</p>
+<pre><code class="language-mysql">alter table mytable add sex varchar(20);
+</code></pre>
+<p>增删改：</p>
+<pre><code class="language-mysql">insert into mytable(id,name,sex) values(1,'zhangsan','male');
+delete from mytable where id = 1;
+update mytable set name = 'lisi' where id = 1;
+</code></pre>
+<p>清空表：</p>
+<pre><code class="language-mysql">truncate table mytable;
+</code></pre>
+<p>distinct：用于返回唯一不同的值</p>
+<pre><code class="language-mysql">select distinct name from mytable;
+</code></pre>
+<p>limit：检索记录行</p>
+<pre><code class="language-mysql">-- 检索前5个记录行
+select * from mytable limit 5;
+-- 检索记录行1-5行
+select * from mytable limit 0, 5;
+-- 检索6-last行
+select * from mytable limit 5, -1;
+</code></pre>
+<p>排序：</p>
+<pre><code class="language-mysql">-- 默认升序
+select * from mytable order by col1 DESC， col2 ASC;
+</code></pre>
+<p>like匹配：</p>
+<pre><code class="language-mysql">-- %匹配大于等于1个任意字符
+select * from mytable where name = 'z%';
+-- _匹配1个任意字符
+select * from mytable where name = 'l_s_';
+-- []匹配集合内的字符
+select * from mytable where name = '[zl]%';
+-- [!]匹配除开集合内的字符
+select * from mytable where name = '[!z]%';
+</code></pre>
+<p>concat()：用于将多个字符串连接成一个字符串</p>
+<pre><code class="language-mysql">select concat(trim(col1), '(', trim(col2), ')') as new from mytable;
+</code></pre>
+<p>函数：</p>
+<pre><code class="language-mysql">-- 均值
+select avg(col) as col_avg from mytable;
+-- 计数
+select count(col) as col_count from mytable;
+-- 类似的sum()、max()、min()等
+-- 时间
+select now();
+</code></pre>
+<p>分组：</p>
+<pre><code class="language-mysql">select col, count(*) as num from mytable where col &gt; 2 group by col having by num &gt; 2;
+</code></pre>
+<p>子查询中只能返回一个字段的数据：</p>
+<pre><code class="language-mysql">select * from mytable1 where col1 in (select col2 from mytable2);
+</code></pre>
+<p>组合查询：</p>
+<pre><code class="language-mysql">select * from mytable where col = 1 union select col from mytable where col = 2;
+</code></pre>
+<p>视图：</p>
+<pre><code class="language-mysql">create view as myview as select * from mytable where id &gt; 2;
+</code></pre>
+<p>存储过程：</p>
+<pre><code class="language-mysql">create procedure myprocedure(out ret int)
+begin
+...
+end
+</code></pre>
+<h3 id="7、-删除操作delete、truncate和drop">7、 删除操作delete、truncate和drop</h3>
+<p>delete：直接删除表中的某一行数据，并且同时将该行的删除操作作为事务记录在日志中保存便于进行回滚，因此delete操作更加占用资源，数据空间不释放。delete可以对table和view对象进行操作。</p>
+<pre><code class="language-mysql">delete from mytable where id = 1;
+</code></pre>
+<p>truncate：一次性从数据表中删除所有数据（释放存储表数据所用的数据页来删除数据），因此不能回滚，占用资源更加少，速度更快。数据空间释放后，表和索引所占用的空间会回复到初始大小。只能对没有关联视图的table进行操作，对于外键约束引用的表，不能使用truncate，需要使用delete。</p>
+<pre><code class="language-mysql">truncate mytable；
+</code></pre>
+<p>drop：删除整个表，包括表的结构、数据、定义等。属于永久抹去，空间会释放，无法恢复，对table和view都能操作。</p>
+<pre><code class="language-mysql">drop mytable;
+</code></pre>
+<p>总结：</p>
+<p>在速度上，drop &gt; truncate &gt; delete；</p>
+<p>在操作对象上，delete和drop可以对table和view操作，truncate只能对table操作；</p>
+<p>在表和索引所占空间上，delete操作不会减少表和索引占用的空间，truncate操作后表和索引所占用的空间会恢复至初始大小，drop将表所占用的空间全部释放；</p>
+<p>在回滚上方面，delete操作为DML语句可以回滚，truncate和drop为DDL语句，隐式提交无法回滚；</p>
+<p>在删除限制上，delete可以操作带有外键约束引用的表，而truncate不可以；</p>
+<h3 id="8、char和varchar的区别">8、char和varchar的区别</h3>
+<p>char的长度是不可变的，而varchar的长度是可变的。例如，创建表时定义一个char[10]和varchar[10]，当存入一个字符串<code>sql</code>时，char所占的长度依然为10，除了字符<code>sql</code>外后面跟7个空格，而varchar所占的长度变为字符串的实际长度3。在取数据时，char类型的要用<code>trim()</code>函数去掉多余的空格，而varchar类型不需要。</p>
+<p>char类型的存取速度比varchar快得多，因为其长度固定方便存储与查找；但char类型会付出空间的代价，是以空间换时间来争取高的时间效率，而varchar是以空间效率为首。</p>
+<p>char对英文字符（ASCII）占用1个字节，对汉字占用2个字节；varchar对英文字符和汉字都是占用2个字节。</p>
+<h3 id="9、-数据库的冷备份与热备份">9、 数据库的冷备份与热备份</h3>
+<p>冷备份（off，慢，时间点上恢复）：需要数据库正常关闭，会提供一个完整的数据库；将关键性文件拷贝到另外位置；对于备份数据库信息而言，冷备份是最快最安全的方法。</p>
+<p>优点：易归档、能够回复到某个时间点；</p>
+<p>缺点：数据库必须处于关闭状态；</p>
+<p>热备份（on，块）：数据库运行的情况下，备份数据库操作的sql语句，当数据库发生问题时可以重新执行一遍备份的sql语句。</p>
+<p>优点：备份时数据库仍可以使用、快速恢复、属于表或数据库级别的备份，并且时间短</p>
+<p>缺点：不能出错</p>
+<h3 id="10、数据库的事务及acid属性">10、数据库的事务及ACID属性</h3>
+<p>事务：逻辑上的一组操作，要么都执行，要么都不执行。</p>
+<p>四大特性：</p>
+<p>A原子性：事务是最小的执行单位，不可分割，要么全部执行，要么都不执行；</p>
+<p>C一致性：事务执行前后，数据库的数据保持一致，多个事务对同一数据读取的结果是相同的；</p>
+<p>I隔离性：并发访问数据库时，事务之间互不打扰，各并发事务之间的数据库是独立的；</p>
+<p>D持久性：一个事务被提交之后，该事务对数据库所做的改变是持久的，不会被回滚。</p>
+<h3 id="11、并发事务的问题">11、并发事务的问题</h3>
+<p>脏读：一个事务读取到了另一个事务还未提交的修改数据，如果另一个事务进行了回滚，这个数据就是脏数据。</p>
+<p>修改丢失：一个事务读取数据并进行了修改，另一个事务页读取了该数据进行了修改，这样第一个事务的修改结果就丢失了，也就是修改丢失问题。</p>
+<p>不可重复读：一个事务对同一数据进行多次修改，期间另一事务也读取了该数据并进行了修改，这样第一个事务读取到的数据可能不一致，称为不可重复读。</p>
+<p>幻读：一个事务在读取多行数据时，另一个并发事务插入了一些新数据，后续查询中第一个事务会查找到一些原本不存在的数据记录，称为幻读。在<code>Mysql</code>中利用<code>MVCC</code>解决了<code>快照读幻读</code>，利用<code>间隙锁</code>解决了<code>当前读幻读</code>。</p>
+<h3 id="12、隔离级别">12、隔离级别</h3>
+<p>读未提交：最低隔离级别，允许读取尚未提交的数据变更，会导致脏读、不可重复读和幻读；</p>
+<p>读已提交：允许读取并发事务已经提交的数据，可以阻止脏读，会导致不可重复读和幻读；</p>
+<p>可重复读：对同一字段多次读取的结果都是一样的，可以阻止脏读和不可重复读，会导致幻读；</p>
+<p>串行化：最高隔离界别，可以阻止脏读、不可重复读和幻读。</p>
+<p>MySQL中InnoDB引擎默认支持的隔离级别是可重复读，使用的是next-key Lock算法，可以避免幻读的产生，可以完全保证事务的隔离性要求</p>
+<h3 id="13、多表查询">13、多表查询</h3>
+<p>一对多关系：从表使用主表的主键作为外键；主表中有的数据，从表中可以没有；主表必须有数据，才能向从表中添加数据；要先删除从表的相应数据才能删除主表的数据；</p>
+<p>多对多关系：老师与学生，一个老师可以教多个学生，一个学生也可以从多个老师那里学习知识。创建表格时，将多对多的关系拆分为多个一对多关系。</p>
+<h3 id="14、数据库表的连接方式">14、数据库表的连接方式</h3>
+<p>内连接：inner join……on…… ：取交集</p>
+<p>外连接：</p>
+<ul>
+<li>1）left join……on…… ：以左表为准，查询出左表的所有数据，右表中有对应的则显示出来，没有对应的则显示为null；</li>
+<li>2）right join……on…… ：以右表为准，查询出右表的所有数据，左表中有对应的则显示出来，没有对应的则显示为null；</li>
+<li>3）full join……on…… ：left和right的集合，某表中某一行在另一表中无匹配行，则相应列的内容为null；</li>
+</ul>
+<p>交叉连接：cross join…… ：笛卡尔积，相当于两个表中的所有行进行排列组合。</p>
+<h3 id="15、存储过程与存储函数">15、存储过程与存储函数</h3>
+<p>存储过程：为以后的使用而保存的一条或多条SQL语句的集合，相当于批处理。存储过程被编译后会被直接保存在数据库中，成为数据库的一部分，以后就可以反复调用、运行速度快。</p>
+<pre><code class="language-mysql">-- in表示输入变量，out表示输出变量，inout输入输出均可
+create procedure myprocedure([IN|OUT|INOUT] 参数名 数据类型, [IN|OUT|INOUT] 参数名 数据类型, ...)
+begin
+...
+end
+</code></pre>
+<p>存储函数：</p>
+<pre><code class="language-mysql">create function myfunction(参数名 数据类型, ...) returns 返回类型
+begin
+...
+end
+</code></pre>
+<p>二者区别：</p>
+<ul>
+<li>存储函数限制较多，例如不能使用临时表，只能用表变量，而存储过程限制较少；</li>
+<li>存储过程可以实现复杂的功能，存储函数针对性比较强；</li>
+<li>返回值不同，存储过程可以没有返回值，也可以返回单个或多个结果集，而存储函数有且仅有一个返回值；</li>
+<li>调用不同。存储过程通过call语句调用，存储函数通过select调用；</li>
+<li>参数不同。存储过程的参数类型可以是in、out、inout，而存储函数的参数类型只有in类型。</li>
+</ul>
+<h3 id="16、触发器">16、触发器</h3>
+<p>SQL触发器是一种特殊类型的存储过程，不由用户调用。它在指定的表中的数据发生变化时自动生效。唤醒调用触发器以响应Insert、Update和Delete语句。他可以查询其它表，并可以包含复杂的Transact-SQL语句。将触发器和触发它的语句作为可在触发器内回滚的单个事务对待。如果检测到严重错误，整个事务自动回滚。</p>
+<p>优点：</p>
+<ul>
+<li>触发器可通过数据库中的相关表实现级联更改；</li>
+<li>触发器可以强制比用check约束定义的约束更为复杂的约束；</li>
+<li>在约束所支持的功能无法满足应用程序的功能要求时，触发器就极为有用。</li>
+</ul>
+<pre><code class="language-mysql">create trigger trigger_order after insert on orders for each row
+begin
+update product set pnum = pnum - new.onum where pid = new.pid;
+end
+</code></pre>
+<h3 id="17、数据库的锁机制">17、数据库的锁机制</h3>
+<p>MyISAM和InnoDB存储引擎使用的锁：</p>
+<p>MyISAM采用表级锁（table-level locking），InnoDB支持行级锁（row-level locking）和表级锁，默认为行级锁。</p>
+<p>二者对比：</p>
+<ul>
+<li>表级锁：MySQL中粒度最大的锁，对当前操作的整张表加锁，实现简单，资源消耗少，加锁快，不会出现死锁。锁冲突的概率高，并发度低。</li>
+<li>行级锁：MySQL中粒度最小的锁，只针对当前操作的行进行加锁。行级锁能大大减少数据库操作的冲突。加锁慢，开销大，并发度高，会出现死锁。</li>
+</ul>
+<p>InnoDB引擎的锁算法：</p>
+<ul>
+<li>
+<p>Record lock：记录锁。条件为精准匹配时，锁住具体的索引项；</p>
+</li>
+<li>
+<p>Gap lock：间隙锁。锁定一个范围，不包括记录本身。</p>
+</li>
+<li>
+<p>Next-key lock：临键锁。锁定一个范围，包含记录本身。</p>
+</li>
+</ul>
+<p>按思想分为乐观锁和悲观锁</p>
+<ul>
+<li>乐观锁：事务并发操作时认为不会发生冲突，对数据进行更新并提交，如果检测到冲突就返回。</li>
+<li>悲观锁：事务并发操作使认为会发生冲突，先进行加锁操作。</li>
+</ul>
+<h3 id="18、日志">18、日志</h3>
+<p><strong>bin log</strong>：二进制日志（服务层）：涉及到主从复制；</p>
+<p><strong>redo log</strong>：重做日志（引擎层）：数据的灾后重新提交，物理日志。包括两部分，内存中的日志缓存（redo log buffer）（易失性）和磁盘上的重做日志（redo log file）（持久性），需要将redo log buffer通过操作系统内核空间的OS buffer刷到磁盘上的log file中。</p>
+<p><strong>undo log</strong>：回滚日志（引擎层）：主要用于数据修改的回滚，逻辑日志。会给予与操作相反的语句，当事务回滚时从undo log中反向读取内容。</p>
+<p><strong>MVCC</strong>：Multiversion concurrency control，多版本并发控制，实现并发和回滚的重要功能。它指的是数据库中的每一条数据，会存在多个版本。对同一条数据而言，MySQL 会通过一定的手段（ReadView 机制）控制每一个事务看到不同版本的数据，这样也就解决了不可重复读的问题。</p>
+<h3 id="19、解决幻读">19、解决幻读</h3>
+<p>在<code>Innodb</code>引擎中，每条聚集索引都会有两个隐藏字段：<code>trx_id</code>和<code>roll_pointer</code>，每次事务对一条记录进行改动时，就会将<code>事务id</code>赋值给<code>trx_id</code>，并且会将旧数据写入一条undo日志，每条undo日志都有<code>roll_pointer</code>属性，可以将这些undo日志都连起来，串成一个链表，undo日志的写入采用头插法，新数据在前。</p>
+<ul>
+<li><strong>快照读：</strong> <code>MVCC</code>中有一个<code>ReadView</code>的概念，其中记录了生成<code>ReadView</code>时的<code>活跃事务id列表:m_ids</code>、<code>最小事务id:min_trx_id</code>、<code>将要分配给下一个事务的id:max_trx_id</code>、<code>生成ReadView的事务id:creator_trx_id</code>。如果被访问版本的<code>trx_id</code>与<code>creator_trx_id</code>相同或者小于<code>min_trx_id</code>，则可以访问；如果被访问版本的<code>trx_id</code>大于等于<code>max_trx_id</code>，则不能访问；如果被访问版本的<code>trx_id</code>在<code>min_trx_id</code>和<code>max_trx_id</code>之间，则当<code>trx_id</code>不在<code>m_ids</code>中时才能访问。</li>
+<li><strong>当前读：</strong> <code>InnoDB</code>存储引擎有三种锁：<code>Record lock</code>：单个行记录上的锁；<code>Gap lock</code>：间隙锁，锁定一个范围，不包括记录本身；<code>Next-key lock</code>：<code>record+gap</code> 锁定一个范围，包含记录本身。<code>innodb</code>对于行的查询使用<code>next-key lock</code>，当查询的索引含有唯一属性时，将<code>next-key lock</code>降级为<code>record key</code>。</li>
+</ul>
+<h3 id="20、数据库的索引机制">20、数据库的索引机制</h3>
+<p>需要创建索引的情况：</p>
+<ul>
+<li>主键自动建立唯一索引；</li>
+<li>频繁作为查询条件的字段；</li>
+<li>查询与其它表关联的字段，外键关系建立索引；</li>
+<li>查询中排序的字段（通过索引访问将大大提高排序速度）；</li>
+<li>查询中统计或分组的字段。</li>
+</ul>
+<p>不需要创建索引的情况：</p>
+<ul>
+<li>表记录太少；</li>
+<li>经常增删改的表；</li>
+<li>频繁更新的字段；</li>
+<li>where条件里用不到的字段；</li>
+<li>数据重复且分布平均的字段</li>
+</ul>
+<h3 id="21、explain关键字">21、explain关键字</h3>
+<p>id：选择标识符；select_type：查询的类型；table：输出结果集的表；type：表的连接类型；possible_keys：可能使用的索引；key：实际使用的索引；key_len：索引字段的长度；ref：列与索引的比较；rows：扫描出的行数；extra：执行情况的描述和说明。</p>
+<h3 id="22、索引优化思路">22、索引优化思路</h3>
+<p>开启慢查询日志设置阈值；explain做慢SQL分析。</p>
+<p>查询截取分析：using filesort效率低，using index效率高；最左前缀原则</p>
+<h3 id="23、索引创建规则">23、索引创建规则</h3>
+<p>最左前缀匹配原则：mysql会一直向右匹配指导遇到范围查询（betwee、like）就停止查询；选择区分度高的列作为索引；选择唯一性索引；尽量使用数据量少的索引；尽量使用前缀来索引；索引列不能参与计算；尽量的扩展索引不要新建索引；限制索引的数目。</p>
+<h3 id="24、索引过多的问题">24、索引过多的问题</h3>
+<p>一般一个表对应5个索引左右，索引过多会导致：查找数据变慢；对insert语句影响很大，尤其是无序插入；删除数据多的情况下索引也需要更新；索引文件过大，占用存储空间，寻址的查询时间长；mysql优化器需要评估更多的组合。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 19:01</span>&nbsp;
+<a href="https://www.cnblogs.com/chiaki/">Chiakiiii</a>&nbsp;
+阅读(<span id="post_view_count">26</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13798711" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13798711);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 620159, cb_blogApp = 'chiaki', cb_blogUserGuid = '770d6efd-8a79-43d9-d389-08d6c8d18c89';
+    var cb_entryId = 13798711, cb_entryCreatedDate = '2020-10-11 19:01', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 Chiakiiii
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

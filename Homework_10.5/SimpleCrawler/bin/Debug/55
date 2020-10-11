@@ -1,0 +1,663 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上一篇abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之三存储过程(三十九) 文章中我们学习了如何在ABP中调用存储过程并创建相关的类。接下来我们要来实现调用存储过" />
+    <meta property="og:description" content="在上一篇abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之三存储过程(三十九) 文章中我们学习了如何在ABP中调用存储过程并创建相关的类。接下来我们要来实现调用存储过" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——入库管理之四(四十)     - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-03-16 09:20';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/12506863.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——入库管理之四(四十)    </span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上一篇abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) 文章中我们学习了如何在ABP中调用存储过程并创建相关的类。接下来我们要来实现调用存储过程，同时实现服务类的编写。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: 仿宋; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<div><span style="font-family: 宋体; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-family: 宋体; font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——多语言（十）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></div>
+<div align="left"><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11448287.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——菜单-上 (十六) </span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11899403.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之一(二十七) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11975823.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之三(二十九) </span></a></span></div>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12173698.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四)</span></a> </span></span></p>
+<div><span style="font-size: 16px; color: rgba(0, 0, 128, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12260841.html"><span style="color: rgba(0, 0, 128, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之十(三十六) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之一(三十七) </span></a></span></div>
+<div><span style="font-size: 16px"><span style="font-family: 宋体"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)">a</span></a><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12383343.html"><span style="color: rgba(0, 0, 255, 1)">bp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八)</span></a></span></span></span></span></span></div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><span style="font-family: 宋体"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12434052.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) </span></a></span></span></div>
+<div>&nbsp;</div>
+<div>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; <span style="font-family: 宋体"> 在上一篇</span></span><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12434052.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) </span></a></span><span style="font-family: 宋体"><span style="font-family: 宋体">文章<span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="font-family: 宋体">中我们学习了如何在ABP中调用存储过程并创建相关的类。</span></span></span></span></span>接下来我们要来实现调用存储过程，同时实现应用层。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="font-family: 宋体">六</span></strong><strong><span style="font-family: 宋体">、定义</span></strong><strong><span style="font-family: 宋体">应用层</span></strong><strong><span style="font-family: 宋体">接口</span></strong></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1<span style="font-family: 宋体">．</span> <span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，鼠标右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“接口”。为应用服务定义一个名为 IInStockOrderAppService&nbsp;<span style="font-family: 宋体">的接口。代码如下。</span> </span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+{
+
+  </span><span style="color: rgba(0, 0, 255, 1)">public</span>  <span style="color: rgba(0, 0, 255, 1)">interface</span> IInStockOrderAppService : IAsyncCrudAppService&lt;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">定义了CRUD方法</span>
+             InStockOrderDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用来展示入库单信息</span>
+             <span style="color: rgba(0, 0, 255, 1)">int</span>, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">Org实体的主键</span>
+             PagedInStockResultRequestDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取入库单信息的时候用于分页</span>
+             CreateUpdateInStockOrderDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于创建入库单信息</span>
+             CreateUpdateInStockOrderDto&gt; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于更新入库单信息</span>
+<span style="color: rgba(0, 0, 0, 1)">    {
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 创建入库单号
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> GetNo();
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 保存入库单数据
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="iso"&gt;&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Save(InStockOrderDto iso);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 导入货物信息
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="ids"&gt;</span><span style="color: rgba(0, 128, 0, 1)">导入货物信息的ID</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="No"&gt;</span><span style="color: rgba(0, 128, 0, 1)">入库单单号</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">string</span> ImportCargo(<span style="color: rgba(0, 0, 255, 1)">string</span> ids,<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> No);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 批量删除
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="ids"&gt;</span><span style="color: rgba(0, 128, 0, 1)">入库单ID集合</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">bool</span> DeleteById(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> ids);
+
+    }
+
+}</span></span></pre>
+</div>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp;&nbsp; 2.在</span>Visual Studio 2017的“解决方案资源管理器”中，鼠标右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“接口”。为应用服务定义一个名为 IInStockOrderDetailAppService&nbsp;<span style="font-family: 宋体">的接口。代码如下。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto;
+
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+{
+
+  </span><span style="color: rgba(0, 0, 255, 1)">public</span>  <span style="color: rgba(0, 0, 255, 1)">interface</span> IInStockOrderDetailAppService : IAsyncCrudAppService&lt;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">定义了CRUD方法</span>
+<span style="color: rgba(0, 0, 0, 1)">
+             InStockOrderDetailDto, </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用来展示入库单明细信息</span>
+             <span style="color: rgba(0, 0, 255, 1)">int</span>, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">Org实体的主键</span>
+             PagedInStockDetailResultRequestDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取入库单信息的时候用于分页</span>
+             CreateUpdateInStockOrderDetailDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于创建入库单明细信息</span>
+              CreateUpdateInStockOrderDetailDto &gt; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于更新入库单明细信息</span>
+<span style="color: rgba(0, 0, 0, 1)">    {
+
+    }
+}
+
+ 
+
+ </span></span></pre>
+</div>
+<span style="font-size: 16px">&nbsp; &nbsp;&nbsp; 3. <span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，鼠标右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“接口”。为应用服务定义一个名为 IInStockOrderDetailLocAppService&nbsp;<span style="font-family: 宋体">的接口。代码如下。</span></span>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">interface</span> IInStockOrderDetailLocAppService :IAsyncCrudAppService&lt;<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">定义了CRUD方法</span>
+             InStockOrderDetailLocDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用来展示入库单中的库位信息</span>
+             <span style="color: rgba(0, 0, 255, 1)">int</span>, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">实体的主键</span>
+             PagedInStockDetailLocResultRequestDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">获取入库单库位信息的时候用于分页</span>
+             CreateUpdateInStockOrderDetailLocDto, <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于创建入库单库位信息</span>
+             CreateUpdateInStockOrderDetailLocDto&gt; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">用于更新入库单库位信息</span>
+<span style="color: rgba(0, 0, 0, 1)">
+    {
+
+    }
+}
+
+ </span></span></pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="font-family: 宋体">七</span></strong><strong><span style="font-family: 宋体">、实现</span>应用层接口</strong></span></p>
+<p><span style="font-size: 16px">4<span style="font-family: 宋体">．在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“类”。为应用服务定义一个名为 InStockOrderAppService&nbsp;<span style="font-family: 宋体">的服务类</span><span style="font-family: 宋体">，实现</span>IInStockOrderAppService<span style="font-family: 宋体">接口中的方法</span><span style="font-family: 宋体">。</span><span style="font-family: 宋体">特别注意在构造函数中定义</span>IInStockOrderRepository <span style="font-family: 宋体">接口，方便注入</span><strong><span style="font-family: 宋体">。</span></strong><span style="font-family: 宋体">代码如下</span><span style="font-family: 宋体">。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Web.Models;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> InStockOrderAppService : AsyncCrudAppService&lt;InStockOrder, InStockOrderDto, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)">, PagedInStockResultRequestDto,
+                            CreateUpdateInStockOrderDto, CreateUpdateInStockOrderDto</span>&gt;<span style="color: rgba(0, 0, 0, 1)">, IInStockOrderAppService
+    {
+
+        IInStockOrderRepository rep </span>= <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+        IInStockOrderDetailAppService isodApp</span>=<span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+        IInStockOrderDetailLocAppService isodLocApp </span>= <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> InStockOrderAppService(IRepository&lt;InStockOrder, <span style="color: rgba(0, 0, 255, 1)">int</span>&gt;<span style="color: rgba(0, 0, 0, 1)"> repository,
+           <span style="color: rgba(0, 0, 255, 1)"><strong> IInStockOrderRepository isdRepository,</strong></span>IInStockOrderDetailAppService isodAppSer
+            ,IInStockOrderDetailLocAppService isodLocAppSer)
+            : </span><span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(repository)
+        {
+
+            rep </span>=<span style="color: rgba(0, 0, 0, 1)"> isdRepository;
+            isodApp </span>=<span style="color: rgba(0, 0, 0, 1)"> isodAppSer;
+            isodLocApp </span>=<span style="color: rgba(0, 0, 0, 1)"> isodLocAppSer;
+
+        }    
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">override</span> Task&lt;PagedResultDto&lt;InStockOrderDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)"> GetAll(PagedInStockResultRequestDto input)
+        {                 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">.GetAll(input);      
+  }
+
+        [DontWrapResult]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> PagedInStockOrderResultDto&lt;InStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)"> GetAllInStockOrders(PagedInStockResultRequestDto input)
+        {
+            PagedInStockOrderResultDto</span>&lt;InStockOrderDto&gt; inSOs = <span style="color: rgba(0, 0, 255, 1)">new</span> PagedInStockOrderResultDto&lt;InStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)">();          
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> allOrgs=<span style="color: rgba(0, 0, 0, 1)">GetAll(input);
+            inSOs.Rows </span>=<span style="color: rgba(0, 0, 0, 1)"> allOrgs.Result.Items;
+            inSOs.Total </span>=<span style="color: rgba(0, 0, 0, 1)"> allOrgs.Result.TotalCount;
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> inSOs;
+        }      
+
+        </span><span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> IQueryable&lt;InStockOrder&gt;<span style="color: rgba(0, 0, 0, 1)"> CreateFilteredQuery(PagedInStockResultRequestDto input)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> qry= <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">.CreateFilteredQuery(input)
+                .Where(t</span>=&gt;t.OwnerName.Contains(input.OwnerName==<span style="color: rgba(0, 0, 255, 1)">null</span>?<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.Empty:input.OwnerName))
+                 .Where(t </span>=&gt; t.No.Contains(input.No == <span style="color: rgba(0, 0, 255, 1)">null</span> ? <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.Empty : input.No))
+
+                .Where(t </span>=&gt; t.CreationTime&gt;<span style="color: rgba(0, 0, 0, 1)">input.BeginTime)
+                .Where(t </span>=&gt; t.CreationTime&lt;<span style="color: rgba(0, 0, 0, 1)">input.EndTime);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> qry;
+
+        }
+
+        [DontWrapResult]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> GetNo()
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> no = rep.GetNo(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">GDE</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> no;
+        }
+
+        [DontWrapResult]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> ImportCargo(<span style="color: rgba(0, 0, 255, 1)">string</span> ids,<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> No)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">try</span><span style="color: rgba(0, 0, 0, 1)">
+            {             
+
+                </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">导入货物信息</span>
+<span style="color: rgba(0, 0, 0, 1)">                rep.ImportCargo(ids, No);
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception ex)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">throw</span><span style="color: rgba(0, 0, 0, 1)"> ex;
+            }
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">OK</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        } 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Save(InStockOrderDto iso)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">try</span><span style="color: rgba(0, 0, 0, 1)">
+            {
+
+                CreateUpdateInStockOrderDto order </span>= ObjectMapper.Map&lt;CreateUpdateInStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)">(iso);
+                </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> item <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> order.InStockOrderDetail)
+                {
+                    CreateUpdateInStockOrderDetailDto isod </span>= ObjectMapper.Map&lt;CreateUpdateInStockOrderDetailDto&gt;<span style="color: rgba(0, 0, 0, 1)">(item);
+                    isodApp.Update(isod);
+                }
+
+                order.InStockOrderDetail </span>= <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">;
+                order.Status </span>= <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)"> ;              
+
+                Update(order);
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception ex)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">throw</span><span style="color: rgba(0, 0, 0, 1)"> ex;
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">OK</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        } 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> DeleteById(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> Ids)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> idList = Ids.Split(<span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">,</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 0, 255, 1)">bool</span> result = <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">;
+            </span><span style="color: rgba(0, 0, 255, 1)">try</span><span style="color: rgba(0, 0, 0, 1)">
+            {     
+
+            </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> id <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> idList)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">int</span>.TryParse(id, <span style="color: rgba(0, 0, 255, 1)">out</span> <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> intId);
+                </span><span style="color: rgba(0, 0, 255, 1)">var</span> iso =<span style="color: rgba(0, 0, 0, 1)"> GetEntityByIdAsync(intId).GetAwaiter().GetResult();
+                PagedInStockDetailResultRequestDto PagedDetail </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> PagedInStockDetailResultRequestDto
+                {
+                    InStockNo </span>=<span style="color: rgba(0, 0, 0, 1)"> iso.No
+                };
+
+                </span><span style="color: rgba(0, 0, 255, 1)">var</span> isods =<span style="color: rgba(0, 0, 0, 1)"> isodApp.GetAll(PagedDetail).GetAwaiter().GetResult();
+                </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> dod <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> isods.Items)
+                {
+
+                    PagedInStockDetailLocResultRequestDto PagedLoc </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> PagedInStockDetailLocResultRequestDto
+                    {
+                        InStockOrderDetailId </span>=<span style="color: rgba(0, 0, 0, 1)"> dod.Id
+                    };
+
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> isodLocs =<span style="color: rgba(0, 0, 0, 1)"> isodLocApp.GetAll(PagedLoc).GetAwaiter().GetResult();
+                    </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> loc <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> isodLocs.Items)
+                    {
+                        isodLocApp.Delete(loc);
+                    }
+                    isodApp.Delete(dod);
+                }
+
+                InStockOrderDto order </span>= ObjectMapper.Map&lt;InStockOrderDto&gt;<span style="color: rgba(0, 0, 0, 1)">(iso);
+                Delete(order);
+            }
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception ex)
+            {
+                result </span>= <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">;
+                </span><span style="color: rgba(0, 0, 255, 1)">throw</span><span style="color: rgba(0, 0, 0, 1)"> ex;
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> result;
+        }
+    }
+}</span></span></pre>
+</div>
+<br>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 5.<span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“类”。为应用服务定义一个名为 InStockOrderDetailAppService&nbsp;<span style="font-family: 宋体">的服务类</span><span style="font-family: 宋体">，实现</span>IInStockOrderDetailAppService<span style="font-family: 宋体">接口</span><span style="font-family: 宋体">。代码如下</span><span style="font-family: 宋体">。</span> <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Web.Models;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks;
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> InStockOrderDetailAppService : AsyncCrudAppService&lt;InStockOrderDetail<br>, InStockOrderDetailDto, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> , PagedInStockDetailResultRequestDto,
+                            CreateUpdateInStockOrderDetailDto, CreateUpdateInStockOrderDetailDto</span>&gt;<br><span style="color: rgba(0, 0, 0, 1)">, IInStockOrderDetailAppService
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> InStockOrderDetailAppService( IRepository&lt;InStockOrderDetail, <span style="color: rgba(0, 0, 255, 1)">int</span>&gt;<span style="color: rgba(0, 0, 0, 1)"> repository)
+            : </span><span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(repository)
+        {
+
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> IQueryable&lt;InStockOrderDetail&gt;<span style="color: rgba(0, 0, 0, 1)"> CreateFilteredQuery(<br>PagedInStockDetailResultRequestDto input)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> qry = <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">.CreateFilteredQuery(input)
+                .Where(t </span>=&gt; t.InStockNo ==<span style="color: rgba(0, 0, 0, 1)"> input.InStockNo);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> qry;
+        }
+    }
+}</span></span></pre>
+</div>
+<span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 6.在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击“InStocks”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“类”。为应用服务定义一个名为 InStockOrderDetailLocAppService&nbsp;<span style="font-family: 宋体">的服务类</span><span style="font-family: 宋体">，实现</span>IInStockOrderDetailLocAppService<span style="font-family: 宋体">接口</span><span style="font-family: 宋体">。代码如下</span><span style="font-family: 宋体">。</span></span>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Web.Models;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.InStocks
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> InStockOrderDetailLocAppService : AsyncCrudAppService&lt;InStockOrderDetailLoc<br>, InStockOrderDetailLocDto, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)">, PagedInStockDetailLocResultRequestDto,<br>CreateUpdateInStockOrderDetailLocDto, CreateUpdateInStockOrderDetailLocDto</span>&gt;<br><span style="color: rgba(0, 0, 0, 1)">, IInStockOrderDetailLocAppService 
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> InStockOrderDetailLocAppService( IRepository&lt;InStockOrderDetailLoc, <span style="color: rgba(0, 0, 255, 1)">int</span>&gt;<span style="color: rgba(0, 0, 0, 1)"> repository)
+            : </span><span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(repository)
+        {
+
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> IQueryable&lt;InStockOrderDetailLoc&gt;<span style="color: rgba(0, 0, 0, 1)"> CreateFilteredQuery(<br>PagedInStockDetailLocResultRequestDto input)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> qry = <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">.CreateFilteredQuery(input)
+                .Where(t </span>=&gt; t.InStockOrderDetailId ==<span style="color: rgba(0, 0, 0, 1)"> input.InStockOrderDetailId);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> qry;
+
+        }
+    }
+}</span></span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-03-16 21:20</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">783</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=12506863" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(12506863);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 12506863, cb_entryCreatedDate = '2020-03-16 21:20', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

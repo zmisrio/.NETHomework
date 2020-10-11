@@ -1,0 +1,506 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="背景描述 最近在使用 Django 时，发现当调用 api 后，在数据库同一个进程下的事务中，出现了大量的数据库查询语句。调查后发现，是由于 Django ORM 的机制所引起。 Django Obj" />
+    <meta property="og:description" content="背景描述 最近在使用 Django 时，发现当调用 api 后，在数据库同一个进程下的事务中，出现了大量的数据库查询语句。调查后发现，是由于 Django ORM 的机制所引起。 Django Obj" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Django ORM 引发的数据库 N+1 性能问题 - 以终为始 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/simplememory/bundle-simplememory.min.css?v=uknaX_hejnSu-njQgx4Hj1R0JiPLwUhFPUlwWNmWyB4" />
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/michael9/custom.css?v=4DU&#x2B;kodMpIDr320xh9MjY7/tHyE=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/SimpleMemory/bundle-SimpleMemory-mobile.min.css" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/michael9/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/michael9/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/michael9/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 558564;
+        var currentBlogApp = 'michael9';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleMemory';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 02:43';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="page_begin_html">
+        <script>loadPageBeginHtml();</script>
+    </div>
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/michael9/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/michael9/">Ethan</a>
+</h1>
+<h2>
+One To Ten.
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/michael9/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E4%BB%A5%E7%BB%88%E4%B8%BA%E5%A7%8B">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/michael9/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+66&nbsp; </span>
+<span id="stats_article_count">文章 - 
+1&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+31</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/michael9/p/13797403.html">
+    <span>Django ORM 引发的数据库 N+1 性能问题</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h2 id="背景描述">背景描述</h2>
+<p>最近在使用 Django 时，发现当调用 api 后，在数据库同一个进程下的事务中，出现了大量的数据库查询语句。调查后发现，是由于 Django ORM 的机制所引起。</p>
+<p>Django Object-Relational Mapper（ORM）作为 Django 比较受欢迎的特性，在开发中被大量使用。我们可以通过它和数据库进行交互，实现 DDL 和  DML 操作.</p>
+<p>具体来说，就是使用 <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet">QuerySet</a> 对象来检索数据， 而 QuerySet 本质上是通过在预先定义好的 model 中的 <a href="https://docs.djangoproject.com/en/3.1/topics/db/managers/#django.db.models.Manager">Manager</a> 和数据库进行交互。</p>
+<p>Manager 是 Django model 提供数据库查询的一个接口，在每个 Model 中都至少存在一个 Manager 对象。但今天要介绍的主角是 QuerySet ，它并不是关键。</p>
+<p>为了更清晰的表述问题，假设在数据库有如下的表：</p>
+<p>device 表，表示当前网络中纳管的物理设备。</p>
+<p>interface 表，表示物理设备拥有的接口。</p>
+<p>interface_extension 表，和 interface 表是一对一关系，由于 interface 属性过多，用于存储一些不太常用的接口属性。</p>
+<pre><code>class Device(models.Model):
+    name = models.CharField(max_length=100, unique=True)  # 添加设备时的设备名
+    hostname = models.CharField(max_length=100, null=True)  # 从设备中获取的hostname
+    ip_address = models.CharField(max_length=100, null=True)  # 设备管理IP
+
+class Interface(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.PROTECT, null=False，related_name='interfaces')) # 属于哪台设备
+    name = models.CharField(max_length=100)  # 端口名
+    collect_status = models.CharField(max_length=30, default='active')
+    class Meta:
+        unique_together = ("device", "name")  # 联合主键
+        
+class InterfaceExtension(models.Model):
+    interface = models.OneToOneField(
+        Interface, on_delete=models.PROTECT, null=False, related_name='ex_info')
+        
+    endpoint_device_id = models.ForeignKey( # 绑定了的终端设备
+        Device, db_column='endpoint_device_id',
+        on_delete=models.PROTECT, null=True, blank=True)
+        
+    endpoint_interface_id = models.ForeignKey(
+        Interface, db_column='endpoint_interface_id', on_delete=models.PROTECT, # 绑定了的终端设备的接口
+        null=True, blank=True)
+</code></pre>
+<p>简单说一下之间的关联关系，一个设备拥有多个接口，一个接口拥有一个拓展属性。</p>
+<p>在接口的拓展属性中，可以绑定另一台设备上的接口，所以在 interface_extension 还有两个参考外键。</p>
+<p>为了更好的分析 ORM 执行 SQL 的过程，需要将执行的 SQL 记录下来，可以通过如下的方式：</p>
+<ul>
+<li>在 django settings 中打开 sql log 的日志</li>
+<li>在 MySQL 中打开记录 sql log 的日志</li>
+</ul>
+<p>django 中，在 <code>settings.py</code> 中配置如下内容, 就可以在控制台上看到 SQL 执行过程：</p>
+<pre><code>DEBUG = True
+
+import logging
+l = logging.getLogger('django.db.backends')
+l.setLevel(logging.DEBUG)
+l.addHandler(logging.StreamHandler())
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+    }
+}
+</code></pre>
+<p>或者直接在 MySQL 中配置：</p>
+<pre><code># 查看记录 SQL 的功能是否打开，默认是关闭的：
+SHOW VARIABLES LIKE "general_log%";
+
+# 将记录功能打开，具体的 log 路径会通过上面的命令显示出来。
+SET GLOBAL general_log = 'ON';
+</code></pre>
+<h2 id="queryset">QuerySet</h2>
+<p>假如要通过 QuerySet 来查询，所有接口的所属设备的名称:</p>
+<pre><code>interfaces = Interface.objects.filter()[:5] # hit once database
+
+for interface in interfaces: 
+    print('interface_name: ', interface.name,
+          'device_name: ', interface.device.name) # hit database again
+</code></pre>
+<p>上面第一句取前 5 条 interface 记录，对应的 raw sql 就是 <code>select * from interface limit 5; </code> 没有任何问题。</p>
+<p>但下面取接口所属的设备名时，就会出现反复调用数据库情况：当遍历到一个接口，就会通过获取的 device_id 去数据库查询 device_name. 对应的 raw sql 类似于：<code>select name from device where id = {}</code>.</p>
+<p>也就是说，假如有 10 万个接口，就会执行 10 万次查询，性能的消耗可想而知。算上之前查找所有接口的一次查询，合称为 N + 1 次查询问题。</p>
+<p>解决方式也很简单，如果使用原生 SQL，通常有两种解决方式：</p>
+<ul>
+<li>在第一次查询接口时，使用 join，将 interface 和 device 关联起来。这样仅会执行一次数据库调用。</li>
+<li>或者在查询接口后，通过代码逻辑，将所需要的 device_id 以集合的形式收集起来，然后通过 in 语句来查询。类似于 <code>SELECT name FROM device WHERE id in (....)</code>. 这样做仅会执行两次 SQL。</li>
+</ul>
+<p>具体选择哪种，就要结合具体的场景，比如有无索引，表的大小具体分析了。</p>
+<p>回到 QuerySet，那么如何让 QuerySet 解决这个问题呢，同样也有两种解决方法，使用 QuerySet 中提供的 <code>select_related()</code> 或者  <code>prefetch_related()</code> 方法。</p>
+<h2 id="select_related">select_related</h2>
+<p>在调用 <code>select_related()</code> 方法时，Queryset 会将所属 Model 的外键关系，一起查询。相当于 raw sql 中的  <code>join</code> . 一次将所有数据同时查询出来。<code>select_related()</code> 主要的应用场景是：某个 model 中关联了外键（多对一），或者有 1 对 1 的关联关系情况。</p>
+<p>还拿上面的查找接口的设备名称举例的话：</p>
+<pre><code>interfaces = Interface.objects.select_related('device').filter()[:5] # hit once database
+
+for interface in interfaces:
+    print('interface_name: ', interface.name,
+         'device_name: ', interface.device.name) # don't need to hit database again 
+</code></pre>
+<p>上面的查询 SQL 就类似于：<code>SELECT xx FROMinterface INNER JOIN device ON interface.device_id = device.id limit5</code>，注意这里是 inner join 是因为是非空外键。</p>
+<p><code>select_related()</code> 还支持一个 model 中关联了多个外键的情况：如拓展接口，查询绑定的设备名称和接口名称：</p>
+<pre><code>ex_interfaces = InterfaceExtension.objects.select_related(
+    'endpoint_device_id', 'endpoint_interface_id').filter()[:5] 
+
+# or
+
+ex_interfaces = InterfaceExtension.objects.select_related(
+    'endpoint_device_id').select_related('endpoint_interface_id').filter()[:5] 
+</code></pre>
+<p>上面的 SQL 类似于：</p>
+<pre><code>SELECT XXX FROM interface_extension LEFT OUTER JOIN device ON (interface_extension.endpoint_device_id=device.id) 
+LEFT OUTER JOIN interface ON (interface_extension.endpoint_interface_id=interface.id)
+LIMIT 5
+</code></pre>
+<p>这里由于是可空外键，所以是 left join.</p>
+<p>如果想要清空 QuerySet 的外键关系，可以通过：<code>queryset.select_related(None)</code> 来清空。</p>
+<h2 id="prefetch_related">prefetch_related</h2>
+<p><strong>prefetch_related</strong> 和 <strong>select_related</strong> 一样都是为了避免大量查询关系时的数据库调用。只不过为了避免多表 join 后产生的巨大结果集以及效率问题， 所以 <strong>select_related</strong>  比较偏向于外键（多对一）和一对一的关系。</p>
+<p>而 <strong>prefetch_related</strong> 的实现方式则类似于之前 raw sql 的第二种，分开查询之间的关系，然后通过 python 代码，将其组合在一起。所以 <strong>prefetch_related</strong> 可以很好的支持一对多或者多对多的关系。</p>
+<p>还是拿查询所有接口的设备名称举例：</p>
+<pre><code>interfaces = Interface.objects.prefetch_related('device').filter()[:5] # hit twice database
+
+for interface in interfaces:
+    print('interface_name: ', interface.name,
+         'device_name: ', interface.device.name) # don't need to hit database again
+</code></pre>
+<p>换成 <strong>prefetch_related</strong> 后，sql 的执行逻辑变成这样：</p>
+<ol>
+<li>"SELECT * FROM interface "</li>
+<li>"SELECT * FROM device where device_id in (.....)"</li>
+<li>然后通过 python 代码将之间的关系组合起来。</li>
+</ol>
+<p>如果查询所有设备具有哪些接口也是一样：</p>
+<pre><code>devices = Device.objects.prefetch_related('interfaces').filter()[:5] # hit twice database
+for device in devices:
+    print('device_name: ', device.name,
+          'interface_list: ', device.interfaces.all())
+</code></pre>
+<p>执行逻辑也是：</p>
+<ol>
+<li>"SELECT * FROM device"</li>
+<li>"SELECT * FROM interface where device_id in (.....)"</li>
+<li>然后通过 python 代码将之间的关系组合起来。</li>
+</ol>
+<p>如果换成多对多的关系，在第二步会变为 join 后在 in，具体可以直接尝试。</p>
+<p>但有一点需要注意，当使用的 QuerySet 有新的逻辑查询时， prefetch_related 的结果不会生效，还是会去查询数据库：</p>
+<p>如在查询所有设备具有哪些接口上，增加一个条件，接口的状态是 up 的接口</p>
+<pre><code>devices = Device.objects.prefetch_related('interfaces').filter()[:5] # hit twice database
+for device in devices:
+    print('device_name: ', device.name,
+         'interfaces:', device.interfaces.filter(collect_status='active')) # hit dababase repeatly
+</code></pre>
+<p>执行逻辑变成：</p>
+<ol>
+<li>"SELECT * FROM device"</li>
+<li>"SELECT * FROM interface where device_id in (.....)"</li>
+<li>一直重复 device 的数量次： "SELECT * FROM interface where device_id = xx and collect_status='up';"</li>
+<li>最后通过 python 组合到一起。</li>
+</ol>
+<p>原因在于：之前的 prefetch_related 查询，并不包含判断 collect_status 的状态。所以对于 QuerySet 来说，这是一个新的查询。所以会重新执行。</p>
+<p>可以利用 <a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.Prefetch">Prefetch 对象</a> 进一步控制并解决上面的问题：</p>
+<pre><code>devices = Device.objects.prefetch_related(
+    Prefetch('interfaces', queryset=Interface.objects.filter(collect_status='active'))
+    ).filter()[:5] # hit twice database
+for device in devices:
+    print('device_name: ', device.name, 'interfaces:', device.interfaces) 
+</code></pre>
+<p>执行逻辑变成：</p>
+<ol>
+<li>"SELECT * FROM device"</li>
+<li>"SELECT * FROM interface where device_id in (.....) and collect_status = 'up';"</li>
+<li>最后通过 python 组合到一起。</li>
+</ol>
+<p>可以通过 Prefetch 对象的 <code>to_attr</code>，来改变之间关联关系的名称：</p>
+<pre><code>devices = Device.objects.prefetch_related(
+    Prefetch('interfaces', queryset=Interface.objects.filter(collect_status='active'), to_attr='actived_interfaces')
+    ).filter()[:5] # hit twice database
+for device in devices:
+    print('device_name: ', device.name, 'interfaces:', device.actived_interfaces) 
+</code></pre>
+<p>可以看到通过 Prefetch，可以实现控制关联那些有关系的对象。</p>
+<p>最后，对于一些关联结构较为复杂的情况，可以将 prefetch_related 和 select_related 组合到一起，从而控制查询数据库的逻辑。</p>
+<p>比如，想要查询全部接口的信息，及其设备名称，以及拓展接口中绑定了对端设备和接口的信息。</p>
+<pre><code>queryset = Interface.objects.select_related('ex_info').prefetch_related(
+            'ex_info__endpoint_device_id', 'ex_info__endpoint_interface_id')
+</code></pre>
+<p>执行逻辑如下：</p>
+<ol>
+<li><code>SELECT XXX FROM interface LEFT OUTER JOIN interface_extension ON (interface.id=interface_extension .interface_id) </code></li>
+<li><code>SELECT XXX FROM device where id in ()</code></li>
+<li><code>SELECT XXX FROM interface where id in ()</code></li>
+<li>最后通过 python 组合到一起。</li>
+</ol>
+<p>第一步, 由于 interface 和 interface_extension 是 1 对 1 的关系，所以使用 select_related 将其关联起来。</p>
+<p>第二三步：虽然 interface_extension  和 endpoint_device_id 和 endpoint_interface_id 是外键关系，如果继续使用 select_related 则会进行 4 张表连续 join，将其换成 select_related，对于 interface_extension  外键关联的属性使用 in 查询，因为interface_extension  表的属性并不是经常使用的。</p>
+<h2 id="总结">总结</h2>
+<p>在这篇文章中，介绍了 Django N +1 问题产生的原因，解决的方法就是通过调用 QuerySet 的 select_related 或 prefetch_related 方法。</p>
+<p>对于 select_related 来说，应用场景主要在外键和一对一的关系中。对应到原生的 SQL 类似于 JOIN 操作。</p>
+<p>对于 prefetch_related 来说，应用场景主要在多对一和多对多的关系中。对应到原生的 SQL 类似于 IN 操作。</p>
+<p>通过 Prefetch 对象，可以控制  select_related  和 prefetch_related 和那些有关系的对象做关联。</p>
+<p>最后，在每个 QuerySet 可以通过组合 select_related  和 prefetch_related 的方式，更改查询数据库的逻辑。</p>
+<h2 id="参考">参考</h2>
+<p><a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/">https://docs.djangoproject.com/en/3.1/ref/models/querysets/</a>](<a href="https://docs.djangoproject.com/en/3.1/ref/models/querysets/">https://docs.djangoproject.com/en/3.1/ref/models/querysets/</a>)</p>
+<p><a href="https://medium.com/better-programming/django-select-related-and-prefetch-related-f23043fd635d">https://medium.com/better-programming/django-select-related-and-prefetch-related-f23043fd635d</a></p>
+<p><a href="https://stackoverflow.com/questions/39669553/django-rest-framework-setting-up-prefetching-for-nested-serializers">https://stackoverflow.com/questions/39669553/django-rest-framework-setting-up-prefetching-for-nested-serializers</a></p>
+<p>[<a href="https://medium.com/@michael_england/debugging-query-performance-issues-when-using-the-django-orm-f05f83041c5f">https://medium.com/@michael_england/debugging-query-performance-issues-when-using-the-django-orm-f05f83041c5f</a></p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 14:43</span>&nbsp;
+<a href="https://www.cnblogs.com/michael9/">以终为始</a>&nbsp;
+阅读(<span id="post_view_count">24</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13797403" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13797403);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 558564, cb_blogApp = 'michael9', cb_blogUserGuid = 'a39eb8cb-7f6f-4674-34b0-08d75c4cd385';
+    var cb_entryId = 13797403, cb_entryCreatedDate = '2020-10-11 14:43', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 以终为始
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    <div id="page_end_html">
+        
+
+
+<!-- lightbox的样式 -->
+<link href="https://blog-static.cnblogs.com/files/michael9/lightbox.css" rel="stylesheet">
+
+<!-- lightbox.js核心代码 -->
+<script src="https://blog-static.cnblogs.com/files/michael9/lightbox-plus-jquery.js"></script>
+<script type='text/javascript'>$('#cnblogs_post_body img').wrap(function(){return "<a href='"+$(this).attr("src")+"' data-lightbox='example-set'></a>"});</script>
+<script type='text/javascript'>$(".code_img_closed").unwrap();</script>
+<script type='text/javascript'>$(".code_img_opened").unwrap();</script>
+
+
+    </div>
+</body>
+</html>

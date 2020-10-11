@@ -1,0 +1,494 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在这一篇文章中，我们将学习如何在MVC页面中实现分页的方法。分页功能是一个非常实用，常用的功能，当数据量过多的时候，必然要使用分页。在今天这篇文章中，我们学习如果在MVC页面中使用PagedList." />
+    <meta property="og:description" content="在这一篇文章中，我们将学习如何在MVC页面中实现分页的方法。分页功能是一个非常实用，常用的功能，当数据量过多的时候，必然要使用分页。在今天这篇文章中，我们学习如果在MVC页面中使用PagedList." />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET MVC(十一)——分页 - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2017-03-15 03:56';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/6554697.html">
+    <span>学习ASP.NET MVC(十一)——分页</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在这一篇文章中，我们将学习如何在MVC页面中实现分页的方法。分页功能是一个非常实用，常用的功能，当数据量过多的时候，必然要使用分页。在今天这篇文章中，我们学习如果在MVC页面中使用PagedList.Mvc包来实现分页功能。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><strong><span class="postTitle2">学习ASP.NET MVC 编程系列目录</span></strong></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_44" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3695382.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(一)——我的第一个ASP.NET MVC应用程序</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_43" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3708995.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(二)——我的第一个ASP.NET MVC 控制器</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_42" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3727487.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(三)——我的第一个ASP.NET MVC 视图</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_41" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3756888.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(四)——我的第一个ASP.NET MVC 实体对象</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_40" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3805067.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(五)——我的第一个ASP.NET MVC CURD页面</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_39" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3871829.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(六)——我的第一个ASP.NET MVC 编辑页面</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_38" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/3918277.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(七)——我的第一个ASP.NET MVC 查询页面</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_37" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/4099407.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(八)——“Code First Migrations ”工具</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_36" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/4131023.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(九)——“Code First Migrations ”工具使用示例</span></a></span></p>
+<p align="left"><span class="postTitle2" style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_35" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/6479133.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(十)——排序</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="CategoryEntryList1_EntryStoryList_ctl00_Entries_TitleUrl_34" class="entrylistItemTitle" href="https://www.cnblogs.com/chillsrc/p/6554697.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET MVC(十一)——分页</span></a></span></p>
+<p align="left">&nbsp;</p>
+<p align="left">&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在这一篇文章中，我们将学习如何在MVC页面中实现分页的方法。分页功能是一个非常实用，常用的功能，当数据量过多的时候，必然要使用分页。在今天这篇文章中，我们学习如果在MVC页面中使用PagedList.Mvc包来实现分页功能。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>1) </strong><strong>&nbsp;</strong><strong>安装PagedList.Mvc</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 首先，我们需要安装分页组件包，在Visual Studio 2010中点击【项目】-【管理NuGet程序包】，打开NuGet包管理器窗体，在该窗体中，选择“联机”标签，然后搜索pagedlist，如下图所示。点击“安装”按钮安装PagedList.Mvc的最新版本（目前最新版本为4.5.0）。</span></p>
+<p align="left"><span style="font-size: 16px"><img style="display: block; margin-left: auto; margin-right: auto" src="https://images2015.cnblogs.com/blog/10343/201703/10343-20170315154444495-2032796411.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在把PagedList.Mvc安装完成之后，PagedList包也被安装上了。如下图。 <img style="display: block; margin-left: auto; margin-right: auto" src="https://images2015.cnblogs.com/blog/10343/201703/10343-20170315154528088-663673898.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 图1：</strong>NuGet包管理器中显示的PagedList.Mvc</span></p>
+<p align="left"><span style="font-size: 16px"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2) </strong><strong>&nbsp;</strong><strong>实现带分页功能的视图实体对象和控制器</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 把PagedList.Mvc安装完成之后，第一件事就是增加一个视图实体对象，用来放置一些查询属性与查询结果。在Models目录下新增一个ViewBook.cs文件，代码如下列所示：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Web;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> PagedList;
+ 
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> MvcApplication1.Models
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> ViewBook
+    {
+
+         </span><span style="color: rgba(0, 0, 255, 1)">public</span> IPagedList&lt;Book&gt; Books { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+         </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Search { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }      
+
+         </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Category { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+         </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> SortBy { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }     
+    }
+}
+
+ </span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;　　我们现在需要修改BookController类的SearchIndex方法，以便Books作为PagedList返回（使用ToPagedList()方法完成）。为了使用PagedList，我们还需要设置默认排序。为了使用PagedList包，我们首先需要在该文件的顶部添加using PagedList;代码，然后修改Controllers\BookController.cs文件为下列粗体显示的代码。</span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px">        <span style="color: rgba(0, 0, 255, 1)">public</span> ActionResult SearchIndex(<span style="color: rgba(0, 0, 255, 1)">string</span> Category, <span style="color: rgba(0, 0, 255, 1)">string</span> searchString, <span style="color: rgba(0, 0, 255, 1)">string</span> sortBy,<em><strong><span style="color: rgba(0, 0, 255, 1)">int</span></strong></em>?<span style="color: rgba(0, 0, 0, 1)"> page)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> cateLst = <span style="color: rgba(0, 0, 255, 1)">new</span> List&lt;<span style="color: rgba(0, 0, 255, 1)">string</span>&gt;<span style="color: rgba(0, 0, 0, 1)">();
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> cateQry = <span style="color: rgba(0, 0, 255, 1)">from</span> d <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> db.Books
+                          </span><span style="color: rgba(0, 0, 255, 1)">orderby</span><span style="color: rgba(0, 0, 0, 1)"> d.Category
+                          </span><span style="color: rgba(0, 0, 255, 1)">select</span><span style="color: rgba(0, 0, 0, 1)"> d.Category;
+            cateLst.AddRange(cateQry.Distinct());
+            ViewBag.category </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> SelectList(cateLst); 
+
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">排序选项</span>
+                <span style="color: rgba(0, 0, 255, 1)">var</span> orderbyLst = <span style="color: rgba(0, 0, 255, 1)">new</span> Dictionary&lt;<span style="color: rgba(0, 0, 255, 1)">string</span>, <span style="color: rgba(0, 0, 255, 1)">string</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+     {
+         { </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">价格从低到高</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">price_lowest</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)"> },
+         { </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">价格从高到低</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">price_highest</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)"> }
+     };
+
+                ViewBag.sortBy </span>= <span style="color: rgba(0, 0, 255, 1)">new</span> SelectList(orderbyLst, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Value</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Key</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">  [2017-2-14 end]</span>
+            <span style="color: rgba(0, 0, 255, 1)">var</span> books = <span style="color: rgba(0, 0, 255, 1)">from</span> m <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> db.Books
+                        </span><span style="color: rgba(0, 0, 255, 1)">select</span><span style="color: rgba(0, 0, 0, 1)"> m; 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 0, 1)">String.IsNullOrEmpty(searchString))
+            {
+                books </span>= books.Where(s =&gt;<span style="color: rgba(0, 0, 0, 1)"> s.Name.Contains(searchString));
+            }
+
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> sort the results</span>
+            <span style="color: rgba(0, 0, 255, 1)">switch</span><span style="color: rgba(0, 0, 0, 1)"> (sortBy)
+            {
+
+                </span><span style="color: rgba(0, 0, 255, 1)">case</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">price_lowest</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">:
+                    books </span>= books.OrderBy(p =&gt;<span style="color: rgba(0, 0, 0, 1)"> p.Price);
+                    </span><span style="color: rgba(0, 0, 255, 1)">break</span><span style="color: rgba(0, 0, 0, 1)">;
+                </span><span style="color: rgba(0, 0, 255, 1)">case</span> <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">price_highest</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">:
+                    books </span>= books.OrderByDescending(p =&gt;<span style="color: rgba(0, 0, 0, 1)"> p.Price);
+                    </span><span style="color: rgba(0, 0, 255, 1)">break</span><span style="color: rgba(0, 0, 0, 1)">;
+                </span><span style="color: rgba(0, 0, 255, 1)">default</span><span style="color: rgba(0, 0, 0, 1)">:
+                    books </span>= books.OrderBy(p =&gt;<span style="color: rgba(0, 0, 0, 1)"> p.Name);
+                    </span><span style="color: rgba(0, 0, 255, 1)">break</span><span style="color: rgba(0, 0, 0, 1)">;
+            } 
+
+            </span><strong><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">分页</span>
+            <span style="color: rgba(0, 0, 255, 1)">const</span> <span style="color: rgba(0, 0, 255, 1)">int</span> pageItems = <span style="color: rgba(128, 0, 128, 1)">5</span><span style="color: rgba(0, 0, 0, 1)">;
+     </span><span style="color: rgba(0, 0, 255, 1)">int</span> currentPage = (page ?? <span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);
+     IPagedList</span>&lt;Book&gt;  pageBooks =<span style="color: rgba(0, 0, 0, 1)"> books.ToPagedList(currentPage, pageItems);
+     </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">  [2017-2-14]</span>
+     ViewBook vbook = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> ViewBook();
+     vbook.Books </span>=<span style="color: rgba(0, 0, 0, 1)"> pageBooks;
+     vbook.Category </span>=<span style="color: rgba(0, 0, 0, 1)"> Category;
+     vbook.SortBy </span>=<span style="color: rgba(0, 0, 0, 1)"> sortBy;
+     vbook.Search </span>=<span style="color: rgba(0, 0, 0, 1)"> searchString;
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.IsNullOrEmpty(Category))
+                 vbook.Books </span>=<span style="color: rgba(0, 0, 0, 1)">pageBooks;
+            </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+            {
+              vbook.Books </span>=pageBooks.Where(x =&gt; x.Category ==<span style="color: rgba(0, 0, 0, 1)"> Category).ToPagedList(currentPage, pageItems);
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span></strong><span style="color: rgba(0, 0, 0, 1)"><strong> View(vbook);</strong>
+        }</span></span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">　　以上代码进行了以下几次发动，第一处改动是添加了一个int? page参数，它是一个可空整型，表示用户在书籍查询页面中选择的当前页码。当第一次加载书籍查询页面时，用户还没有选择任何页码，因此，这个参数可以为null。</span></p>
+<p align="left"><span style="font-size: 16px">　　我们必须确保当前的分类也要保存在视图实体对象中，因此，我们添加了<strong><em>vbook</em></strong><strong><em>.Category = Category;</em></strong>这行代码。</span></p>
+<p align="left"><span style="font-size: 16px">　　代码books = books.OrderBy(p =&gt; p.Name);用于对产品列表进行默认排序，这是因为PagedList要求列表必须是一个有序列表。</span></p>
+<p align="left"><span style="font-size: 16px">　　接着，我们使用代码const int pageItems = 5;来指定每页显示的数据数量。然后，我们声明了一个整型变量int currentPage = (page ?? 1);来保存当前页码，该变量的值是page参数的值，或者是1（当page变量为null时）。</span></p>
+<p align="left"><span style="font-size: 16px">　　我们使用代码vbook.Books = books.ToPagedList(currentPage, PageItems);，对产品信息调用了ToPagedList方法，并将当前页和每页显示的条目数传递给了ToPagedList方法，然后将该方法的返回值赋值给了视图实体对象的Books属性。</span></p>
+<p align="left"><span style="font-size: 16px">　　我们使用代码viewBook.SortBy = sortBy;将sortBy参数的值保存到视图实体对象的SortBy属性中，以便我们从一页移动到另一页时，产品的排序保持不变。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>3) </strong><strong>带分页功能的查询页面</strong></span></p>
+<p align="left"><span style="font-size: 16px">　 　在视图实体对象和控制器中对实现分页功能的代码进行修改之后，现在，我们需要更新视图文件\Views\Products\SearchIndex.cshtml，在这个视图文件中显示一个分页控件，以便用户可以在各页之间移动。我们同时也添加了有多少条数据的指示信息。为了完成这些功能，我们在该文件中添加了一个using语句，一个书籍总数的指示信息以及在该页底部显示一个分页控件，具体代码如下面显示：</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">  @model MvcApplication1.Models.ViewBook
+ @using PagedList.Mvc
+
+@{
+
+    ViewBag.Title = "书籍查询";
+}
+<span style="font-size: 16px; color: rgba(255, 0, 255, 1)">&nbsp;<span style="text-decoration: underline"><em>&nbsp; &lt;link href="/Content/PagedList.css" rel="stylesheet" type="text/css" /&gt;</em></span>
+</span></span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>书籍查询<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">h2</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+     @using (Html.BeginForm("SearchIndex","book",FormMethod.Get)){   
+         </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">书籍种类： @Html.DropDownList("category", "All")  
+           书籍名称： @Html.TextBox("SearchString") 
+              排序: @Html.DropDownList("sortBy", "不排序")
+         </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input </span><span style="color: rgba(255, 0, 0, 1)">type</span><span style="color: rgba(0, 0, 255, 1)">="submit"</span><span style="color: rgba(255, 0, 0, 1)"> value</span><span style="color: rgba(0, 0, 255, 1)">="查询"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span> <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">p</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+        }
+
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">table</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">tr</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().Category)
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().Name)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().Numberofcopies)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().AuthorID)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().Price)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayNameFor(model =&gt; model.Books.First().PublishDate)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;&lt;/</span><span style="color: rgba(128, 0, 0, 1)">th</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+    <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">tr</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+@foreach (var item in Model.Books) {
+
+    </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">tr</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.Category)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.Name)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.Numberofcopies)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.AuthorID)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.Price)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.DisplayFor(modelItem =&gt; item.PublishDate)
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+            @Html.ActionLink("Edit", "Edit", new { id=item.BookID }) |
+
+            @Html.ActionLink("Details", "Details", new { id=item.BookID }) |
+
+            @Html.ActionLink("Delete", "Delete", new { id=item.BookID })
+
+        </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">td</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">tr</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+}
+</span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">table</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+
+<strong><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+     Page @(Model.Books.PageCount </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)"> Model</span><span style="color: rgba(255, 0, 0, 1)">.Books.PageNumber ? 0 : Model.Books.PageNumber) of @Model.Books.PageCount
+
+     @Html.PagedListPager(Model.Books, page </span><span style="color: rgba(0, 0, 255, 1)">=</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)"> Url.Action("SearchIndex", new { category = Model.Category, <br>search = Model.Search, sortBy = Model.SortBy, page }))
+ </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></strong></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 分页链接生成代码包裹在div标签内。其中第一行代码使用?:操作符的第一行代码决定是否有任何页码显示，它显示“Page 0 of 0”或者“Page x of y”，x表示当前页码，y表示总页数。 </span></p>
+<p align="left"><span style="font-size: 16px"><span style="font-size: 16px"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 第二行代码使用来自于PagedList.Mvc命名空间的PagedListPager辅助器。该辅助器接收一个产品列表参数，并为每个页面生成一个超链接。Url.Action用于生成一个含有当前页参数超链接目标。我们将一个匿名类型（含有当前分类、搜索条件、排序信息和分页）传递给该辅助器方法，以便每个页面的链接中都包含一个查询字符串，这个查询字符串包含有当前分类、搜索条件、排序信息和分页信息。这意味着，当从一个页面移动到另一个页面时，搜索条件、选择的分类和排序规则都被保存下来。如果没有这样做，书籍列表将会被重置为显示所有书籍信息。</span></span></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在使用了上述代码后，按“价格从低到高”排序分页界面，如下图1。</span></p>
+<p align="left"><span style="font-size: 16px"><img style="display: block; margin-left: auto; margin-right: auto" src="https://images2015.cnblogs.com/blog/10343/201703/10343-20170315155313745-1029353223.png" alt=""></span></p>
+<p style="text-align: center" align="left"><span style="font-size: 16px">&nbsp;图1</span></p>
+<p align="left"><span style="font-size: 16px">　&nbsp;&nbsp; 　 我们发现分页的数字部分，并不好看，原来我们缺少引用了CSS，在查询页面的标题下方添加如下代码。在上述代码中的蓝色字体。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;link href="/Content/PagedList.css" rel="stylesheet" type="text/css" /&gt;</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 再次点击“查询”按钮，然后对其结果按照“价格从低到高”进行排序，效果如下图2。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img style="display: block; margin-left: auto; margin-right: auto" src="https://images2015.cnblogs.com/blog/10343/201703/10343-20170315155508932-530474.png" alt=""></span></p>
+<p style="text-align: center" align="left"><span style="font-size: 16px">&nbsp;<strong>图2：</strong>有搜索条件、排序和按分类过滤的分页效果</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2017-03-15 15:56</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">11615</span>)&nbsp;
+评论(<span id="post_comment_count">4</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=6554697" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(6554697);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 6554697, cb_entryCreatedDate = '2017-03-15 15:56', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

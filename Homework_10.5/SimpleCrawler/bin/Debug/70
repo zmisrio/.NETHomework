@@ -1,0 +1,399 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="从篇 abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——EasyUI前端页面框架 (十八) 至abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——Easy" />
+    <meta property="og:description" content="从篇 abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——EasyUI前端页面框架 (十八) 至abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——Easy" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理八(二十六) - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-11-12 03:20';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/11842320.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理八(二十六)</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        从篇 abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) 至abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理七(二十五) 为止，我们已经通过EasyUI完成了货物信息管理的增删改功能基本实现。现在我们来完成查询功能。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: 仿宋; font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<p><span style="font-family: 宋体; font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: 宋体"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231265.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——多语言（十）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></p>
+<p align="left"><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11448287.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——菜单-上 (十六) </span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></p>
+<p><span style="font-size: 16px">&nbsp;<a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11606969.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理二 (二十) </span></a></span></p>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11642618.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理三 (二十一) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11679387.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理四 (二十二) </span></a></span></div>
+<div><span style="font-size: 16px">&nbsp;<a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11718891.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理五 (二十三) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11770233.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理六(二十四) </span></a></span></div>
+<div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11804797.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理七(二十五) </span></a></span></div>
+</div>
+<div>&nbsp;</div>
+<div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 从篇<span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span>至</span><span style="font-size: 16px"><a href="https://www.cnblogs.com/chillsrc/p/11804797.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理七(二十五) </span></a>为止，我们已经通过EasyUI完成了货物信息管理的增删改功能基本实现。现在我们来完成查询功能。</span></p>
+</div>
+<div>
+<p align="left"><span style="font-size: 16px"><strong>十七、查询货物信息</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1. 在Visual Studio 2017的“解决方案资源管理器”中，右键单击在领域层“ABP.TPLMS.Web.Mvc”项目中的Views\Cargo目录。 找到Index.cshmtl文件，添加一个查询条件相关代码。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151233583-34301135.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">具体代码如下：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">div </span><span style="color: rgba(255, 0, 0, 1)">id</span><span style="color: rgba(0, 0, 255, 1)">="dg-button"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+      <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">form </span><span style="color: rgba(255, 0, 0, 1)">name</span><span style="color: rgba(0, 0, 255, 1)">="searchform"</span><span style="color: rgba(255, 0, 0, 1)"> method</span><span style="color: rgba(0, 0, 255, 1)">="post"</span><span style="color: rgba(255, 0, 0, 1)"> action</span><span style="color: rgba(0, 0, 255, 1)">=""</span><span style="color: rgba(255, 0, 0, 1)"> id</span><span style="color: rgba(0, 0, 255, 1)">="searchform"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+             <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">label </span><span style="color: rgba(255, 0, 0, 1)">for</span><span style="color: rgba(0, 0, 255, 1)">="Name"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>货物名称：<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">label</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+             <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input  </span><span style="color: rgba(255, 0, 0, 1)">name</span><span style="color: rgba(0, 0, 255, 1)">="Name"</span><span style="color: rgba(255, 0, 0, 1)"> id</span><span style="color: rgba(0, 0, 255, 1)">="Name"</span><span style="color: rgba(255, 0, 0, 1)"> class</span><span style="color: rgba(0, 0, 255, 1)">="easyui-validatebox"</span><span style="color: rgba(255, 0, 0, 1)"> data-options</span><span style="color: rgba(0, 0, 255, 1)">="width:200"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span>
+              <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">label </span><span style="color: rgba(255, 0, 0, 1)">for</span><span style="color: rgba(0, 0, 255, 1)">="Code"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>货物代码：<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">label</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+              <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input </span><span style="color: rgba(255, 0, 0, 1)">name</span><span style="color: rgba(0, 0, 255, 1)">="Code"</span><span style="color: rgba(255, 0, 0, 1)"> id</span><span style="color: rgba(0, 0, 255, 1)">="Code"</span><span style="color: rgba(255, 0, 0, 1)"> class</span><span style="color: rgba(0, 0, 255, 1)">="easyui-validatebox"</span><span style="color: rgba(255, 0, 0, 1)"> data-options</span><span style="color: rgba(0, 0, 255, 1)">="width:150"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span>
+               <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">label </span><span style="color: rgba(255, 0, 0, 1)">for</span><span style="color: rgba(0, 0, 255, 1)">="HsCode"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>商品编码：<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">label</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+               <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">input </span><span style="color: rgba(255, 0, 0, 1)">name</span><span style="color: rgba(0, 0, 255, 1)">="HsCode"</span><span style="color: rgba(255, 0, 0, 1)"> id</span><span style="color: rgba(0, 0, 255, 1)">="HsCode"</span><span style="color: rgba(255, 0, 0, 1)"> class</span><span style="color: rgba(0, 0, 255, 1)">="easyui-validatebox"</span><span style="color: rgba(255, 0, 0, 1)"> data-options</span><span style="color: rgba(0, 0, 255, 1)">="width:100"</span> <span style="color: rgba(0, 0, 255, 1)">/&gt;</span>
+              <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">a </span><span style="color: rgba(255, 0, 0, 1)">href</span><span style="color: rgba(0, 0, 255, 1)">="#"</span><span style="color: rgba(255, 0, 0, 1)"> id</span><span style="color: rgba(0, 0, 255, 1)">="search"</span><span style="color: rgba(255, 0, 0, 1)"> class</span><span style="color: rgba(0, 0, 255, 1)">="easyui-linkbutton"</span><span style="color: rgba(255, 0, 0, 1)"> data-options</span><span style="color: rgba(0, 0, 255, 1)">="iconCls:'icon-search'"</span><span style="color: rgba(255, 0, 0, 1)"> onclick</span><span style="color: rgba(0, 0, 255, 1)">="Search()"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>查询<span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">a</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+          <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">form</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">div</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.在Visual Studio 2017的“解决方案资源管理器”中，右键单击“ABP.TPLMS.Application”项目的 “Cargos”文件夹中，找到Paged CargoResultRequestDto.cs文件，添加查询条件属性。代码如下。 <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> PagedCargoResultRequestDto : PagedResultRequestDto
+    {
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Keyword { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> CargoName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> CargoCode { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> HsCode { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+    }
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3. 在Visual Studio 2017的“解决方案资源管理器”中，右键单击在领域层“ABP.TPLMS.Web.Mvc”项目中的Controller目录。找到“CargoController.cs”文件。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151339403-11333614.png" alt=""></span></p>
+<p><span style="font-size: 16px">具体代码如下：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">[DontWrapResult]
+        [HttpPost]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> List()
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> page = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">page</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">].ToString();
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> size = Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">rows</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">].ToString();
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span> pageIndex = page == <span style="color: rgba(0, 0, 255, 1)">null</span> ? <span style="color: rgba(128, 0, 128, 1)">1</span> : <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)">.Parse(page);
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span> pageSize = size == <span style="color: rgba(0, 0, 255, 1)">null</span> ? <span style="color: rgba(128, 0, 128, 1)">20</span> : <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)">.Parse(size);
+
+            PagedCargoResultRequestDto paged </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> PagedCargoResultRequestDto();
+            paged.MaxResultCount </span>=<span style="color: rgba(0, 0, 0, 1)"> pageSize;
+            paged.SkipCount </span>= ((pageIndex-<span style="color: rgba(128, 0, 128, 1)">1</span>)&lt;<span style="color: rgba(128, 0, 128, 1)">0</span>?<span style="color: rgba(128, 0, 128, 1)">0</span>: pageIndex - <span style="color: rgba(128, 0, 128, 1)">1</span>) *<span style="color: rgba(0, 0, 0, 1)"> pageSize;
+            paged.CargoName </span>= Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Name</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">].ToString();
+            paged.CargoCode </span>= Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Code</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">].ToString();
+            paged.HsCode </span>= Request.Form[<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">HsCode</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">].ToString(); 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> userList =<span style="color: rgba(0, 0, 0, 1)"> _cargoAppService.GetAll(paged).GetAwaiter().GetResult().Items;
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span> total = _cargoAppService.GetAll(paged).GetAwaiter().GetResult().TotalCount; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">1000;</span>
+            <span style="color: rgba(0, 0, 255, 1)">var</span> json =<span style="color: rgba(0, 0, 0, 1)"> JsonEasyUI(userList,total);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> json;
+        }</span></pre>
+</div>
+<span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4. 在Visual Studio 2017的“解决方案资源管理器”中，找到领域层“ABP.TPLMS.Web.Mvc”项目中的wwwroot目录下的view-resources\Cargo文件夹下，找到cargomgr.js文件，在工具栏(toolbar)中添加查询条件。如下图画框处。</span>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151429728-1849741973.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 5.在cargomgr.js文件添加一个查询方法Search，代码如下。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> Search() {
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> _$form = $('form[name=searchform]'<span style="color: rgba(0, 0, 0, 1)">);
+    </span><span style="color: rgba(0, 0, 255, 1)">var</span> params =<span style="color: rgba(0, 0, 0, 1)"> _$form.serializeFormToObject();
+    $(</span>'#dgCargo'<span style="color: rgba(0, 0, 0, 1)">).datagrid({ queryParams:params});
+}</span></pre>
+</div>
+<span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 6.在Visual Studio 2017中按F5运行应用程序。</span>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 7.在浏览器中的地址栏中输入“http://localhost:5000/”，然后输入管理员用户名进行登录。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 8.在主界面的菜单中，选择“Business-&gt;货物管理”菜单项，浏览器中呈现一个带查询条件的货物信息列表与四个按钮。如下图。 <img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151511913-1181733245.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9.在“货物代码”查询条件中输入“A”，然后点击“查询”按钮，然而查询结果没有变化。如下图。 <img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151549062-714298569.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 10. 在“商品编码”查询条件中输入“8548900010”，然后点击“查询”按钮，然而查询结果没有变化。如下图。 <img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151603491-1998254891.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 11.通过上面的两次测试，发现查询没有起到作用。输入查询条件，还是查询出了所有记录。接下来我们来把查询条件添加到查询方法中。在Visual Studio 2017的“解决方案资源管理器”中，右键单击“ABP.TPLMS.Application”项目的 “Cargos”文件夹中，找到<code>CargoAppService.cs</code><code>文件</code>。重写CreateFilteredQuery方法。代码如下。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> IQueryable&lt;Cargo&gt;<span style="color: rgba(0, 0, 0, 1)"> CreateFilteredQuery(PagedCargoResultRequestDto input)
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">.CreateFilteredQuery(input)
+                 .Where(t </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> t.CargoName.Contains(input.CargoName))
+                 .Where(t </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> t.CargoCode.Contains(input.CargoCode))
+                 .Where(t </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> t.HSCode.Contains(input.HsCode))
+                 ;
+        }</span></pre>
+</div>
+<span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 12. 重复上面的第6、7、8步。然后在“货物代码”查询条件中输入“a”，然后点击“查询”按钮，然而查询出所有货物代码中有“a”的货物信息。如下图。</span></div>
+<div><span style="font-size: 16px"> <img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151734805-1277483082.png" alt=""></span>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 13.在“商品编码”查询条件中输入“1100120000”，然后点击“查询”按钮，然而查询出所有“商品编码”中有“1100120000”的货物信息。如下图。 </span></p>
+<p><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151801645-1884445038.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 14.在“商品名称”查询条件中输入“触摸屏”，然后点击“查询”按钮，然而查询出所有“商品名称”中有“触摸屏”的货物信息。如下图。 </span></p>
+<p><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151813669-1298877515.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15.在“商品名称”查询条件中输入“触摸屏”，然后点击“查询”按钮，然而查询出所有“商品名称”中有“触摸屏”的货物信息，然后点击翻页。如下图。</span></p>
+<p><span style="font-size: 16px"> <img src="https://img2018.cnblogs.com/blog/10343/201911/10343-20191112151828321-1171218891.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 至此，通过EasyUI进行增删改查的功能已经全部实现。</span></p>
+</div>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-11-12 15:20</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">1136</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=11842320" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(11842320);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 11842320, cb_entryCreatedDate = '2019-11-12 15:20', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

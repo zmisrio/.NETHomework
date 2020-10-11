@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在经过了上面几篇文章的学习这宾，本篇文章我们来学习如何在已经的功能中添加新字段。" />
+    <meta property="og:description" content="在经过了上面几篇文章的学习这宾，本篇文章我们来学习如何在已经的功能中添加新字段。" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>学习ASP.NET Core Razor 编程系列十——添加新字段 - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2018-05-23 04:18';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/9077466.html">
+    <span>学习ASP.NET Core Razor 编程系列十——添加新字段</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在经过了上面几篇文章的学习这宾，本篇文章我们来学习如何在已经的功能中添加新字段。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="font-size: 16px"><strong><span style="font-size: 16px"><span style="font-size: 16px"><strong><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span class="postTitle2"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列目录</span></span></span></span></span></strong></span></span></strong></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl02_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8579777.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列一</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8622439.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列二——添加一个实体</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8651973.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列三——创建数据表及创建项目基本页面</span></a></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8717199.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列四——Asp.Net Core Razor列表模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8778379.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列五——Asp.Net Core Razor新建模板页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8872303.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列六——数据库初始化</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8968398.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列七——修改列表页面</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/8986512.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列八——并发处理</span></a></span></p>
+<p align="left"><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/chillsrc/p/9025896.html"><span style="color: rgba(0, 0, 255, 1)">学习ASP.NET Core Razor 编程系列九——增加查询功能</span></a></span></p>
+<p align="left">&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp; &nbsp;&nbsp; &nbsp; 在经过了上面几篇文章的学习这宾，本篇文章我们来学习如何在已经的功能中添加新字段。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>一、添加出版社字段到实体类</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 我们首先在Visual Studio 2017的解决方案资源管理器中打开 <em>Models/Books.cs</em> 文件，并添加一个Publishing字段，代码如下：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.ComponentModel.DataAnnotations;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks;
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> RazorMvcBooks.Models
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Book
+    {  
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> ID { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Name { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [Display(Name </span>= <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">出版日期</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        [DataType(DataType.Date)] 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DateTime ReleaseDate { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Author { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">decimal</span> Price { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Publishing { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+    }
+
+}</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在Visual Studio 2017中按下(Ctrl+Shift+B)，或是菜单中选择生成--&gt;生成解决方案</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201805/10343-20180523161252221-976565460.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<h2><span style="font-size: 16px">二、给列表页面添加Publishing字段</span></h2>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在Visual Studio 2017的解决方案资源管理器中找到 <em>Pages/Books/Index.cshtml</em>文件，然后使用鼠标双击打开，并在文件中添加Publishing字段，代码如下:</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@page 
+@model RazorMvcBooks.Pages.Books.IndexModel 
+
+@{
+    ViewData[</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Title</span><span style="color: rgba(128, 0, 0, 1)">"</span>] = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Index</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+} 
+
+</span>&lt;h2&gt;Index&lt;/h2&gt;
+
+&lt;p&gt;
+    &lt;a asp-page=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Create</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;Create New&lt;/a&gt;
+&lt;/p&gt;
+&lt;form&gt;
+    &lt;p&gt;
+        &lt;<span style="color: rgba(0, 0, 255, 1)">select</span> asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Author</span><span style="color: rgba(128, 0, 0, 1)">"</span> asp-items=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Model.Authors</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+            &lt;option value=<span style="color: rgba(128, 0, 0, 1)">""</span>&gt;All&lt;/option&gt;
+        &lt;/<span style="color: rgba(0, 0, 255, 1)">select</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+书籍名称
+         </span>&lt;input type=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text</span><span style="color: rgba(128, 0, 0, 1)">"</span> name=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">SearchString</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+        &lt;input type=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">submit</span><span style="color: rgba(128, 0, 0, 1)">"</span> value=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">查询</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+    &lt;/p&gt;
+&lt;/form&gt;
+ 
+&lt;table <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">table</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+                &lt;th&gt;<span style="color: rgba(0, 0, 0, 1)">
+                    @Html.DisplayNameFor(model </span>=&gt; model.Book[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">].Name)
+
+                </span>&lt;/th&gt;
+                &lt;th&gt;<span style="color: rgba(0, 0, 0, 1)">
+                    @Html.DisplayNameFor(model </span>=&gt; model.Book[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">].ReleaseDate)
+
+                </span>&lt;/th&gt;
+                &lt;th&gt;<span style="color: rgba(0, 0, 0, 1)">
+                    @Html.DisplayNameFor(model </span>=&gt; model.Book[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">].Author)
+
+                </span>&lt;/th&gt;
+                &lt;th&gt;<span style="color: rgba(0, 0, 0, 1)">
+                    @Html.DisplayNameFor(model </span>=&gt; model.Book[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">].Price)
+
+                </span>&lt;/th&gt;
+            &lt;th&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayNameFor(model </span>=&gt; model.Book[<span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">].Publishing)
+
+            </span>&lt;/th&gt;
+            &lt;th&gt;&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;<span style="color: rgba(0, 0, 0, 1)">
+@foreach (</span><span style="color: rgba(0, 0, 255, 1)">var</span> item <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> Model.Book) {
+        </span>&lt;tr&gt;
+            &lt;td&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayFor(modelItem </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> item.Name)
+
+            </span>&lt;/td&gt;
+            &lt;td&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayFor(modelItem </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> item.ReleaseDate)
+
+            </span>&lt;/td&gt;
+            &lt;td&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayFor(modelItem </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> item.Author)
+
+            </span>&lt;/td&gt;
+            &lt;td&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayFor(modelItem </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> item.Price)
+
+            </span>&lt;/td&gt;
+            &lt;td&gt;<span style="color: rgba(0, 0, 0, 1)">
+                @Html.DisplayFor(modelItem </span>=&gt;<span style="color: rgba(0, 0, 0, 1)"> item.Publishing)
+
+            </span>&lt;/td&gt;
+            &lt;td&gt;
+
+                &lt;a asp-page=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">./Edit</span><span style="color: rgba(128, 0, 0, 1)">"</span> asp-route-id=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">@item.ID</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;Edit&lt;/a&gt; |
+
+                &lt;a asp-page=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">./Details</span><span style="color: rgba(128, 0, 0, 1)">"</span> asp-route-id=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">@item.ID</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;Details&lt;/a&gt; |
+                &lt;a asp-page=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">./Delete</span><span style="color: rgba(128, 0, 0, 1)">"</span> asp-route-id=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">@item.ID</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;Delete&lt;/a&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;<span style="color: rgba(0, 0, 0, 1)">
+}
+    </span>&lt;/tbody&gt;
+&lt;/table&gt;</pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 按照上面的方式，把Publishing字段添加到“Delete.cshtml”与“Details.cshtml”页面中。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接下来我们在Visual Studio 2017的解决方案资源管理器中打开<em>Create.cshtml，</em>然后选择一个现成&lt;div&gt;元素（例如包含Name字段的div元素），复制，粘贴到如下图的位置，最后把Name修改为Publishing字段。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://images2018.cnblogs.com/blog/10343/201805/10343-20180523161438292-1733727184.png" alt=""></span></p>
+<p><span style="font-size: 16px">添加了Publishing字段之后 <em>Create.cshtml</em> &nbsp;代码如下:</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 0, 1)">@page
+@model RazorMvcBooks.Pages.Books.CreateModel
+@{
+
+    ViewData[</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Title</span><span style="color: rgba(128, 0, 0, 1)">"</span>] = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Create</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+} 
+
+</span>&lt;h2&gt;Create&lt;/h2&gt; 
+
+&lt;h4&gt;Book&lt;/h4&gt;
+&lt;hr /&gt;
+&lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">row</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+    &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">col-md-4</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+        &lt;form method=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">post</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+            &lt;div asp-validation-summary=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">ModelOnly</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/div&gt;
+
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Name</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.ReleaseDate</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.ReleaseDate</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.ReleaseDate</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt;
+
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Author</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Author</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Author</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt; 
+
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Price</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Price</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Price</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;label asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Publishing</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">control-label</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/label&gt;
+                &lt;input asp-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Publishing</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-control</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+
+                &lt;span asp-validation-<span style="color: rgba(0, 0, 255, 1)">for</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Book.Publishing</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">text-danger</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">form-group</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;
+                &lt;input type=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">submit</span><span style="color: rgba(128, 0, 0, 1)">"</span> value=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Create</span><span style="color: rgba(128, 0, 0, 1)">"</span> <span style="color: rgba(0, 0, 255, 1)">class</span>=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">btn btn-default</span><span style="color: rgba(128, 0, 0, 1)">"</span> /&gt;
+
+            &lt;/div&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt; 
+
+&lt;div&gt;
+    &lt;a asp-page=<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Index</span><span style="color: rgba(128, 0, 0, 1)">"</span>&gt;Back to List&lt;/a&gt;
+&lt;/div&gt;<span style="color: rgba(0, 0, 0, 1)"> 
+
+@section Scripts {
+    @{</span><span style="color: rgba(0, 0, 255, 1)">await</span> Html.RenderPartialAsync(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">_ValidationScriptsPartial</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);}
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参照上面的方式给编辑页面添加Publishing字段。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在经过上面的修改之后，但是由于我们还没有进行数据库更新，所以此时运行书籍管理信息系统是会报错的。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 此时如果我们在Visual Studio 2017中按下F5，在浏览器中我们会得到如下图的错误信息。 <br></span></p>
+<p align="left"><span style="font-size: 16px"><img src="https://images2018.cnblogs.com/blog/10343/201805/10343-20180523161601525-1843606826.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这个错误信息表明我们的实体类与数据库中的表结构不一致。数据库中Book表没有Publishing字段。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<h2><span style="font-size: 16px">三、有几种方法可以解决这个错误</span><span style="font-size: 16px"><br></span></h2>
+<p align="left"><span style="font-size: 16px">1、让实体框架自动删除并使用新的实体类重新创建数据库。这种方法适合在开发周期的早期使用；它允许您快速地将实体类和数据库表一起快速改进。缺点是丢失数据库中的现有数据。请不要在生产数据库上使用这种方法！在架构更改时删除数据库并使用初始化类自动地用测试数据生成数据库中的数据，这通常是开发应用程序的一种有效方式。 <br></span></p>
+<p align="left"><span style="font-size: 16px">2、通过SQL Server Management Studio显式修改现有数据库中的表，使之与实体类相匹配。这种方法的优点是可以保存数据。您可以手动或通过创建数据库更改脚本来进行更改。 <br></span></p>
+<p align="left"><span style="font-size: 16px">3、使用 Code First 迁移功能来更新数据库。我们将在下一篇文章中进行学习。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2018-05-23 16:18</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">1950</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=9077466" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(9077466);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 9077466, cb_entryCreatedDate = '2018-05-23 16:18', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

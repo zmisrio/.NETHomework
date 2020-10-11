@@ -1,0 +1,343 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="爬虫原理 我是一个爬虫，每天穿行于互联网之上，爬取我需要的一切。 说起来还要感谢HTTP协议，因为它，全世界的网站和浏览器才能够连接通信，而我也是借助HTTP协议，获取我想要的数据。 我只需要伪装成一" />
+    <meta property="og:description" content="爬虫原理 我是一个爬虫，每天穿行于互联网之上，爬取我需要的一切。 说起来还要感谢HTTP协议，因为它，全世界的网站和浏览器才能够连接通信，而我也是借助HTTP协议，获取我想要的数据。 我只需要伪装成一" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>一个爬虫的故事：这是人干的事儿？ - 轩辕之风 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/codinglife/bundle-codinglife.min.css?v=dij5UHLPkhCwoV5SpUeOW7BnKC0vZ5-8GYi-drRcxLA" />
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/xuanyuan/custom.css?v=1x/hOAF2DBc3F9SC1kmM7U6j8oc=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/codinglife/bundle-codinglife-mobile.min.css?v=JtOonyglmq10yOLdtvmh-WsVtFwm8HRB8mR_g_TGArQ" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/xuanyuan/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/xuanyuan/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/xuanyuan/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 193695;
+        var currentBlogApp = 'xuanyuan';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'CodingLife';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-10 09:36';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="page_begin_html">
+        <script>loadPageBeginHtml();</script>
+    </div>
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/xuanyuan/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/xuanyuan/">轩辕之风</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/xuanyuan/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E8%BD%A9%E8%BE%95%E4%B9%8B%E9%A3%8E">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/xuanyuan/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+70&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+607</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/xuanyuan/p/13790268.html">
+    <span>一个爬虫的故事：这是人干的事儿？</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h2 data-tool="mdnice编辑器">爬虫原理</h2>
+<p data-tool="mdnice编辑器">我是一个爬虫，每天穿行于互联网之上，爬取我需要的一切。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093255408-1936524777.png" alt="" width="482" height="319" loading="lazy"></p>
+<p data-tool="mdnice编辑器">说起来还要感谢HTTP协议，因为它，全世界的网站和浏览器才能够连接通信，而我也是借助HTTP协议，获取我想要的数据。</p>
+<p data-tool="mdnice编辑器">我只需要伪装成一个浏览器，向服务器发送HTTP请求，就能拿到网页HTML文件。</p>
+<p data-tool="mdnice编辑器">接着，我再按照HTML的格式规范，去解析其中的图片&lt;img&gt;、链接&lt;a&gt;、表单&lt;form&gt;等等我关注的信息。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093308327-690315524.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">获取链接标签以后，我又可以进一步爬取链接背后的网页，如此反复，要不了多久，一个网站中暴露出来的内容我就能爬个干净。</p>
+<p data-tool="mdnice编辑器">当然了，咱们做爬虫也还是有底线的。干我们这一行，有一个约定俗成的规定，那就是<strong>Robots协议</strong>。</p>
+<p data-tool="mdnice编辑器">只要你在网站的根目录下放置一个叫<strong>robots.txt</strong>的文件，里面写上哪些目录禁止访问，我就会绕道而行，就像这样：</p>
+<blockquote data-tool="mdnice编辑器">
+<p>User-agent: *</p>
+<p>Disallow: /a/</p>
+<p>Disallow: /b/</p>
+<p>Disallow: /c/</p>
+</blockquote>
+<p data-tool="mdnice编辑器">就像程序员们经常互相鄙视一样，在咱们爬虫的圈子里，也存在鄙视链。</p>
+<p data-tool="mdnice编辑器">地位最高的要数搜索引擎的爬虫了，他们高高在上，正大光明的爬，各个网站欢迎还来不及，都想被他们收录到搜索引擎之中，给网站带来流量。这些爬虫，都是圈子里的大佬，我们惹不起。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093325647-1832088026.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">另外有一些爬虫，他们有的不遵守robots协议，随意乱爬，有的一天天的净知道爬美女图片，把人家服务器爬崩溃了，这些爬虫我们也是看不起的。</p>
+<p data-tool="mdnice编辑器">像我这样老实本分的爬虫，平日的工作就是爬取一些网站的数据，像购物网站、点评网站等等。虽然我们很守规矩，但这些个网站还是很不待见我们，为了拿到数据，我们展开了旷日持久的拉锯战。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093333916-1418272896.png" alt="" loading="lazy"></p>
+<h2 data-tool="mdnice编辑器">反爬虫技术</h2>
+<p data-tool="mdnice编辑器">现在很多网站都上云了，云上的资源可昂贵了，CPU、内存、存储这些都价格不菲，尤其是网络带宽，价格是真心贵。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093404825-1227123340.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">那些网站不待见咱们这些爬虫也就可以理解了，我们不像搜索引擎爬虫可以给他们带来好处，相反，还会消耗他们的服务器性能，花掉他们宝贵的流量，那可是白花花的人民币，谁不心疼啊？</p>
+<p data-tool="mdnice编辑器">所以这些网站加了一个措施：一旦在HTTP请求中的<strong>user-agent</strong>字段发现这是一个爬虫，那就不搭理我们了。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093412424-1448136058.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">这个user-agent是HTTP协议中表示客户端名字的字段，那个时候我刚刚入行，没什么经验，不懂得伪装，很容易就被发现。</p>
+<p data-tool="mdnice编辑器">为了能够继续爬数据，我只好改头换面，伪装成了浏览器的名字，圈子里有的兄弟还伪装成了搜索引擎爬虫的名字，我可不像他们那样没下线。</p>
+<p data-tool="mdnice编辑器">这一招管用了没多久，这些网站就升级了策略，通过我们的行为来识别是不是真的浏览器。我们毕竟是程序，那速度比人类点击快多了，网站一旦发现我们短时间内发起了很多请求，那就掐断连接。</p>
+<p data-tool="mdnice编辑器">我只好降低爬取的频率，避免被拉入黑名单。</p>
+<p data-tool="mdnice编辑器">有些网站更狠，在网页里面插入一些假的图片，只有几个像素那种，人类的眼睛是看不见的，但是我们不知道啊，对我来说都是&lt;img&gt;标签，我一访问就中计了！立刻被拉入黑名单。</p>
+<p data-tool="mdnice编辑器">没有办法，摊上这种事，我只好想办法换个IP再去爬，真是难顶。</p>
+<p data-tool="mdnice编辑器">听说圈子里有些大佬用上了分布式技术，组团去爬，很多个IP地址，其中一个或者几个封了也不用怕，我真是很羡慕。</p>
+<h2 data-tool="mdnice编辑器">前后端分离</h2>
+<p data-tool="mdnice编辑器">在我的职业生涯中，遇到过一些奇怪的网站，明明网页中有数据，但是我一访问拿到的HTML中啥也没有，一度让我很郁闷。</p>
+<p data-tool="mdnice编辑器">后来才知道，原来他们用上了一个叫<strong>前后端分离开发</strong>的技术，数据不再从服务器渲染到HTML网页中，而是浏览器通过单独的API接口拿到后再动态加载出来，难怪我拿到的只是一个空壳子。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093436305-23481390.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">为了拿到数据，我只好也学着去请求这些数据接口，不过因为这些网站都有API网关，会检查请求的<strong>Token</strong>或者<strong>Authorization</strong>之类的认证字段，再加上我不知道他们的接口参数格式，导致我经常拿不到数据。</p>
+<p data-tool="mdnice编辑器">到了最近两年，我拿到的网页HTML越来越简单了，在浏览器中丰富多彩的页面，一查看源代码竟然只有简单几行，真是见了鬼了！</p>
+<p data-tool="mdnice编辑器">终于有一天，一个前辈告诉我，现在流行<strong>单页应用SPA</strong>了，页面全都是在前端动态生成的，拿到的HTML根本没有价值。</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093442365-1791115897.png" alt="" width="535" height="268" loading="lazy"></p>
+<p data-tool="mdnice编辑器">这简直欺人太甚了！</p>
+<p data-tool="mdnice编辑器">一不做二不休，我决定弄一个真正的浏览器进来，这个内嵌的浏览器没有界面，专门为我服务，嵌入到我的程序中，让他去真正的渲染网页，渲染完成后我再去取数据！</p>
+<p data-tool="mdnice编辑器">这是真正意义上模拟人类去访问网站了，再也不用模拟繁琐的数据接口访问，也不用担心单页应用，前端渲染就前端渲染，我再也不怕了！</p>
+<h2 data-tool="mdnice编辑器">验证码</h2>
+<p data-tool="mdnice编辑器">到后来，不知道是谁发明的，网站们纷纷用上了一种叫验证码的技术，给我们出了难题。</p>
+<p data-tool="mdnice编辑器">开始的验证码还算比较简单，一般都是些简单的数字、英文字符做了些变形，就像这样：</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093502152-223804766.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">圈子里很快有大佬教我们用文字识别技术OCR来自动识别这种验证码，我也折腾了一下，费了老大劲终于可以识别出来，准确率不敢说100%，99%还是有的。</p>
+<p data-tool="mdnice编辑器">不过没多久，这验证码就变得越来越复杂，什么汉字识别，物体识别，滑动解锁，一个比一个难，根本超出了我的理解范围，你瞧瞧下面这些验证码，这是人干的事儿吗？</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093508469-1393472663.png" alt="" loading="lazy"></p>
+<p data-tool="mdnice编辑器">哎，这还真是人才能干的事，不是我们爬虫能干的~</p>
+<p data-tool="mdnice编辑器">如今，这些网站的反爬虫技术越来越先进，我们能发挥的空间被一步步挤压。</p>
+<p data-tool="mdnice编辑器">前段时间，有个愣头青爬虫把一家公司的服务器给爬崩溃了，把人家正常业务都弄停掉了，他还被抓了起来，现在监管越来越严，搞得大家人心惶惶。</p>
+<p data-tool="mdnice编辑器">内忧外患不断，不少爬虫兄弟失业的失业，转行的转行，爬虫这碗饭，真是越来越不好吃了。。。</p>
+<h2 data-tool="mdnice编辑器">往期TOP5文章</h2>
+<p data-tool="mdnice编辑器"><a href="https://mp.weixin.qq.com/s?__biz=MzIyNjMxOTY0NA==&amp;mid=2247486528&amp;idx=1&amp;sn=3f7b09eb21969fdb16f5b0805ff69fed&amp;scene=21#wechat_redirect" data-linktype="2">我是Redis，MySQL大哥被我害惨了！</a></p>
+<p data-tool="mdnice编辑器"><a href="https://mp.weixin.qq.com/s?__biz=MzIyNjMxOTY0NA==&amp;mid=2247484717&amp;idx=1&amp;sn=2c1dd6c389c8476eb4fd178c714eaafc&amp;scene=21#wechat_redirect" data-linktype="2">CPU明明8个核，网卡为啥拼命折腾一号核？</a></p>
+<p data-tool="mdnice编辑器"><a href="https://mp.weixin.qq.com/s?__biz=MzIyNjMxOTY0NA==&amp;mid=2247484178&amp;idx=1&amp;sn=7d8e5efe7cba41122a6d978a08058627&amp;scene=21#wechat_redirect" data-linktype="2">因为一个跨域请求，我差点丢了饭碗</a></p>
+<p data-tool="mdnice编辑器"><a href="https://mp.weixin.qq.com/s?__biz=MzIyNjMxOTY0NA==&amp;mid=2247484072&amp;idx=1&amp;sn=ad1de598214dbb4eec652789d500d3a6&amp;scene=21#wechat_redirect" data-linktype="2">完了！CPU一味求快出事儿了！</a></p>
+<p data-tool="mdnice编辑器"><a href="https://mp.weixin.qq.com/s?__biz=MzIyNjMxOTY0NA==&amp;mid=2247484076&amp;idx=1&amp;sn=890977e58f86a4fb3b6a26b487697bf8&amp;scene=21#wechat_redirect" data-linktype="2">哈希表哪家强？几大编程语言吵起来了！</a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img src="https://img2020.cnblogs.com/blog/659280/202010/659280-20201010093551671-299841506.png" alt="" loading="lazy"></p>
+<p>&nbsp;</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-10 09:36</span>&nbsp;
+<a href="https://www.cnblogs.com/xuanyuan/">轩辕之风</a>&nbsp;
+阅读(<span id="post_view_count">2728</span>)&nbsp;
+评论(<span id="post_comment_count">17</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13790268" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13790268);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 193695, cb_blogApp = 'xuanyuan', cb_blogUserGuid = '8508cac9-f21a-e411-8d02-90b11c0b17d6';
+    var cb_entryId = 13790268, cb_entryCreatedDate = '2020-10-10 09:36', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 轩辕之风
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

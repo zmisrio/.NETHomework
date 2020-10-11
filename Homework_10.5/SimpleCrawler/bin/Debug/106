@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="通过使用Http定义的服务器的交互方法，进行更新与删除。&#xD;&#xA;    PUT通常用于向服务器发送请求，如果URI不存在，则要求服务器根据请求创建资源，如果存在，服务器就接受请求内容，并修改URI资源的原" />
+    <meta property="og:description" content="通过使用Http定义的服务器的交互方法，进行更新与删除。&#xD;&#xA;    PUT通常用于向服务器发送请求，如果URI不存在，则要求服务器根据请求创建资源，如果存在，服务器就接受请求内容，并修改URI资源的原" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>使用 ASP.NET Core MVC 创建 Web API（五） - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-04-25 03:31';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/10768738.html">
+    <span>使用 ASP.NET Core MVC 创建 Web API（五）</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        通过使用Http定义的服务器的交互方法，进行更新与删除。
+    PUT通常用于向服务器发送请求，如果URI不存在，则要求服务器根据请求创建资源，如果存在，服务器就接受请求内容，并修改URI资源的原始版本。如果新的资源被创建，这个原始服务器就必须通过201（Created）响应通知用户代理。如果已有资源被修改，则发送200或者204响应，表示成功完成了该请求。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p align="left"><span style="font-size: 16px"><strong><strong><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1)"><span class="postTitle2"><span style="color: rgba(0, 0, 255, 1)">使用 ASP.NET Core MVC 创建 Web API</span></span></span></span></span></strong></strong></span></p>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10614598.html"><span style="color: rgba(0, 0, 255, 1)">使用 ASP.NET Core MVC 创建 Web API（一）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10649898.html"><span style="color: rgba(0, 0, 255, 1)">使用 ASP.NET Core MVC 创建 Web API（二）</span></a></span></p>
+<p><span style="font-size: 16px; color: rgba(0, 0, 255, 1)">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10697463.html"><span style="color: rgba(0, 0, 255, 1)">使用 ASP.NET Core MVC 创建 Web API（三）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10727666.html"><span style="color: rgba(0, 0, 255, 1)">使用 ASP.NET Core MVC 创建 Web API（四）</span></a></span></p>
+<p>&nbsp;</p>
+<h2><span style="font-size: 16px">十五、添加更新方法</span></h2>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; Http定义了与 服务器的交互方法，其中除了一般我们用的最多的GET,POST这两个方法之外， 其实还有PUT和DELETE。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; PUT通常用于向服务器发送请求，如果URI不存在，则要求服务器根据请求创建资源，如果存在，服务器就接受请求内容，并修改URI资源的原始版本。如果新的资源被创建，这个原始服务器就必须通过201（Created）响应通知用户代理。如果已有资源被修改，则发送200或者204响应，表示成功完成了该请求。</span></p>
+<p><span style="font-size: 16px"><code>&nbsp;&nbsp; PutBookItem</code>与 <code>PostBookItem</code> 类似，但是使用的是 HTTP PUT。 响应是 204（无内容）。 根据 HTTP 规范，PUT 请求需要客户端发送整个更新的实体，而不仅仅是更改。如果在调用 <code>PutBookItem</code>时出错，请先调用 <code>GET</code> 方法以确保数据库中有指定的书籍信息。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在Visual Studio 2017中打开BookController.cs文件，添加以下 <code>PutBookItem</code> 方法：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> PUT: api/Book/5</span>
+        [HttpPut(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">{id}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task&lt;IActionResult&gt; PutBookItem(<span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> id, Book item)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id !=<span style="color: rgba(0, 0, 0, 1)"> item.ID)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> BadRequest();
+            }
+
+            _context.Entry(item).State </span>=<span style="color: rgba(0, 0, 0, 1)"> EntityState.Modified;
+            </span><span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _context.SaveChangesAsync();
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NoContent();
+        }</span></pre>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h3><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 一）测试 <code>PutBookItem</code>方法</span></h3>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在进行 PUT 调用之前，在数据库中必须要有所要修改的书籍信息。请先调用 GET 方法以确认数据库中存在进行 PUT 调用的书籍信息数据。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 1) 在Visual Studio 2017中按F5，启动BookApi应用程序。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2) 打开Firefox浏览器，并打开 Rester，在Reseter中，将 HTTP 方法设置为 <code>PUT</code>。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 3) 选择“Headers”选项卡，选择“Content-Type”选项，并将值设置为 JSON (application/json)。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 4) 然后选择“BODY”选项卡，在请求正文中，输入书籍信息的 JSON，如下图：</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425152851652-1003966308.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;JSON字符串：{</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "id": 24,</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "name": "Python编程实例",</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "releaseDate": "2018-03-02",</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "price": 59.49,</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "author": "马瑟斯",</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; "publishing": "机械工业出版社",</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; "rowVersion": "AAAAAAAANrE="</span></p>
+<p><span style="font-size: 16px">}</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 5) 使用鼠标左键，单击“SEND”按钮。 响应返回204，这次修改成功。结果如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425152907762-1045979678.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 6) 如下图，我们对ID=24的书籍信息进行了修改。我们来看一下更新前后的变化。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425152919943-5310623.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<h2><span style="font-size: 16px">十六、添加删除方法</span></h2>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 我们通过Http定义的DELETE方法删除一条书籍信息。DELETE请求就是执行相应的删除操作，配合数据库进行相应的删除动作。</span></p>
+<p><span style="font-size: 16px"><code>&nbsp; DeleteBookItem</code>使用的是 HTTP DELETE。 响应是 204（无内容）。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 在Visual Studio 2017中打开BookController.cs文件，添加以下 <code>DeleteBookItem</code> 方法：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> DELETE: api/Book/5</span>
+        [HttpDelete(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">{id}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task&lt;IActionResult&gt; DeleteBookItem(<span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> id)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> book = <span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _context.Book.FindAsync(id); 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (book == <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NotFound();
+            } 
+            _context.Book.Remove(book);
+            </span><span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _context.SaveChangesAsync();
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> NoContent();
+        }</span></pre>
+</div>
+<h3><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 一）&nbsp; 测试 DeleteBookItem方法</span></h3>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 在进行 DELETE 调用之前，在数据库中必须要有所要删除的书籍信息。请先调用 GET 方法以确认数据库中存在进行 DELETE 调用的书籍信息数据。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 1) 在Visual Studio 2017中按F5，启动BookApi应用程序。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 2) 打开Firefox浏览器，并打开 Rester，在Reseter中，将 HTTP 方法设置为 <code>DELETE</code>。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 3) 然后在URL输入框中输入要删除的对象URI，例如 <code>http://localhost:5000/api/book/24</code></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 4) 使用鼠标，点击“Send”按钮。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425152945390-847020811.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 5) 删除成功，如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425153002430-1617546159.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; &nbsp;&nbsp; 6)如果数据库中没有我们所要删除的数据，则会提示如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425153021431-991756343.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 7) 我们在浏览器中查询刚才的URI地址，如下图。数据已经不存在了。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201904/10343-20190425153035478-187859704.png" alt=""></span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-04-25 15:31</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">1709</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=10768738" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(10768738);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 10768738, cb_entryCreatedDate = '2019-04-25 15:31', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

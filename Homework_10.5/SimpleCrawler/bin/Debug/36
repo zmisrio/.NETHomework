@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="ABP是为新的现代Web应用程序使用最佳实践和使用最流行工具的一个起点。可作为一般用途的应用程序的基础框架或项目模板。本系列是介绍基于ABP&#x2B;EasyUI的Web开发框架的形成过程，期间包括一些ABP" />
+    <meta property="og:description" content="ABP是为新的现代Web应用程序使用最佳实践和使用最流行工具的一个起点。可作为一般用途的应用程序的基础框架或项目模板。本系列是介绍基于ABP&#x2B;EasyUI的Web开发框架的形成过程，期间包括一些ABP" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一） - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-05-23 05:06';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/10913047.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        ABP是为新的现代Web应用程序使用最佳实践和使用最流行工具的一个起点。可作为一般用途的应用程序的基础框架或项目模板。本系列是介绍基于ABP+EasyUI的Web开发框架的形成过程，期间包括一些ABP的介绍，ASP.NET MVC Core技术、EasyUI技术、JQuery技术、WebAPI 技术，以及一些我对整体框架改造的基础性东西，力求更加稳定、通用、高效、简洁，最少的代码做最多的事情。我所使用的ABP版本是4.3，是2019年3月14日的版
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p><span style="font-size: 16px">&nbsp;<span style="font-family: 仿宋; font-size: 18px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></span></p>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在前面我已经介绍了<span style="color: rgba(0, 0, 255, 1)"><a href="https://www.cnblogs.com/chillsrc/p/3695382.html" target="_blank"><span style="color: rgba(0, 0, 255, 1)">ASP.NET MVC</span></a>、<a href="https://www.cnblogs.com/chillsrc/p/10509412.html" target="_blank"><span style="color: rgba(0, 0, 255, 1)">ASP.NET Razor</span></a>、<a href="https://www.cnblogs.com/chillsrc/p/10861728.html" target="_blank"><span style="color: rgba(0, 0, 255, 1)">WEBAPI</span></a></span>等技术。我准备通过一个实践项目来整体应用一下之前介绍的技术。本系列是介绍基于ABP+EasyUI的Web开发框架的形成过程，期间包括一些ABP的介绍，ASP.NET MVC Core技术、EasyUI技术、JQuery技术、WebAPI 技术，以及一些我对整体框架改造的基础性东西，力求更加稳定、通用、高效、简洁，最少的代码做最多的事情。我所使用的ABP版本是4.3，是2019年3月14日的版本。</span></p>
+<h1><span style="font-size: 16px">一、ABP 的由来</span></h1>
+<p><span style="font-size: 16px">&nbsp; &nbsp; &nbsp;&nbsp; “DRY——避免重复代码”是一个优秀的开发者在开发软件时所具备的最重要的思想之一。我们在开发企业WEB应用程序时都有一些类似的需求，例如：都需要登录页面、用户/角色管理、权限验证、数据有效性验证、多语言/本地化等等。一个高品质的大型软件都会运用一些最佳实践，例如分层体系结构、领域驱动设计、依赖注入等。我们也可能会采用ORM、数据库迁移（Database Migrations）、日志记录（Logging）等工具。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 从零开始创建一个企业应用程序是一件繁琐的事，因为需要重复做很多常见的基础工作。许多公司都在开发自己的应用程序框架来重用于不同的项目，然后在框架的基础上开发一些新的功能。但并不是每个公司都有这样的实力。假如我们可以分享的更多，也许可以避免每个公司或每个项目的重复编写类似的代码。作者之所以把项目命名为“ASP.NET Boilerplate”，就是希望它能成为开发一般企业WEB应用的新起点，直接把ABP作为项目模板。&nbsp;</span></p>
+<h1><span style="font-size: 16px">二、ABP是什么？</span></h1>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ABP是为新的现代Web应用程序使用最佳实践和使用最流行工具的一个起点。可作为一般用途的应用程序的基础框架或项目模板。它的功能包括：</span></p>
+<p><span style="font-size: 16px"><strong>服务器端：</strong></span></p>
+<ul>
+<li><span style="font-size: 16px">基于最新的.NET技术 （我使用的是ASP.NET Core MVC、Web API 2、C#）</span></li>
+<li><span style="font-size: 16px">实现领域驱动设计（实体、仓储、领域服务、领域事件、应用服务、数据传输对象，工作单元等等）</span></li>
+<li><span style="font-size: 16px">实现分层体系结构（领域层，应用层，展现层和基础设施层）</span></li>
+<li><span style="font-size: 16px">提供了一个基础架构来开发可重用可配置的模块</span></li>
+<li><span style="font-size: 16px">集成一些最流行的开源框架/库，也许有些是你正在使用的。</span></li>
+<li><span style="font-size: 16px">提供了一个基础架构让我们很方便地使用依赖注入</span></li>
+<li><span style="font-size: 16px">提供Repository仓储模式支持不同的ORM（已实现Entity Framework 、NHibernate、MangoDb和内存数据库）</span></li>
+<li><span style="font-size: 16px">支持并实现数据库迁移（EF 的 Code first）</span></li>
+<li><span style="font-size: 16px">模块化开发（每个模块有独立的EF DbContext，可单独指定数据库）</span></li>
+<li><span style="font-size: 16px">包括一个简单的和灵活的多语言/本地化系统</span></li>
+<li><span style="font-size: 16px">包括一个 EventBus来实现服务器端全局的领域事件</span></li>
+<li><span style="font-size: 16px">统一的异常处理（应用层几乎不需要处理自己写异常处理代码）</span></li>
+<li><span style="font-size: 16px">数据有效性验证</span></li>
+<li><span style="font-size: 16px">通过Application Services自动创建Web Api层</span></li>
+<li><span style="font-size: 16px">提供基类和帮助类让我们方便地实现一些常见的任务</span></li>
+<li><span style="font-size: 16px">使用“约定优于配置原则”&nbsp;</span></li>
+</ul>
+<p><span style="font-size: 16px"><strong>客户端：</strong></span></p>
+<ul>
+<li><span style="font-size: 16px">Bootstrap、React、AngularJs、jQuery、Vue和其他JS库: jQuery.validate、jQuery.form、jQuery.blockUI、json2等</span></li>
+<li><span style="font-size: 16px">为单页面应用程序（AngularJs、Vue 、React）和多页面应用程序（Bootstrap+Jquery）提供了项目模板。</span></li>
+<li><span style="font-size: 16px">自动创建Javascript 的代理层来更方便使用Web Api</span></li>
+<li><span style="font-size: 16px">封装一些Javascript 函数，更方便地使用ajax、消息框、通知组件、忙状态的遮罩层等等</span></li>
+</ul>
+<p><span style="font-size: 16px"><strong>&nbsp;除ABP框架项目以外，还开发了名叫“Zero”的模块，实现了以下功能：</strong></span></p>
+<ul>
+<li><span style="font-size: 16px">身份验证与授权管理（通过ASP.NET Identity实现的）</span></li>
+<li><span style="font-size: 16px">用户&amp;角色管理</span></li>
+<li><span style="font-size: 16px">系统设置存取管理（系统级、租户级、用户级，作用范围自动管理）</span></li>
+<li><span style="font-size: 16px">审计日志（自动记录每一次接口的调用者和参数）</span></li>
+</ul>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<h1><span style="font-size: 16px">三、ABP不是什么？</span></h1>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ABP&nbsp;提供了一个应用程序开发模型用于最佳实践。它拥有基础类、接口和工具使我们容易建立起可维护的大规模的应用程序。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 它不是RAD工具之一，RAD工具的目的是无需编码创建应用程序。相反，ABP提供了一种编码的最佳实践。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 它不是一个代码生成工具。在运行时虽然它有一些特性构建动态代码，但它不能生成代码。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 它不是一个一体化的框架。相反，它使用流行的工具/库来完成特定的任务（例如用EF做ORM，用Log4Net做日志记录，使得Castle Windsor作为赖注入容器， AngularJs 用于SPA 框架）。 <br></span></p>
+<h1><span style="font-size: 16px">四、进入官网创建项目模板</span></h1>
+<ol>
+<li><span style="font-size: 16px"><cite>在浏览器中输入https://aspnetboilerplate.com/Templates</cite><cite>。然后</cite>依次按下图选择：<br><img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523165749669-21487549.png" alt=""></span><br>
+</li>
+<li><span style="font-size: 16px">下载提示，如下图。</span><br>
+</li>
+
+
+
+
+
+
+
+</ol>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523165759242-1976290609.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px"><strong>五、开发工具</strong></span></p>
+<p align="left"><span style="font-size: 16px">Visual Studio 2017（以上）</span></p>
+<p><span style="font-size: 16px">SQL Server 2012&nbsp; 以上</span></p>
+<h1><span style="font-size: 16px">六、启动项目</span></h1>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1．使用Visual Studio&nbsp; 2017打开我们刚才在官网上创建的项目“ABP.TPLMS”，Visual Studio 2017会自动还原Nuget包，如下图。</span><br>
+</p>
+<p align="left"><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170039544-833697924.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. 设置“ABP.TPLMS.Web.Mvc”为启动项目，如下图。</span><br>
+</p>
+<p align="left"><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170100046-1688964523.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3.打开“appsettings.json”文件，修改连接字符串，如下图。（因为我本地装的sqlserver是实例是.\sqlexpress，所以需要手动修改server。）</span><br>
+</p>
+<p align="left"><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170200934-1171227186.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4. 在Visual Studio 2017中，选择“菜单&gt;工具&gt;NuGet包管理器&gt;程序包管理器控制台”，打开程序包管理器控制台。 如下图。</span><br><span style="font-size: 16px">
+<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170220428-1016670068.png" alt=""></span><br>
+</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.在程序包管理器控制台中的“默认项目”选择“ABP.TPLMS.EntityFrameworkCore”项目，并执行<code>Update-Database</code>，以创建数据库。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170232122-97516124.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.在Visual Studio 2017中按F5运行应用程序，然后在浏览器中显示的登录页面中使用账号admin/123qwe，登陆即可。如下图。</span><br>
+</p>
+<p align="left"><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170247751-807696189.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7.在正常登录之后，浏览器中显示如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170301022-162470853.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8.默认是英文，可以选择其他语言。如下图1，图2。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170316865-1217201036.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">图1</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201905/10343-20190523170323899-552413203.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">图2</span></p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-05-23 17:06</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">12396</span>)&nbsp;
+评论(<span id="post_comment_count">24</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=10913047" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(10913047);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 10913047, cb_entryCreatedDate = '2019-05-23 17:06', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

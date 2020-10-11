@@ -1,0 +1,388 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Repository用来操作数据库进行数据存取。仓储接口在领域层定义，而仓储的实现类应该写在基础设施层。在ABP中，仓储类要实现IRepository接口，接口定义了常用的增删改查以及聚合方法，其中包" />
+    <meta property="og:description" content="Repository用来操作数据库进行数据存取。仓储接口在领域层定义，而仓储的实现类应该写在基础设施层。在ABP中，仓储类要实现IRepository接口，接口定义了常用的增删改查以及聚合方法，其中包" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四) - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-06-14 05:12';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/11024357.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        Repository用来操作数据库进行数据存取。仓储接口在领域层定义，而仓储的实现类应该写在基础设施层。在ABP中，仓储类要实现IRepository接口，接口定义了常用的增删改查以及聚合方法，其中包括同步及异步方法。如何自定义仓储实现类。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="color: rgba(0, 0, 255, 1); font-family: 仿宋; font-size: 16px"><span style="font-family: 仿宋; font-size: 18px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></span></h3>
+<p><span style="font-family: 宋体; font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: 宋体"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></p>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">在上一篇文章中我们创建了Module实体并在数据库中生成了数据表，在这一文章中我们介绍如何来对数据库进行操作。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>一、先来介绍下仓储</strong></span></p>
+<p align="left"><span style="font-size: 16px">仓储（Repository）： 仓储用来操作数据库进行数据存取。仓储接口在领域层定义，而仓储的实现类应该写在基础设施层。</span></p>
+<p align="left"><span style="font-size: 16px">在ABP中，仓储类要实现IRepository接口，接口定义了常用的增删改查以及聚合方法，其中包括同步及异步方法。主要包括以下方法：</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201906/10343-20190614170704858-853389021.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">ABP针对不同的ORM框架对这个接口进行了默认的实现：</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 1） 对于EntityFrameworkCore，提供了EfCoreRepositoryBase&lt;TDbContext, TEntity, TPrimaryKey&gt;的泛型版本的实现方式。</span><br><span style="font-size: 16px">
+&nbsp;&nbsp;&nbsp; 2） 对于NHibernate，提供了NhRepositoryBase&lt;TEntity, TPrimaryKey&gt;的泛型版本的实现方式。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 这些使用泛型的实现类，在大多数的时候，这些实现类中的方法已经足够应付一般增删改查的需要。如果默认实现类中的方法对于实体类来说已够用了，我们便不需要再去创建这个实体所需的仓储接口与实现类。直接通过在应用服务层定义仓储引用，然后通过构造函数注入即可。</span></p>
+<p align="left"><span style="font-size: 16px">接下来，我们来讲讲如何自定义仓储实现类。</span></p>
+<p align="left"><strong><span style="font-size: 16px">二、如何实现自定义仓储</span></strong></p>
+<p align="left"><span style="font-size: 16px">1.
+在Visual Studio 2017的“解决方案资源管理器”中，右键单击在领域层“ABP.TPLMS.Core”项目。
+选择“添加” &gt; “新建文件夹”。</span></p>
+<p align="left"><span style="font-size: 16px">2.将文件夹命名为“IRepositories”。</span></p>
+<p align="left"><span style="font-size: 16px">3． 右键单击“IRepositories”文件夹，然后选择“添加” &gt; “类”。
+在弹出对话框“添加新项- ABP.TPLMS.Core”中选择接口，将接口命名为
+IModuleRepository。然后使用鼠标左键单击“添加”按钮。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201906/10343-20190614170745788-828411360.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">4. <span style="font-size: 16px"> IModuleRepository</span>接口的代码如下。 <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">interface</span> IModuleRepository: IRepository&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)">
+    {
+   
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 分页查询功能模块
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="pageindex"&gt;</span><span style="color: rgba(0, 128, 0, 1)">页索引</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="pagesize"&gt;</span><span style="color: rgba(0, 128, 0, 1)">每页多少条</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;</span><span style="color: rgba(0, 128, 0, 1)">模块列表</span><span style="color: rgba(128, 128, 128, 1)">&lt;/returns&gt;</span>
+        IEnumerable&lt;Module&gt; LoadModules(<span style="color: rgba(0, 0, 255, 1)">int</span> pageindex, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> pagesize);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 批量删除
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="ids"&gt;&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">bool</span> Delete(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> ids);
+    }
+
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<h1><span style="font-size: 16px">三、在基础架构层，实现该仓储。</span></h1>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 1. 在Visual Studio 2017的“解决方案资源管理器”中，打开“ABP.TPLMS.EntityFrameworkCore”项目，找到“Repositories”目录，在这个目录中有一个ABP生成的基类。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201906/10343-20190614170908932-1796277305.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2． 鼠标右键单击“Repositories”文件夹，然后选择“添加” &gt; “类”。 在弹出对话框“添加新项- ABP.TPLMS.EntityFrameworkCore”中类命名为 ModuleRepository。然后使用鼠标左键单击“添加”按钮。代码如下。 <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.EntityFrameworkCore;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq.Expressions;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.EntityFrameworkCore.Repositories
+{
+
+   </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> ModuleRepository:TPLMSRepositoryBase&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)">, IModuleRepository
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> ModuleRepository(IDbContextProvider&lt;TPLMSDbContext&gt;<span style="color: rgba(0, 0, 0, 1)"> dbContextProvider)
+            : </span><span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(dbContextProvider)
+        {
+        } 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> Delete(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> ids)
+        {
+              </span><span style="color: rgba(0, 0, 255, 1)">var</span> idList = ids.Split(<span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">,</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">);
+            Expression</span>&lt;Func&lt;Module, <span style="color: rgba(0, 0, 255, 1)">bool</span>&gt;&gt; exp = m =&gt;<span style="color: rgba(0, 0, 0, 1)"> idList.Contains(m.Id.ToString());        
+
+            </span><span style="color: rgba(0, 0, 255, 1)">bool</span> result = <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">;      
+                Delete(exp); 
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> result;
+
+        }    
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> IEnumerable&lt;Module&gt; LoadModules(<span style="color: rgba(0, 0, 255, 1)">int</span> pageindex, <span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> pagesize)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> Context.Modules.OrderBy(u =&gt; u.Id).Skip((pageindex - <span style="color: rgba(128, 0, 128, 1)">1</span>) *<span style="color: rgba(0, 0, 0, 1)"> pagesize).Take(pagesize);
+
+        }
+    }
+}</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 该仓储实现，继承自模板生成的TPLMSRepositoryBase泛型抽象类，然后再实现IModuleRepository接口。这里要显示声明实现类的有参构造函数，使用泛型的IDbContextProvider将数据库上下文的子类ChargeStationContext传给父类的构造函数。如下图。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201906/10343-20190614171136779-2132624738.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px"><strong>四、仓储的注意事项</strong></span></p>
+<ol start="1">
+<li><span style="font-size: 16px">仓储实现类方法中，ABP自动进行数据库连接的开启和关闭。</span></li>
+<li><span style="font-size: 16px">仓储方法被调用时，数据库连接自动开启事务。</span></li>
+<li><span style="font-size: 16px">当仓储方法调用另外一个仓储的方法，它们实际上共享的是同一个数据库连接和事务。</span></li>
+<li><span style="font-size: 16px">仓储对象都是暂时性的，因为IRepository接口默认继承自ITransientDependency接口。所以，仓储对象只有在需要注入的时候，才会由Ioc容器自动创建新实例。</span></li>
+<li><span style="font-size: 16px">ABP默认的泛型仓储功能满足我们大部分的CURD操作需求。当有默认的仓储功能不满足需求的情况下，可以创建自己定制化的仓储实现类。</span></li>
+</ol>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-06-14 17:12</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">5227</span>)&nbsp;
+评论(<span id="post_comment_count">5</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=11024357" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(11024357);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 11024357, cb_entryCreatedDate = '2019-06-14 17:12', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

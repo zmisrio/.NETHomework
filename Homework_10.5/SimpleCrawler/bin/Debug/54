@@ -1,0 +1,748 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上一篇文章Abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之二(三十八) 中我们创建了入库单的一些有关DTO类与分页类。由于入库单我使用了到了数据库的存储过程，那么" />
+    <meta property="og:description" content="在上一篇文章Abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——入库管理之二(三十八) 中我们创建了入库单的一些有关DTO类与分页类。由于入库单我使用了到了数据库的存储过程，那么" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九)  - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-03-07 02:19';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/12434052.html">
+    <span> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之三存储过程(三十九) </span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上一篇文章Abp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八) 中我们创建了入库单的一些有关DTO类与分页类。由于入库单我使用了到了数据库的存储过程，那么本篇文章中我们来学习一下如何在ABP中调用存储过程。
+
+   我们都知道，仓储管理系统中的单号最基本的要求就是唯一，这个条件必须满足。或者说对于任何有单号的系统来说单号必须唯一，这是硬性要求。
+
+   先来讲讲对于单号命名的几种规则：
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: 仿宋; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<div><span style="font-family: 宋体; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-family: 宋体; font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——多语言（十）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></div>
+<div align="left"><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11448287.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——菜单-上 (十六) </span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11899403.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之一(二十七) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11975823.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之三(二十九) </span></a></span></div>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12173698.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四)</span></a> </span></span></p>
+<div><span style="font-size: 16px; color: rgba(0, 0, 128, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12260841.html"><span style="color: rgba(0, 0, 128, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之十(三十六) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——入库管理之一(三十七) </span></a></span></div>
+<div><span style="font-size: 16px"><span style="font-size: 16px"><span style="font-family: 宋体"><span style="color: rgba(0, 0, 255, 1)"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12342166.html"><span style="color: rgba(0, 0, 255, 1)">a</span></a></span><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12383343.html"><span style="color: rgba(0, 0, 255, 1)">bp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八)</span></a></span></span></span></span></span></div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 在上一篇文章<span style="color: rgba(0, 0, 255, 1)">A</span></span><span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12383343.html"><span style="color: rgba(0, 0, 255, 1)">bp(net core)+easyui+efcore实现仓储管理系统——入库管理之二(三十八) </span></a></span><span style="font-family: 宋体">中我们</span><span style="font-family: 宋体">创建了入库单的</span><span style="font-family: 宋体">一些有关</span>DTO<span style="font-family: 宋体">类</span><span style="font-family: 宋体">与分页类</span><span style="font-family: 宋体">。</span><span style="font-family: 宋体">由于入库单我使用了到了数据库的存储过程，那么本篇文章中我们来学习一下如何在</span>ABP中调用存储过程。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp;&nbsp; 我们都知道，仓储管理系统中的单号最基本的要求就是唯一，这个条件必须满足。或者说对于任何有单号的系统来说单号必须唯一，这是硬性要求。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp;&nbsp; 先来讲讲对于单号命名的几种规则：</span></p>
+<p><span style="font-size: 16px">1、不重复。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp; 这点我相信大家都懂，单号的唯一性不用解释。</span></p>
+<p><span style="font-size: 16px">2、安全性。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp; 你的单号编号尽量不要透露你公司的真实运营信息，比如你的单号就是流水号的话，那么别人就可以从单号推测出你公司的整体运营概括了。所以单号编码必须是除了你们公司少部分人外，其他人基本看不懂的。其实最好的防泄漏编码规则就是在编码中不要加入任何和公司运营的数据。</span></p>
+<p><span style="font-size: 16px">3、随机码。</span></p>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp; 很多人在制定单号编码规则的时候，第一个想法肯定是不重复唯一性，那么第二个想法可能就是安全性，同时满足前两者的第三个想法，就是在单号中添加随机码了。在单号中添加</span>2~3随机码，和流水号结合使用，可以起到隐藏流水号的真实数据的作用。</span></p>
+<p><span style="font-size: 16px">4、防止并发。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp; 这条规则主要针对编码中有时间的设定。</span></p>
+<p><span style="font-size: 16px">5、控制位数。</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp; 这点很好理解，单号的作用就是便于查询。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">单号几种常规的创建方式：</span></p>
+<p><span style="font-size: 16px">&nbsp; &nbsp; 1.利用数据库主键值产生一个自增长的订单号（订单号即数据表的主键）</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2.日期+自增长数字的订单号（比如：20200101100662、<span style="font-size: 16px">202002100662、<span style="font-size: 16px">2002100662</span></span>）</span></p>
+<p><span style="font-size: 16px">&nbsp; &nbsp; 3.随机生成的单号(6512353245921)</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 4.字母+数字字符串式，字母应该有特殊意义。如入库单，GD202016652</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-family: 宋体; font-size: 16px">&nbsp; 订单号设计用户体验规则：</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 1.订单号无重复性；</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 2.如果方便客服的话，最好是“日期+自增数”样式的订单号。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 3.订单号长度尽量保持短（15位以内），方便用户，长的号码报错几率高，影响客服效率；</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp; 4.如果你的系统用户量在千万级别，那么订单号尽量保持数字型(纯整数)，在数据库订单索引查询中，长整数字型的数据索引与检索效率，远远高于文本型。对于中小应用可以使用“字母+数字”的字符串形式！</span></p>
+<p><span style="font-size: 16px">&nbsp;<br></span></p>
+<p><strong><span style="font-size: 16px">五、<span style="font-family: 宋体">使用存储过程创建单号</span></span></strong></p>
+<p class="p"><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 在使用</span>ABP框架构<span style="font-family: 宋体">建</span><span style="font-family: 宋体">项目时，如果想在仓储层调用存储过程，我们</span><span style="font-family: 宋体">应该如何来实现呢？关于这个问题，我搜索了很多资料，最后还看了官方文档：</span><a href="https://aspnetboilerplate.com/Pages/Documents/Articles/Using-Stored-Procedures,-User-Defined-Functions-and-Views/index.html"><span style="text-decoration: underline">https://aspnetboilerplate.com/Pages/Documents/Articles/Using-Stored-Procedures,-User-Defined-Functions-and-Views/index.html</span></a></span></p>
+<p class="p"><span style="font-size: 16px"><span style="font-family: 宋体">在看完官方文档，对于如何在</span>ABP中使用存储过程已经有了一个相应的思路。现在我们来实现。</span></p>
+<ol>
+<li><span style="font-size: 16px"><span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击“ABP.TPLMS.Core”项目的“IRepositories”文件夹，在弹出菜单中选择“添加” &gt; &nbsp;“类”<span style="font-family: 宋体">，在弹出对话框中选择</span>“接口”，&nbsp;<span style="font-family: 宋体">将</span><span style="font-family: 宋体">接口</span><span style="font-family: 宋体">命名为</span> IInStockOrderRepository<span style="font-family: 宋体">，然后选择</span>“添加”。<span style="font-family: 宋体">如下图。</span></span></li>
+
+
+</ol>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2020.cnblogs.com/blog/10343/202003/10343-20200307140552031-1925065622.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2.在IInStockOrderRepository接口定义我们需要用到的方法，代码如下。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data.SqlClient;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data.Common;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Dependency; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">interface</span> IInStockOrderRepository : IRepository&lt;InStockOrder,<span style="color: rgba(0, 0, 255, 1)">int</span>&gt;<span style="color: rgba(0, 0, 0, 1)">, ITransientDependency
+    {
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 执行给定的命令
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="sql"&gt;</span><span style="color: rgba(0, 128, 0, 1)">命令字符串</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="parameters"&gt;</span><span style="color: rgba(0, 128, 0, 1)">要应用于命令字符串的参数</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;</span><span style="color: rgba(0, 128, 0, 1)">执行命令后由数据库返回的结果</span><span style="color: rgba(128, 128, 128, 1)">&lt;/returns&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">int</span> Execute(<span style="color: rgba(0, 0, 255, 1)">string</span> sql, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 创建一个原始 SQL 查询，该查询将返回给定泛型类型的元素。
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;typeparam name="T"&gt;</span><span style="color: rgba(0, 128, 0, 1)">查询所返回对象的类型</span><span style="color: rgba(128, 128, 128, 1)">&lt;/typeparam&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="sql"&gt;</span><span style="color: rgba(0, 128, 0, 1)">SQL 查询字符串</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="parameters"&gt;</span><span style="color: rgba(0, 128, 0, 1)">要应用于 SQL 查询字符串的参数</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+<span style="color: rgba(0, 0, 0, 1)">
+        IQueryable</span>&lt;T&gt; SqlQuery&lt;T&gt;(<span style="color: rgba(0, 0, 255, 1)">string</span> sql, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters);
+
+        DbCommand CreateCommand(</span><span style="color: rgba(0, 0, 255, 1)">string</span> commandText, CommandType commandType, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 创建单号
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="name"&gt;</span><span style="color: rgba(0, 128, 0, 1)">单证名称代码</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+
+        <span style="color: rgba(0, 0, 255, 1)">string</span> GetNo(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> name);
+
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 导入货物信息
+        </span><span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="ids"&gt;</span><span style="color: rgba(0, 128, 0, 1)">导入货物的ID集合</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="no"&gt;</span><span style="color: rgba(0, 128, 0, 1)">单号</span><span style="color: rgba(128, 128, 128, 1)">&lt;/param&gt;</span>
+        <span style="color: rgba(0, 0, 255, 1)">void</span> ImportCargo(<span style="color: rgba(0, 0, 255, 1)">string</span> ids,<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> no);
+
+    }
+}</span></pre>
+</div>
+</div>
+<div>&nbsp;</div>
+<div><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 3. <span style="font-family: 宋体">在</span>Visual Studio 2017的“解决方案资源管理器”中，右键单击“ABP.TPLMS.EntityFrameworkCore”项目的“Repositories”文件夹，在弹出菜单中选择“添加” &gt; &nbsp;“类”<span style="font-family: 宋体">，</span>&nbsp;<span style="font-family: 宋体">将</span><span style="font-family: 宋体">类</span><span style="font-family: 宋体">命名为</span> InStockOrderRepository<span style="font-family: 宋体">，并继承</span>IInStockOrderRepository接口。实现接口中的方法。代码如下。</span></div>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Data;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Dependency;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Entities;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.EntityFrameworkCore;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.IRepositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Microsoft.EntityFrameworkCore;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data.Common;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Data.SqlClient;
+
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Linq;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks;
+ 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.EntityFrameworkCore.Repositories
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> InStockOrderRepository : TPLMSRepositoryBase&lt;InStockOrder, <span style="color: rgba(0, 0, 255, 1)">int</span>&gt;<span style="color: rgba(0, 0, 0, 1)"> ,IInStockOrderRepository, ITransientDependency
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span><span style="color: rgba(0, 0, 0, 1)"> IActiveTransactionProvider _transactionProvider; 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> InStockOrderRepository(IDbContextProvider&lt;TPLMSDbContext&gt; dbContextProvider) : <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(dbContextProvider)
+        { }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">protected</span> InStockOrderRepository(IDbContextProvider&lt;TPLMSDbContext&gt;<span style="color: rgba(0, 0, 0, 1)"> dbContextProvider, IActiveTransactionProvider transactionProvider)
+            : </span><span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(dbContextProvider)
+        {
+
+            _transactionProvider </span>=<span style="color: rgba(0, 0, 0, 1)"> transactionProvider;
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> DbCommand CreateCommand(<span style="color: rgba(0, 0, 255, 1)">string</span> commandText, CommandType commandType, <span style="color: rgba(0, 0, 255, 1)">params</span><span style="color: rgba(0, 0, 0, 1)"> SqlParameter[] parameters)
+        {
+
+            EnsureConnectionOpen();
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> dbFacade =<span style="color: rgba(0, 0, 0, 1)"> Context.Database;
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> connection =<span style="color: rgba(0, 0, 0, 1)"> Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetDbConnection(dbFacade);
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> command =<span style="color: rgba(0, 0, 0, 1)"> connection.CreateCommand();
+            command.CommandText </span>=<span style="color: rgba(0, 0, 0, 1)"> commandText;
+            command.CommandType </span>=<span style="color: rgba(0, 0, 0, 1)"> commandType;
+            command.Transaction </span>=<span style="color: rgba(0, 0, 0, 1)"> GetActiveTransaction();
+
+            </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> parameter <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> parameters)
+            {
+                command.Parameters.Add(parameter);
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> command;
+
+        }
+
+        DbCommand IInStockOrderRepository.CreateCommand(</span><span style="color: rgba(0, 0, 255, 1)">string</span> commandText, CommandType commandType, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters)
+        {
+
+            EnsureConnectionOpen();
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> dbFacade =<span style="color: rgba(0, 0, 0, 1)"> Context.Database;
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> connection =<span style="color: rgba(0, 0, 0, 1)"> Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetDbConnection(dbFacade);
+ 
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> command =<span style="color: rgba(0, 0, 0, 1)"> connection.CreateCommand();
+            command.CommandText </span>=<span style="color: rgba(0, 0, 0, 1)"> commandText;
+            command.CommandType </span>=<span style="color: rgba(0, 0, 0, 1)"> commandType;
+            command.Transaction </span>=<span style="color: rgba(0, 0, 0, 1)"> GetActiveTransaction();
+            </span><span style="color: rgba(0, 0, 255, 1)">foreach</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> parameter <span style="color: rgba(0, 0, 255, 1)">in</span><span style="color: rgba(0, 0, 0, 1)"> parameters)
+            {
+                command.Parameters.Add(parameter);
+
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> command;
+        }
+
+ 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> EnsureConnectionOpen()
+        {
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> dbFacade =<span style="color: rgba(0, 0, 0, 1)"> Context.Database;
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> connection =<span style="color: rgba(0, 0, 0, 1)"> Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.GetDbConnection(dbFacade);
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (connection.State !=<span style="color: rgba(0, 0, 0, 1)"> ConnectionState.Open)
+            {
+                connection.Open();
+            }
+
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">int</span> IInStockOrderRepository.Execute(<span style="color: rgba(0, 0, 255, 1)">string</span> sql, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">throw</span> <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> NotImplementedException();
+
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span><span style="color: rgba(0, 0, 0, 1)"> DbTransaction GetActiveTransaction()
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> (DbTransaction)_transactionProvider.GetActiveTransaction(<span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> ActiveTransactionProviderArgs
+            {
+                {</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">ContextType</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(0, 0, 255, 1)">typeof</span><span style="color: rgba(0, 0, 0, 1)">(TPLMSDbContext) },
+                {</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">MultiTenancySide</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">, MultiTenancySide }
+            });
+
+        }
+ 
+
+         </span><span style="color: rgba(0, 0, 255, 1)">string</span> IInStockOrderRepository.GetNo(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> name)
+        {       
+
+            SqlParameter[] parameters </span>=<span style="color: rgba(0, 0, 0, 1)"> {
+                 </span><span style="color: rgba(0, 0, 255, 1)">new</span> SqlParameter(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Name</span><span style="color: rgba(128, 0, 0, 1)">"</span>,System.Data.SqlDbType.NVarChar,<span style="color: rgba(128, 0, 128, 1)">10</span><span style="color: rgba(0, 0, 0, 1)">),
+                 </span><span style="color: rgba(0, 0, 255, 1)">new</span> SqlParameter(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">BH</span><span style="color: rgba(128, 0, 0, 1)">"</span>, System.Data.SqlDbType.NVarChar,<span style="color: rgba(128, 0, 128, 1)">20</span><span style="color: rgba(0, 0, 0, 1)">)
+
+                                          };
+
+            parameters[</span><span style="color: rgba(128, 0, 128, 1)">0</span>].Value =<span style="color: rgba(0, 0, 0, 1)"> name;
+            parameters[</span><span style="color: rgba(128, 0, 128, 1)">1</span>].Direction =<span style="color: rgba(0, 0, 0, 1)"> System.Data.ParameterDirection.Output;
+
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span> cnt =<span style="color: rgba(0, 0, 0, 1)"> Context.Database.ExecuteSqlCommand(
+ </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">EXEC p_NextBH @Name, @BH output</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+parameters);
+
+            </span><span style="color: rgba(0, 0, 255, 1)">string</span> no = parameters[<span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">].Value.ToString();
+
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (cnt &lt; <span style="color: rgba(128, 0, 128, 1)">0</span><span style="color: rgba(0, 0, 0, 1)">)
+            {
+                no </span>= <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.Empty;
+            }
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> no;
+        }
+
+ 
+
+        </span><span style="color: rgba(0, 0, 255, 1)">void</span> IInStockOrderRepository.ImportCargo(<span style="color: rgba(0, 0, 255, 1)">string</span> ids,<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> no)
+        {
+
+            SqlParameter[] parameters </span>=<span style="color: rgba(0, 0, 0, 1)"> {
+                </span><span style="color: rgba(0, 0, 255, 1)">new</span> SqlParameter(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">id</span><span style="color: rgba(128, 0, 0, 1)">"</span>,System.Data.SqlDbType.VarChar,<span style="color: rgba(128, 0, 128, 1)">500</span><span style="color: rgba(0, 0, 0, 1)">),
+                </span><span style="color: rgba(0, 0, 255, 1)">new</span> SqlParameter(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">No</span><span style="color: rgba(128, 0, 0, 1)">"</span>, System.Data.SqlDbType.NVarChar,<span style="color: rgba(128, 0, 128, 1)">20</span><span style="color: rgba(0, 0, 0, 1)">)
+
+         };
+
+            parameters[</span><span style="color: rgba(128, 0, 128, 1)">0</span>].Value = ids + <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">,</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+            parameters[</span><span style="color: rgba(128, 0, 128, 1)">1</span>].Value =<span style="color: rgba(0, 0, 0, 1)"> no;
+            </span><span style="color: rgba(0, 0, 255, 1)">int</span> cnt =<span style="color: rgba(0, 0, 0, 1)"> Context.Database.ExecuteSqlCommand(
+ </span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">EXEC SP_ImportCargo2GDE @id, @No</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+parameters);
+        }
+
+        IQueryable</span>&lt;T&gt; IInStockOrderRepository.SqlQuery&lt;T&gt;(<span style="color: rgba(0, 0, 255, 1)">string</span> sql, <span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)">[] parameters)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">throw</span> <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> NotImplementedException();
+        }
+    }
+}
+
+ </span></pre>
+</div>
+<p><span style="font-size: 16px"><span style="font-family: 新宋体">&nbsp;&nbsp; 4.在这里我一共使用了两个存储过程，</span>p_NextBH <span style="font-family: 新宋体">与</span>SP_ImportCargo2GDE<span style="font-family: 新宋体">。</span></span></p>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp; 5.定义一张表</span>TPLMS_NO<span style="font-family: 宋体">，专门用来存放存所有需要唯一单号的单号的类型，以及类单号当前所使用到最大值。</span></span></p>
+</div>
+<div>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">CREATE</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">(
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Name</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">nvarchar</span><span style="color: rgba(255, 0, 0, 1)">]</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>) <span style="color: rgba(128, 128, 128, 1)">NOT</span> <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Head</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">nvarchar</span><span style="color: rgba(255, 0, 0, 1)">]</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>) <span style="color: rgba(128, 128, 128, 1)">NOT</span> <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CurrentNo</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">int</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(128, 128, 128, 1)">NOT</span> <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">BHLen</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">bigint</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(128, 128, 128, 1)">NOT</span> <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">IsYear</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">int</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(128, 128, 128, 1)">NOT</span> <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">DESCRIPTION</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">nvarchar</span><span style="color: rgba(255, 0, 0, 1)">]</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">50</span>) <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(0, 0, 255, 1)">PRIMARY</span> <span style="color: rgba(0, 0, 255, 1)">KEY</span> <span style="color: rgba(0, 0, 255, 1)">CLUSTERED</span><span style="color: rgba(0, 0, 0, 1)"> 
+(
+</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Name</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">ASC</span><span style="color: rgba(0, 0, 0, 1)">
+)</span><span style="color: rgba(0, 0, 255, 1)">WITH</span> (PAD_INDEX  <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 0, 255, 1)">OFF</span>, STATISTICS_NORECOMPUTE  <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 0, 255, 1)">OFF</span>, IGNORE_DUP_KEY <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 0, 255, 1)">OFF</span>, ALLOW_ROW_LOCKS  <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 0, 255, 1)">ON</span>, ALLOW_PAGE_LOCKS  <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 0, 255, 1)">ON</span>) <span style="color: rgba(0, 0, 255, 1)">ON</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">PRIMARY</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+) </span><span style="color: rgba(0, 0, 255, 1)">ON</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">PRIMARY</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">ALTER</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">ADD</span>  <span style="color: rgba(0, 0, 255, 1)">DEFAULT</span> (<span style="color: rgba(255, 0, 0, 1)">''</span>) <span style="color: rgba(0, 0, 255, 1)">FOR</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Head</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">ALTER</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">ADD</span>  <span style="color: rgba(0, 0, 255, 1)">DEFAULT</span> ((<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span>)) <span style="color: rgba(0, 0, 255, 1)">FOR</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CurrentNo</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">ALTER</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">ADD</span>  <span style="color: rgba(0, 0, 255, 1)">DEFAULT</span> ((<span style="color: rgba(128, 0, 0, 1); font-weight: bold">6</span>)) <span style="color: rgba(0, 0, 255, 1)">FOR</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">BHLen</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">ALTER</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">ADD</span>  <span style="color: rgba(0, 0, 255, 1)">DEFAULT</span> ((<span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>)) <span style="color: rgba(0, 0, 255, 1)">FOR</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">IsYear</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">INSERT</span> <span style="color: rgba(0, 0, 255, 1)">INTO</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span>(<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Name</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Head</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CurrentNo</span><span style="color: rgba(255, 0, 0, 1)">]</span> ,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">BHLen</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">IsYear</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">DESCRIPTION</span><span style="color: rgba(255, 0, 0, 1)">]</span>) <span style="color: rgba(0, 0, 255, 1)">VALUES</span>  (<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">GDE</span><span style="color: rgba(255, 0, 0, 1)">'</span>,<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">GD</span><span style="color: rgba(255, 0, 0, 1)">'</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">6</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>,<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">入库单</span><span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">)
+
+</span><span style="color: rgba(0, 0, 255, 1)">GO</span>
+<span style="color: rgba(0, 0, 255, 1)">INSERT</span> <span style="color: rgba(0, 0, 255, 1)">INTO</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span>(<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Name</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Head</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CurrentNo</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">BHLen</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">IsYear</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">DESCRIPTION</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">)
+</span><span style="color: rgba(0, 0, 255, 1)">VALUES</span> (<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">BAT</span><span style="color: rgba(255, 0, 0, 1)">'</span>,<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">A</span><span style="color: rgba(255, 0, 0, 1)">'</span> ,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">7</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span>,<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">批次号</span><span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">)
+
+</span><span style="color: rgba(0, 0, 255, 1)">GO</span></pre>
+</div>
+<span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6.由于这是一个小应用，所以单号的生成就是字母+日期+流水号。通过</span><span style="font-family: 新宋体; font-size: 16px"><span style="font-size: 16px">p_NextBH来实现单号的创建</span>，专门用来在上一步的表中取单号。</span><span style="font-size: 16px">p_NextBH这个存储过程的实现如下：</span>
+<p style="font-size: 16px"><span style="font-size: 16px">&nbsp;</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">获取新编号的存储过程</span>
+
+<span style="color: rgba(0, 0, 255, 1)">CREATE</span> <span style="color: rgba(0, 0, 255, 1)">PROC</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">p_NextBH</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+<span style="color: rgba(0, 128, 0, 1)">@Name</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>),           <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">编号种类</span>
+<span style="color: rgba(0, 128, 0, 1)">@BH</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">20</span>) OUTPUT <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">新编号</span>
+<span style="color: rgba(0, 0, 255, 1)">AS</span>
+
+<span style="color: rgba(0, 0, 255, 1)">BEGIN</span> <span style="color: rgba(0, 0, 255, 1)">TRAN</span>
+<span style="color: rgba(0, 0, 255, 1)">UPDATE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">WITH</span>(ROWLOCK) <span style="color: rgba(0, 0, 255, 1)">SET</span> 
+<span style="color: rgba(0, 128, 0, 1)">@BH</span><span style="color: rgba(128, 128, 128, 1)">=</span>Head<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(255, 0, 255, 1)">case</span> isyear <span style="color: rgba(0, 0, 255, 1)">when</span> <span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span> <span style="color: rgba(0, 0, 255, 1)">then</span> <span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">varchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">4</span>),<span style="color: rgba(255, 0, 255, 1)">year</span>(<span style="color: rgba(255, 0, 255, 1)">getdate</span>())) <span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(255, 0, 0, 1)">''</span> <span style="color: rgba(0, 0, 255, 1)">end</span> 
+<span style="color: rgba(128, 128, 128, 1)">+RIGHT</span>(<span style="color: rgba(255, 0, 255, 1)">POWER</span>(<span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">bigint</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>),BHLen)<span style="color: rgba(128, 128, 128, 1)">+</span>CurrentNo<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span><span style="color: rgba(0, 0, 0, 1)">,BHLen),
+CurrentNo</span><span style="color: rgba(128, 128, 128, 1)">=</span>CurrentNo<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>
+<span style="color: rgba(0, 0, 255, 1)">WHERE</span> Name<span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(0, 128, 0, 1)">@Name</span>
+<span style="color: rgba(0, 0, 255, 1)">select</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span>
+
+<span style="color: rgba(0, 0, 255, 1)">COMMIT</span> <span style="color: rgba(0, 0, 255, 1)">TRAN</span>
+<span style="color: rgba(0, 0, 255, 1)">GO</span></pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 7. </span><span style="font-size: 16px"><span style="font-family: 新宋体">关于使用</span>p_NextBH这个存储过程生成单号有什么优缺点呢？在存储过程中使用事物，数据库的性能会急剧下滑。对于小应用来说，这并不是太大的问题，对于中大型应用来说，就可能是问题了。可以直接使用UPDATE获取到的更新锁，即SQL SERVER会保证UPDATE的顺序执行。</span><span style="font-size: 16px">适用中型应用，但是无法满足高并发性能要求。我们来改一下存储过程。 <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">获取新编号的存储过程</span>
+<span style="color: rgba(0, 0, 255, 1)">CREATE</span> <span style="color: rgba(0, 0, 255, 1)">PROC</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">p_NextBH</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+<span style="color: rgba(0, 128, 0, 1)">@Name</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>),           <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">编号种类</span>
+<span style="color: rgba(0, 128, 0, 1)">@BH</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">20</span>) OUTPUT <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">新编号</span>
+
+<span style="color: rgba(0, 0, 255, 1)">AS</span>
+
+<span style="color: rgba(0, 0, 255, 1)">UPDATE</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TPLMS_NO</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">WITH</span>(ROWLOCK) <span style="color: rgba(0, 0, 255, 1)">SET</span> 
+<span style="color: rgba(0, 128, 0, 1)">@BH</span><span style="color: rgba(128, 128, 128, 1)">=</span>Head<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(255, 0, 255, 1)">case</span> isyear <span style="color: rgba(0, 0, 255, 1)">when</span> <span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span> <span style="color: rgba(0, 0, 255, 1)">then</span> <span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">varchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">4</span>),<span style="color: rgba(255, 0, 255, 1)">year</span>(<span style="color: rgba(255, 0, 255, 1)">getdate</span>())) <span style="color: rgba(0, 0, 255, 1)">else</span> <span style="color: rgba(255, 0, 0, 1)">''</span> <span style="color: rgba(0, 0, 255, 1)">end</span> 
+<span style="color: rgba(128, 128, 128, 1)">+RIGHT</span>(<span style="color: rgba(255, 0, 255, 1)">POWER</span>(<span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">bigint</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">10</span>),BHLen)<span style="color: rgba(128, 128, 128, 1)">+</span>CurrentNo<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span><span style="color: rgba(0, 0, 0, 1)">,BHLen),
+CurrentNo</span><span style="color: rgba(128, 128, 128, 1)">=</span>CurrentNo<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>
+<span style="color: rgba(0, 0, 255, 1)">WHERE</span> Name<span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(0, 128, 0, 1)">@Name</span>
+
+<span style="color: rgba(0, 0, 255, 1)">select</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span>
+
+<span style="color: rgba(0, 0, 255, 1)">GO</span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 8. 通过传递货物信息的ID，把货物信息导入到入库单中，这个功能通过存储过程</span><span style="font-size: 16px">SP_ImportCargo2GDE来实现。<span style="font-family: 新宋体">这个存储过程的实现如下：</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">CREATE</span> <span style="color: rgba(0, 0, 255, 1)">Proc</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SP_ImportCargo2GDE</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+<span style="color: rgba(0, 128, 0, 1)">@id</span> <span style="color: rgba(0, 0, 255, 1)">varchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">1000</span>),           <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">id集合</span>
+<span style="color: rgba(0, 128, 0, 1)">@No</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">20</span>)  <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">单号</span>
+
+<span style="color: rgba(0, 0, 255, 1)">as</span> 
+ 
+
+<span style="color: rgba(0, 0, 255, 1)">CREATE</span> <span style="color: rgba(0, 0, 255, 1)">TABLE</span> #IdTable(Id <span style="color: rgba(0, 0, 255, 1)">int</span>  <span style="color: rgba(0, 0, 255, 1)">NULL</span><span style="color: rgba(0, 0, 0, 1)">) 
+
+</span><span style="color: rgba(0, 0, 255, 1)">DECLARE</span> <span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span> <span style="color: rgba(0, 0, 255, 1)">int</span>
+    <span style="color: rgba(0, 0, 255, 1)">DECLARE</span> <span style="color: rgba(0, 128, 0, 1)">@PointerCurr</span> <span style="color: rgba(0, 0, 255, 1)">int</span>
+    <span style="color: rgba(0, 0, 255, 1)">DECLARE</span> <span style="color: rgba(0, 128, 0, 1)">@TName</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">100</span><span style="color: rgba(0, 0, 0, 1)">)
+    </span><span style="color: rgba(0, 0, 255, 1)">Set</span> <span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>
+    <span style="color: rgba(0, 0, 255, 1)">while</span> (<span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span> <span style="color: rgba(128, 128, 128, 1)">&lt;</span> <span style="color: rgba(255, 0, 255, 1)">LEN</span>(<span style="color: rgba(0, 128, 0, 1)">@id</span><span style="color: rgba(0, 0, 0, 1)">))
+    </span><span style="color: rgba(0, 0, 255, 1)">Begin</span>
+
+        <span style="color: rgba(0, 0, 255, 1)">Set</span> <span style="color: rgba(0, 128, 0, 1)">@PointerCurr</span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(255, 0, 255, 1)">CharIndex</span>(<span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">,</span><span style="color: rgba(255, 0, 0, 1)">'</span>,<span style="color: rgba(0, 128, 0, 1)">@id</span>,<span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span><span style="color: rgba(0, 0, 0, 1)">)
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span>(<span style="color: rgba(0, 128, 0, 1)">@PointerCurr</span><span style="color: rgba(128, 128, 128, 1)">&gt;</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span><span style="color: rgba(0, 0, 0, 1)">)
+        </span><span style="color: rgba(0, 0, 255, 1)">Begin</span>
+
+            <span style="color: rgba(0, 0, 255, 1)">set</span> <span style="color: rgba(0, 128, 0, 1)">@TName</span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(255, 0, 255, 1)">SUBSTRING</span>(<span style="color: rgba(0, 128, 0, 1)">@id</span>,<span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span>,<span style="color: rgba(0, 128, 0, 1)">@PointerCurr</span><span style="color: rgba(128, 128, 128, 1)">-</span><span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span>)         <span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">如果作为查询条件，我需要创建一个临时表，将数据插入进去</span>
+         <span style="color: rgba(0, 0, 255, 1)">insert</span> <span style="color: rgba(0, 0, 255, 1)">into</span> #IdTable (Id) <span style="color: rgba(0, 0, 255, 1)">VALUES</span> (<span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">int</span>,<span style="color: rgba(0, 128, 0, 1)">@TName</span><span style="color: rgba(0, 0, 0, 1)">))
+         </span><span style="color: rgba(0, 0, 255, 1)">SET</span> <span style="color: rgba(0, 128, 0, 1)">@PointerPrev</span> <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 128, 0, 1)">@PointerCurr</span><span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(128, 0, 0, 1); font-weight: bold">1</span>
+
+        <span style="color: rgba(0, 0, 255, 1)">End</span>
+        <span style="color: rgba(0, 0, 255, 1)">else</span>
+            <span style="color: rgba(0, 0, 255, 1)">Break</span>
+    <span style="color: rgba(0, 0, 255, 1)">End</span> 
+
+<span style="color: rgba(0, 0, 255, 1)">DECLARE</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span> <span style="color: rgba(0, 0, 255, 1)">nvarchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">20</span>),<span style="color: rgba(0, 128, 0, 1)">@batch</span> <span style="color: rgba(0, 0, 255, 1)">varchar</span>(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">20</span>),<span style="color: rgba(0, 128, 0, 1)">@maxseqno</span> <span style="color: rgba(0, 0, 255, 1)">int</span>
+<span style="color: rgba(0, 0, 255, 1)">select</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(0, 128, 0, 1)">@No</span>
+<span style="color: rgba(0, 0, 255, 1)">select</span> <span style="color: rgba(0, 128, 0, 1)">@maxseqno</span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(255, 0, 255, 1)">isnull</span>(<span style="color: rgba(255, 0, 255, 1)">MAX</span>(seqno),<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span>) <span style="color: rgba(0, 0, 255, 1)">from</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">InStockOrderDetail</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(0, 0, 255, 1)">where</span> InStockNo<span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span>
+
+<span style="color: rgba(0, 128, 128, 1)">--</span><span style="color: rgba(0, 128, 128, 1)">创建批次号</span>
+
+<span style="color: rgba(0, 0, 255, 1)">EXEC</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">p_NextBH</span><span style="color: rgba(255, 0, 0, 1)">]</span> <span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">BAT</span><span style="color: rgba(255, 0, 0, 1)">'</span>, <span style="color: rgba(0, 128, 0, 1)">@batch</span><span style="color: rgba(0, 0, 0, 1)"> OUTPUT 
+
+</span><span style="color: rgba(0, 0, 255, 1)">INSERT</span> <span style="color: rgba(0, 0, 255, 1)">INTO</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span>.<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">InStockOrderDetail</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+           (</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">InStockNo</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SeqNo</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SupplierId</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CargoCode</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">HSCode</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CargoName</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Spcf</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+           ,</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Unit</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Country</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Brand</span><span style="color: rgba(255, 0, 0, 1)">]</span> ,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Curr</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Package</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Length</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Width</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Height</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Qty</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+           ,</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Vol</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">LawfQty</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SecdLawfQty</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Price</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TotalAmt</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">GrossWt</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">NetWt</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+           ,</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">LawfUnit</span><span style="color: rgba(255, 0, 0, 1)">]</span> ,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SecdLawfUnit</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Batch</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">DeliveryOrderDetailId</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CreationTime</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">)
+
+   </span><span style="color: rgba(0, 0, 255, 1)">SELECT</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span>,<span style="color: rgba(255, 0, 255, 1)">convert</span>(<span style="color: rgba(0, 0, 255, 1)">int</span>,seqno)<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(0, 128, 0, 1)">@maxseqno</span>,a.supplierid,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CargoCode</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">HSCode</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">CargoName</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Spcf</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+         ,</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Unit</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Country</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Brand</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Curr</span><span style="color: rgba(255, 0, 0, 1)">]</span>  ,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Package</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Length</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Width</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Height</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Qty</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+ ,</span><span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Vol</span><span style="color: rgba(255, 0, 0, 1)">]</span> ,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">LawfQty</span><span style="color: rgba(255, 0, 0, 1)">]</span>, <span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SecdLawfQty</span><span style="color: rgba(255, 0, 0, 1)">]</span> ,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">Price</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">TotalAmt</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">GrossWt</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">NetWt</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">
+ ,</span><span style="color: rgba(255, 0, 0, 1)">''</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">LawfUnit</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(255, 0, 0, 1)">''</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">SecdLawfUnit</span><span style="color: rgba(255, 0, 0, 1)">]</span>,<span style="color: rgba(0, 128, 0, 1)">@batch</span>,a.id,<span style="color: rgba(255, 0, 255, 1)">getdate</span><span style="color: rgba(0, 0, 0, 1)">()
+  </span><span style="color: rgba(0, 0, 255, 1)">FROM</span><span style="color: rgba(0, 0, 0, 1)"> 
+  (</span><span style="color: rgba(0, 0, 255, 1)">select</span> row_number() <span style="color: rgba(0, 0, 255, 1)">OVER</span>  ( <span style="color: rgba(0, 0, 255, 1)">order</span> <span style="color: rgba(0, 0, 255, 1)">by</span> id) seqno,<span style="color: rgba(128, 128, 128, 1)">*</span> <span style="color: rgba(0, 0, 255, 1)">from</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">dbo</span><span style="color: rgba(255, 0, 0, 1)">]</span><span style="color: rgba(0, 0, 0, 1)">.Cargos
+   </span><span style="color: rgba(0, 0, 255, 1)">where</span> id <span style="color: rgba(128, 128, 128, 1)">in</span> (<span style="color: rgba(0, 0, 255, 1)">select</span> id <span style="color: rgba(0, 0, 255, 1)">from</span><span style="color: rgba(0, 0, 0, 1)"> #IdTable
+  </span><span style="color: rgba(0, 0, 255, 1)">where</span>  id <span style="color: rgba(128, 128, 128, 1)">not</span> <span style="color: rgba(128, 128, 128, 1)">in</span> (<span style="color: rgba(0, 0, 255, 1)">select</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">DeliveryOrderDetailId</span><span style="color: rgba(255, 0, 0, 1)">]</span> 
+  <span style="color: rgba(0, 0, 255, 1)">from</span> <span style="color: rgba(255, 0, 0, 1)">[</span><span style="color: rgba(255, 0, 0, 1)">InStockOrderDetail</span><span style="color: rgba(255, 0, 0, 1)">]</span>
+  <span style="color: rgba(0, 0, 255, 1)">where</span> InStockNo<span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(0, 128, 0, 1)">@BH</span><span style="color: rgba(0, 0, 0, 1)">
+  )
+  )   
+  ) a 
+
+</span><span style="color: rgba(0, 0, 255, 1)">drop</span> <span style="color: rgba(0, 0, 255, 1)">table</span><span style="color: rgba(0, 0, 0, 1)"> #IdTable
+
+</span><span style="color: rgba(0, 0, 255, 1)">GO</span></pre>
+</div>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 9. </span><span style="font-size: 16px">关于单号的创建，除了使用存储过程，也可以使用应用程序来创建。不过使用应用程序来创建，你要保证应用的高可用性，并且建议把最大值保存到数据库。我在这里只是给出大概的代码。 <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> class BillNoBuilder{
+    private static object locker </span><span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(0, 0, 0, 1)"> new object();      
+
+    private static </span><span style="color: rgba(0, 0, 255, 1)">int</span> seq <span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span><span style="color: rgba(0, 0, 0, 1)">;      
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> static string NextBillNumber(string head){
+       </span><span style="color: rgba(128, 128, 128, 1)">//</span><span style="color: rgba(0, 0, 0, 1)">在这里执行，或是经过一定的步长之后，再执行。GetMaxSeq();
+        lock(locker){
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span>(seq <span style="color: rgba(128, 128, 128, 1)">==</span> <span style="color: rgba(128, 0, 0, 1); font-weight: bold">99999999</span><span style="color: rgba(0, 0, 0, 1)">)
+                seq </span><span style="color: rgba(128, 128, 128, 1)">=</span> <span style="color: rgba(128, 0, 0, 1); font-weight: bold">0</span><span style="color: rgba(0, 0, 0, 1)">;
+            </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)">
+                seq</span><span style="color: rgba(128, 128, 128, 1)">++</span><span style="color: rgba(0, 0, 0, 1)">;
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> head<span style="color: rgba(128, 128, 128, 1)">+</span><span style="color: rgba(0, 0, 255, 1)">DateTime</span>.Now.ToString("yyyyMMdd") <span style="color: rgba(128, 128, 128, 1)">+</span> sn.ToString().PadLeft(<span style="color: rgba(128, 0, 0, 1); font-weight: bold">8</span>, <span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(255, 0, 0, 1)">0</span><span style="color: rgba(255, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">);
+        }
+}
+
+</span><span style="color: rgba(128, 128, 128, 1)">//</span><span style="color: rgba(0, 0, 0, 1)">获取数据库中最大的序列号
+private static void GetMaxSeq()
+{
+</span><span style="color: rgba(128, 128, 128, 1)">//</span>seq <span style="color: rgba(128, 128, 128, 1)">=</span><span style="color: rgba(0, 0, 0, 1)">数据库中的最大值
+
+}
+
+ 
+    </span><span style="color: rgba(128, 128, 128, 1)">//</span><span style="color: rgba(0, 0, 0, 1)"> 防止创建类的实例
+    private BillNoBuilder(){}
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-03-07 14:19</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">664</span>)&nbsp;
+评论(<span id="post_comment_count">1</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=12434052" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(12434052);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 12434052, cb_entryCreatedDate = '2020-03-07 14:19', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

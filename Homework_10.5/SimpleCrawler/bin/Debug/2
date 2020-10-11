@@ -1,0 +1,570 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="一，引言 还记得国庆期间，我们学习了一下关于Azure Cosmos DB 的一些基础知识以及Azure Cosmos DB 的几种支持数据库类型。今天就开始分享一些实战操作，如何通过Azure Po" />
+    <meta property="og:description" content="一，引言 还记得国庆期间，我们学习了一下关于Azure Cosmos DB 的一些基础知识以及Azure Cosmos DB 的几种支持数据库类型。今天就开始分享一些实战操作，如何通过Azure Po" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Azure Cosmos DB (二) SQL API 操作 - Grant_Allen - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/buildtowin/bundle-buildtowin.min.css?v=Tgl1d--mRuaeqinLMFZ2zu1KEazOmNWHLTJIcXu4SXU" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/buildtowin/bundle-buildtowin-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/AllenMaster/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/AllenMaster/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/AllenMaster/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 593290;
+        var currentBlogApp = 'AllenMaster';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'BuildtoWin';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 03:49';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/AllenMaster/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/AllenMaster/">Grant_Allen</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/AllenMaster/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+</li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/AllenMaster/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+35&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+403</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/AllenMaster/p/13786605.html">
+    <span>Azure Cosmos DB (二) SQL API 操作</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h2>一，引言</h2>
+<p>　　还记得国庆期间，我们学习了一下关于Azure Cosmos DB 的一些基础知识以及Azure Cosmos DB 的几种支持数据库类型。今天就开始分享一些实战操作，如何通过Azure Portal 创建 Cosmos DB，以及在实际项目中如何通过代码操作数据库。</p>
+<p>　　今天要演示的是 Core(SQL) 核心，SQL API 是具有丰富的SQL查询功能的无架构 JSON 数据库引擎，它是以 json 形式的文档数据库。同时微软提供了对应的 EF 的操作包 ----- <strong>Microsoft.EntityFrameworkCore.Cosmos</strong>，使得我们很轻松的使用原有EF操作数据库的模式进行操作 Cosmos DB。</p>
+<p><span style="color: rgba(255, 0, 0, 1)">注意这里使用的&nbsp;&nbsp;<strong>Microsoft.EntityFrameworkCore.Cosmos&nbsp;</strong>仅适用于 Azure Cosmos DB 的 SQL API</span></p>
+<p><span style="color: rgba(0, 0, 0, 1)">--------------------我是分割线--------------------</span></p>
+<h3><a href="https://www.cnblogs.com/AllenMaster/p/13763109.html" target="_blank"><span style="color: rgba(0, 0, 0, 1)">1，Azure Cosmos DB (一) 入门介绍</span></a></h3>
+<h3><a href="https://www.cnblogs.com/AllenMaster/p/13786605.html" target="_blank"><span style="color: rgba(0, 0, 0, 1)">2，Azure Cosmos DB (二) SQL API 操作</span></a></h3>
+<h2>二，正文</h2>
+<h3>1， 创建Azure Cosmos DB&nbsp;</h3>
+<p>在Azure portal 中点击 “+ 创建资源”，在搜索框中输入 “Azure Cosmos DB” 进行搜索</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010180145492-1603827242.png" alt="" loading="lazy"></p>
+<p>点击 “Create” ，进行开始创建</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010180203206-1763462564.png" alt="" loading="lazy"></p>
+<p>Resource Group："Web_Test_DB_RG"</p>
+<p>Account Name："cnbateblogwebcosmosdb"</p>
+<p>API 选择：Core（SQL）</p>
+<p>Capacity mode 选择默认 ：“Provisioned throughtput”（预配的吞吐量）</p>
+<p>其他都选择默认。点击 “Review + create” 进行创建前的预校验。</p>
+<p>使用Azure Cosmos DB 免费层时，将在账户中免费获得 400 RU/秒和 5GB 的存储。每个订阅最多可对一个账户启用免费层。预计每个账户每月有24美元的折扣。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010180612685-925633163.png" alt="" loading="lazy"></p>
+<p>可以看到验证提示 “Validation Sucess”，点击 ”Create“ 进行创建</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010180747290-2100980443.png" alt="" loading="lazy"></p>
+<p>等待几分钟后，我们可以在 "<strong>Web_Test_DB_RG</strong>" 中找到刚刚创建好的叫 ”<strong>cnbateblogwebcosmosdb</strong>“ 的 Cosmos DB 了</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010181009192-1065352996.png" alt="" loading="lazy"></p>
+<p>点击进去，找到 Data Explorer ，点击 ”<strong>New Database</strong>“ 新建数据库</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010181724600-1174751975.png" alt="" loading="lazy"></p>
+<p>或者点击 ”<strong>New Container</strong>“ 旁边的小箭头，进行下拉选择创建新的数据库。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010181950050-1700508420.png" alt="" loading="lazy"></p>
+<p>Database id：”<strong>CNBATEBLOGWEB</strong>“</p>
+<p>点击 “OK” ，进行创建</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201010182022195-647160132.png" alt="" loading="lazy"></p>
+<p>可以看到 “<strong>CNBATEBLOGWEB</strong>” 的 Database 已创建好了。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011142944858-2060336602.png" alt="" loading="lazy"></p>
+<h3>2，项目添加对Cosmos DB 的依赖包</h3>
+<p>2.1，安装 “<strong>Microsoft.EntityFrameworkCore</strong>”，“<strong>Microsoft.EntityFrameworkCore.Cosmos</strong>”</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011143716691-417472182.png" alt="" loading="lazy"></p>
+<p>使用程序包管理控制台进行安装</p>
+<div class="cnblogs_Highlighter">
+<pre class="brush:csharp;gutter:true;">Install-Package Microsoft.EntityFrameworkCore -Version 3.1.8
+</pre>
+</div>
+<div class="cnblogs_Highlighter">
+<pre class="brush:csharp;gutter:true;">Install-Package Microsoft.EntityFrameworkCore.Cosmos -Version 3.1.8
+</pre>
+</div>
+<p>2.2，要创建所需的容器并插入种子数据</p>
+<p>配置环境，此时需要cosmosDB 的 Endpoint，Key，DatabaseName</p>
+<p>图中对应的 URL=》Endpoint，PRIMARK KEY=》Key，</p>
+<p>上面步骤中创建的叫 “CNBATEBLOGWEB” 的我们需要的DatabaseName</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011144847084-1614717517.png" alt="" loading="lazy"></p>
+<p>整理好刚才需要的三个参数，添加到项目的配置文件中 也就是 appsettings.json 文件中</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011145301884-1813988314.png" alt="" loading="lazy"></p>
+<p>创建UserModel 实体，UserContext，重写 OnConfiguring 方法，调用UseCosmos 方法</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011145642961-1176935236.png" alt="" loading="lazy"></p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011145535156-391850294.png" alt="" loading="lazy"></p>
+<p>重写 “<strong>OnModelCreating</strong>” 创建数据数据映射关系</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011150654939-844335042.png" alt="" loading="lazy"></p>
+<p>”<strong>ConfigrueServices</strong>“ 中添加对 “<strong>UserContext</strong>” 的依赖注入</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011145840996-1030317843.png" alt="" loading="lazy"></p>
+<p>生产种子数据，先将已有的数据库进行删除操作，再进行添加操作以及生成种子数据</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011150034831-318402982.png" alt="" loading="lazy"></p>
+<p>&nbsp;完整代码</p>
+<div class="cnblogs_code"><img src="https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" id="code_img_closed_8ac82c12-4986-42a0-b928-1468e43b5b86" class="code_img_closed"><img src="https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" id="code_img_opened_8ac82c12-4986-42a0-b928-1468e43b5b86" class="code_img_opened" style="display: none">
+<div id="cnblogs_code_open_8ac82c12-4986-42a0-b928-1468e43b5b86" class="cnblogs_code_hide">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> UserContext : DbContext
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> UserContext(DbContextOptions&lt;UserContext&gt; options) : <span style="color: rgba(0, 0, 255, 1)">base</span><span style="color: rgba(0, 0, 0, 1)">(options)
+</span><span style="color: rgba(0, 128, 128, 1)"> 4</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 6</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)"> 7</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 8</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> DbSet&lt;UserModel&gt; Users { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 9</span> 
+<span style="color: rgba(0, 128, 128, 1)">10</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">11</span>         <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 重写连接数据库
+</span><span style="color: rgba(0, 128, 128, 1)">12</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">13</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="optionsBuilder"&gt;&lt;/param&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span>         <span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+</span><span style="color: rgba(0, 128, 128, 1)">15</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">16</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 从 appsetting.json 中获取配置信息</span>
+<span style="color: rgba(0, 128, 128, 1)">17</span>             <span style="color: rgba(0, 0, 255, 1)">var</span> config = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> ConfigurationBuilder()
+</span><span style="color: rgba(0, 128, 128, 1)">18</span> <span style="color: rgba(0, 0, 0, 1)">                .SetBasePath(Directory.GetCurrentDirectory())
+</span><span style="color: rgba(0, 128, 128, 1)">19</span>                 .AddJsonFile(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">appsettings.json</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)
+</span><span style="color: rgba(0, 128, 128, 1)">20</span> <span style="color: rgba(0, 0, 0, 1)">                .Build();
+</span><span style="color: rgba(0, 128, 128, 1)">21</span> 
+<span style="color: rgba(0, 128, 128, 1)">22</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 定义要使用的数据库</span>
+<span style="color: rgba(0, 128, 128, 1)">23</span>             optionsBuilder.UseCosmos(Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Endpoint</span><span style="color: rgba(128, 0, 0, 1)">"</span>), Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Key</span><span style="color: rgba(128, 0, 0, 1)">"</span>), Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">DataBase</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">));
+</span><span style="color: rgba(0, 128, 128, 1)">24</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">25</span> 
+<span style="color: rgba(0, 128, 128, 1)">26</span>         <span style="color: rgba(0, 0, 255, 1)">protected</span> <span style="color: rgba(0, 0, 255, 1)">override</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> OnModelCreating(ModelBuilder modelBuilder)
+</span><span style="color: rgba(0, 128, 128, 1)">27</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">28</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">针对于HasData限制（即使主键是由数据库生成的自动增长），也需要指定主键 
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> 
+<span style="color: rgba(0, 128, 128, 1)">30</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">调用EnsureCreated方法只针对与添加数据有效，但是数据库如果有数据的话，
+</span><span style="color: rgba(0, 128, 128, 1)">31</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">也就是对数据更改将无效</span>
+<span style="color: rgba(0, 128, 128, 1)">32</span>             Console.WriteLine(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">**********UserModel表开始初始化数据**********</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">33</span>             <span style="color: rgba(0, 0, 255, 1)">#region</span> 数据库数据映射
+<span style="color: rgba(0, 128, 128, 1)">34</span>             modelBuilder.Entity&lt;UserModel&gt;<span style="color: rgba(0, 0, 0, 1)">().HasData(
+</span><span style="color: rgba(0, 128, 128, 1)">35</span>                    <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">new Blog{Id=1,Name="DDD领域驱动模型"},</span>
+<span style="color: rgba(0, 128, 128, 1)">36</span>                    <span style="color: rgba(0, 0, 255, 1)">new</span> UserModel { Id = <span style="color: rgba(128, 0, 128, 1)">1</span>, Name = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">EntityFramework Core 3.1.1</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)"> },
+</span><span style="color: rgba(0, 128, 128, 1)">37</span>                   <span style="color: rgba(0, 0, 255, 1)">new</span> UserModel { Id = <span style="color: rgba(128, 0, 128, 1)">2</span>, Name = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">EntityFramework Core 3.1.6</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)"> });
+</span><span style="color: rgba(0, 128, 128, 1)">38</span> 
+<span style="color: rgba(0, 128, 128, 1)">39</span>             <span style="color: rgba(0, 0, 255, 1)">#endregion</span>
+<span style="color: rgba(0, 128, 128, 1)">40</span> 
+<span style="color: rgba(0, 128, 128, 1)">41</span> 
+<span style="color: rgba(0, 128, 128, 1)">42</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">43</span> 
+<span style="color: rgba(0, 128, 128, 1)">44</span>     }</pre>
+</div>
+<span class="cnblogs_code_collapse">UserContext.cs</span></div>
+<div class="cnblogs_code"><img src="https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" id="code_img_closed_257da9b8-a884-4554-850f-2a4df4b1d3f8" class="code_img_closed"><img src="https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" id="code_img_opened_257da9b8-a884-4554-850f-2a4df4b1d3f8" class="code_img_opened" style="display: none">
+<div id="cnblogs_code_open_257da9b8-a884-4554-850f-2a4df4b1d3f8" class="cnblogs_code_hide">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> UserModel
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> Id { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 4</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 5</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Name { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 7</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> Age { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 8</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Address { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)">10</span> 
+<span style="color: rgba(0, 128, 128, 1)">11</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Remark { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)">12</span>     }</pre>
+</div>
+<span class="cnblogs_code_collapse">UserModel.cs</span></div>
+<div class="cnblogs_code"><img src="https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" id="code_img_closed_11e7936d-75b1-4299-9d71-ff009591ce82" class="code_img_closed"><img src="https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" id="code_img_opened_11e7936d-75b1-4299-9d71-ff009591ce82" class="code_img_opened" style="display: none">
+<div id="cnblogs_code_open_11e7936d-75b1-4299-9d71-ff009591ce82" class="cnblogs_code_hide">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span>    <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)"> 2</span>     <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> appsettings.json操作类
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>     <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)"> 4</span>     <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Appsettings
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span>         <span style="color: rgba(0, 0, 255, 1)">static</span> IConfiguration Configuration { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 7</span>         <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">string</span> contentPath { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)"> 8</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> Appsettings(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> contentPath)
+</span><span style="color: rgba(0, 128, 128, 1)">10</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">11</span>             <span style="color: rgba(0, 0, 255, 1)">string</span> Path = <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">appsettings.json</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">12</span> 
+<span style="color: rgba(0, 128, 128, 1)">13</span> 
+<span style="color: rgba(0, 128, 128, 1)">14</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">如果你把配置文件 是 根据环境变量来分开了，可以这样写
+</span><span style="color: rgba(0, 128, 128, 1)">15</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">string Path = $"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json";
+</span><span style="color: rgba(0, 128, 128, 1)">16</span> 
+<span style="color: rgba(0, 128, 128, 1)">17</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">var contentPath = env.ContentRootPath;</span>
+<span style="color: rgba(0, 128, 128, 1)">18</span>             Configuration = <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> ConfigurationBuilder()
+</span><span style="color: rgba(0, 128, 128, 1)">19</span> <span style="color: rgba(0, 0, 0, 1)">               .SetBasePath(contentPath)
+</span><span style="color: rgba(0, 128, 128, 1)">20</span>                .Add(<span style="color: rgba(0, 0, 255, 1)">new</span> JsonConfigurationSource { Path = Path, Optional = <span style="color: rgba(0, 0, 255, 1)">false</span>, ReloadOnChange = <span style="color: rgba(0, 0, 255, 1)">true</span> })<span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">这样的话，可以直接读目录里的json文件，而不是 bin 文件夹下的，所以不用修改复制属性</span>
+<span style="color: rgba(0, 128, 128, 1)">21</span> <span style="color: rgba(0, 0, 0, 1)">               .Build();
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">23</span> 
+<span style="color: rgba(0, 128, 128, 1)">24</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">25</span>         <span style="color: rgba(128, 128, 128, 1)">///</span><span style="color: rgba(0, 128, 0, 1)"> 封装要操作的字符
+</span><span style="color: rgba(0, 128, 128, 1)">26</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;/summary&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">27</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;param name="sections"&gt;&lt;/param&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">28</span>         <span style="color: rgba(128, 128, 128, 1)">///</span> <span style="color: rgba(128, 128, 128, 1)">&lt;returns&gt;&lt;/returns&gt;</span>
+<span style="color: rgba(0, 128, 128, 1)">29</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">string</span> app(<span style="color: rgba(0, 0, 255, 1)">params</span> <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">[] sections)
+</span><span style="color: rgba(0, 128, 128, 1)">30</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">31</span>             <span style="color: rgba(0, 0, 255, 1)">try</span>
+<span style="color: rgba(0, 128, 128, 1)">32</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)">33</span>                 <span style="color: rgba(0, 0, 255, 1)">var</span> val = <span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">.Empty;
+</span><span style="color: rgba(0, 128, 128, 1)">34</span>                 <span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">int</span> i = <span style="color: rgba(128, 0, 128, 1)">0</span>; i &lt; sections.Length; i++<span style="color: rgba(0, 0, 0, 1)">)
+</span><span style="color: rgba(0, 128, 128, 1)">35</span> <span style="color: rgba(0, 0, 0, 1)">                {
+</span><span style="color: rgba(0, 128, 128, 1)">36</span>                     val += sections[i] + <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">:</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">37</span> <span style="color: rgba(0, 0, 0, 1)">                }
+</span><span style="color: rgba(0, 128, 128, 1)">38</span> 
+<span style="color: rgba(0, 128, 128, 1)">39</span>                 <span style="color: rgba(0, 0, 255, 1)">return</span> Configuration[val.TrimEnd(<span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(128, 0, 0, 1)">:</span><span style="color: rgba(128, 0, 0, 1)">'</span><span style="color: rgba(0, 0, 0, 1)">)];
+</span><span style="color: rgba(0, 128, 128, 1)">40</span> <span style="color: rgba(0, 0, 0, 1)">            }
+</span><span style="color: rgba(0, 128, 128, 1)">41</span>             <span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception)
+</span><span style="color: rgba(0, 128, 128, 1)">42</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)">43</span>                 <span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(128, 0, 0, 1)">""</span><span style="color: rgba(0, 0, 0, 1)">;
+</span><span style="color: rgba(0, 128, 128, 1)">44</span> <span style="color: rgba(0, 0, 0, 1)">            }
+</span><span style="color: rgba(0, 128, 128, 1)">45</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">46</span>     }</pre>
+</div>
+<span class="cnblogs_code_collapse">Appsettings.json</span></div>
+<div class="cnblogs_code"><img src="https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" id="code_img_closed_b553bcef-add0-4236-b877-894ad28573d8" class="code_img_closed"><img src="https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" id="code_img_opened_b553bcef-add0-4236-b877-894ad28573d8" class="code_img_opened" style="display: none">
+<div id="cnblogs_code_open_b553bcef-add0-4236-b877-894ad28573d8" class="cnblogs_code_hide">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span>     <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Program
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">void</span> Main(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">[] args)
+</span><span style="color: rgba(0, 128, 128, 1)"> 4</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span>             <span style="color: rgba(0, 0, 255, 1)">var</span> host =<span style="color: rgba(0, 0, 0, 1)"> CreateHostBuilder(args).Build();
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 创建可用于解析作用域服务的新 Microsoft.Extensions.DependencyInjection.IServiceScope。</span>
+<span style="color: rgba(0, 128, 128, 1)"> 7</span>             <span style="color: rgba(0, 0, 255, 1)">using</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> scope =<span style="color: rgba(0, 0, 0, 1)"> host.Services.CreateScope())
+</span><span style="color: rgba(0, 128, 128, 1)"> 8</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)"> 9</span>                 <span style="color: rgba(0, 0, 255, 1)">var</span> services =<span style="color: rgba(0, 0, 0, 1)"> scope.ServiceProvider;
+</span><span style="color: rgba(0, 128, 128, 1)">10</span>                 <span style="color: rgba(0, 0, 255, 1)">var</span> loggerFactory = services.GetRequiredService&lt;ILoggerFactory&gt;<span style="color: rgba(0, 0, 0, 1)">();
+</span><span style="color: rgba(0, 128, 128, 1)">11</span>                 <span style="color: rgba(0, 0, 255, 1)">var</span> env = services.GetRequiredService&lt;IWebHostEnvironment&gt;<span style="color: rgba(0, 0, 0, 1)">();
+</span><span style="color: rgba(0, 128, 128, 1)">12</span>                 <span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (env.IsDevelopment())
+</span><span style="color: rgba(0, 128, 128, 1)">13</span> <span style="color: rgba(0, 0, 0, 1)">                {
+</span><span style="color: rgba(0, 128, 128, 1)">14</span>                     <span style="color: rgba(0, 0, 255, 1)">try</span>
+<span style="color: rgba(0, 128, 128, 1)">15</span> <span style="color: rgba(0, 0, 0, 1)">                    {
+</span><span style="color: rgba(0, 128, 128, 1)">16</span>                         <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 从 system.IServicec提供程序获取 T 类型的服务。</span>
+<span style="color: rgba(0, 128, 128, 1)">17</span>                         <span style="color: rgba(0, 0, 255, 1)">var</span> context = services.GetRequiredService&lt;UserContext&gt;<span style="color: rgba(0, 0, 0, 1)">();
+</span><span style="color: rgba(0, 128, 128, 1)">18</span>                         
+<span style="color: rgba(0, 128, 128, 1)">19</span> <span style="color: rgba(0, 0, 0, 1)">                        context.Database.EnsureDeleted();
+</span><span style="color: rgba(0, 128, 128, 1)">20</span>                         Console.WriteLine(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">**********开始初始化数据**********</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">21</span> <span style="color: rgba(0, 0, 0, 1)">                        context.Database.EnsureCreated();
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> 
+<span style="color: rgba(0, 128, 128, 1)">23</span> <span style="color: rgba(0, 0, 0, 1)">                    }
+</span><span style="color: rgba(0, 128, 128, 1)">24</span>                     <span style="color: rgba(0, 0, 255, 1)">catch</span><span style="color: rgba(0, 0, 0, 1)"> (Exception e)
+</span><span style="color: rgba(0, 128, 128, 1)">25</span> <span style="color: rgba(0, 0, 0, 1)">                    {
+</span><span style="color: rgba(0, 128, 128, 1)">26</span>                         <span style="color: rgba(0, 0, 255, 1)">var</span> logger = loggerFactory.CreateLogger&lt;Program&gt;<span style="color: rgba(0, 0, 0, 1)">();
+</span><span style="color: rgba(0, 128, 128, 1)">27</span>                         logger.LogError(e, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Error occured seeding the Database.</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">28</span> <span style="color: rgba(0, 0, 0, 1)">                    }
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> <span style="color: rgba(0, 0, 0, 1)">                }
+</span><span style="color: rgba(0, 128, 128, 1)">30</span> <span style="color: rgba(0, 0, 0, 1)">            }
+</span><span style="color: rgba(0, 128, 128, 1)">31</span> 
+<span style="color: rgba(0, 128, 128, 1)">32</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 运行 web 应用程序并阻止调用线程, 直到主机关闭。
+</span><span style="color: rgba(0, 128, 128, 1)">33</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 创建完 WebHost 之后，便调用它的 Run 方法，而 Run 方法会去调用 WebHost 的 StartAsync 方法
+</span><span style="color: rgba(0, 128, 128, 1)">34</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 将Initialize方法创建的Application管道传入以供处理消息
+</span><span style="color: rgba(0, 128, 128, 1)">35</span>             <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> 执行HostedServiceExecutor.StartAsync方法</span>
+<span style="color: rgba(0, 128, 128, 1)">36</span> 
+<span style="color: rgba(0, 128, 128, 1)">37</span> <span style="color: rgba(0, 0, 0, 1)">            host.Run();
+</span><span style="color: rgba(0, 128, 128, 1)">38</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">39</span> 
+<span style="color: rgba(0, 128, 128, 1)">40</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">static</span> IHostBuilder CreateHostBuilder(<span style="color: rgba(0, 0, 255, 1)">string</span>[] args) =&gt;
+<span style="color: rgba(0, 128, 128, 1)">41</span> <span style="color: rgba(0, 0, 0, 1)">            Host.CreateDefaultBuilder(args)
+</span><span style="color: rgba(0, 128, 128, 1)">42</span>                 .ConfigureWebHostDefaults(webBuilder =&gt;
+<span style="color: rgba(0, 128, 128, 1)">43</span> <span style="color: rgba(0, 0, 0, 1)">                {
+</span><span style="color: rgba(0, 128, 128, 1)">44</span> <span style="color: rgba(0, 0, 0, 1)">                    webBuilder
+</span><span style="color: rgba(0, 128, 128, 1)">45</span>                     .UseUrls(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">http://*:9001</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)
+</span><span style="color: rgba(0, 128, 128, 1)">46</span>                     .UseStartup&lt;Startup&gt;<span style="color: rgba(0, 0, 0, 1)">();
+</span><span style="color: rgba(0, 128, 128, 1)">47</span> <span style="color: rgba(0, 0, 0, 1)">                });
+</span><span style="color: rgba(0, 128, 128, 1)">48</span>     }</pre>
+</div>
+<span class="cnblogs_code_collapse">Program.cs</span></div>
+<div class="cnblogs_code"><img src="https://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" id="code_img_closed_2d202ede-ace4-49e0-8b1b-02e98c8dd54d" class="code_img_closed"><img src="https://images.cnblogs.com/OutliningIndicators/ExpandedBlockStart.gif" id="code_img_opened_2d202ede-ace4-49e0-8b1b-02e98c8dd54d" class="code_img_opened" style="display: none">
+<div id="cnblogs_code_open_2d202ede-ace4-49e0-8b1b-02e98c8dd54d" class="cnblogs_code_hide">
+<pre><span style="color: rgba(0, 128, 128, 1)"> 1</span> <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Startup
+</span><span style="color: rgba(0, 128, 128, 1)"> 2</span> <span style="color: rgba(0, 0, 0, 1)">    {
+</span><span style="color: rgba(0, 128, 128, 1)"> 3</span>         <span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> Startup(IConfiguration configuration, IWebHostEnvironment env)
+</span><span style="color: rgba(0, 128, 128, 1)"> 4</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)"> 5</span>             Env =<span style="color: rgba(0, 0, 0, 1)"> env;
+</span><span style="color: rgba(0, 128, 128, 1)"> 6</span>             Configuration =<span style="color: rgba(0, 0, 0, 1)"> configuration;
+</span><span style="color: rgba(0, 128, 128, 1)"> 7</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)"> 8</span> 
+<span style="color: rgba(0, 128, 128, 1)"> 9</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> IConfiguration Configuration { <span style="color: rgba(0, 0, 255, 1)">get</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)">10</span> 
+<span style="color: rgba(0, 128, 128, 1)">11</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> IWebHostEnvironment Env { <span style="color: rgba(0, 0, 255, 1)">get</span><span style="color: rgba(0, 0, 0, 1)">; }
+</span><span style="color: rgba(0, 128, 128, 1)">12</span> 
+<span style="color: rgba(0, 128, 128, 1)">13</span>         <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> This method gets called by the runtime. Use this method to add services to the container.</span>
+<span style="color: rgba(0, 128, 128, 1)">14</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> ConfigureServices(IServiceCollection services)
+</span><span style="color: rgba(0, 128, 128, 1)">15</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">16</span>             services.AddSingleton(<span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> Appsettings(Env.ContentRootPath));
+</span><span style="color: rgba(0, 128, 128, 1)">17</span> 
+<span style="color: rgba(0, 128, 128, 1)">18</span>             services.AddDbContext&lt;UserContext&gt;(options =&gt; options.UseCosmos(Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Endpoint</span><span style="color: rgba(128, 0, 0, 1)">"</span>), Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">Key</span><span style="color: rgba(128, 0, 0, 1)">"</span>), Appsettings.app(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">CosmosDB</span><span style="color: rgba(128, 0, 0, 1)">"</span>, <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">DataBase</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">)));
+</span><span style="color: rgba(0, 128, 128, 1)">19</span> 
+<span style="color: rgba(0, 128, 128, 1)">20</span> <span style="color: rgba(0, 0, 0, 1)">            services.AddControllersWithViews();
+</span><span style="color: rgba(0, 128, 128, 1)">21</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">22</span> 
+<span style="color: rgba(0, 128, 128, 1)">23</span>         <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)"> This method gets called by the runtime. Use this method to configure the HTTP request pipeline.</span>
+<span style="color: rgba(0, 128, 128, 1)">24</span>         <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">void</span><span style="color: rgba(0, 0, 0, 1)"> Configure(IApplicationBuilder app, IWebHostEnvironment env)
+</span><span style="color: rgba(0, 128, 128, 1)">25</span> <span style="color: rgba(0, 0, 0, 1)">        {
+</span><span style="color: rgba(0, 128, 128, 1)">26</span>             <span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (env.IsDevelopment())
+</span><span style="color: rgba(0, 128, 128, 1)">27</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)">28</span> <span style="color: rgba(0, 0, 0, 1)">                app.UseDeveloperExceptionPage();
+</span><span style="color: rgba(0, 128, 128, 1)">29</span> <span style="color: rgba(0, 0, 0, 1)">            }
+</span><span style="color: rgba(0, 128, 128, 1)">30</span>             <span style="color: rgba(0, 0, 255, 1)">else</span>
+<span style="color: rgba(0, 128, 128, 1)">31</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)">32</span>                 app.UseExceptionHandler(<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">/Home/Error</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">33</span> <span style="color: rgba(0, 0, 0, 1)">            }
+</span><span style="color: rgba(0, 128, 128, 1)">34</span> <span style="color: rgba(0, 0, 0, 1)">            app.UseStaticFiles();
+</span><span style="color: rgba(0, 128, 128, 1)">35</span> 
+<span style="color: rgba(0, 128, 128, 1)">36</span> <span style="color: rgba(0, 0, 0, 1)">            app.UseRouting();
+</span><span style="color: rgba(0, 128, 128, 1)">37</span> 
+<span style="color: rgba(0, 128, 128, 1)">38</span> <span style="color: rgba(0, 0, 0, 1)">            app.UseAuthorization();
+</span><span style="color: rgba(0, 128, 128, 1)">39</span> 
+<span style="color: rgba(0, 128, 128, 1)">40</span>             app.UseEndpoints(endpoints =&gt;
+<span style="color: rgba(0, 128, 128, 1)">41</span> <span style="color: rgba(0, 0, 0, 1)">            {
+</span><span style="color: rgba(0, 128, 128, 1)">42</span> <span style="color: rgba(0, 0, 0, 1)">                endpoints.MapControllerRoute(
+</span><span style="color: rgba(0, 128, 128, 1)">43</span>                     name: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">default</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">,
+</span><span style="color: rgba(0, 128, 128, 1)">44</span>                     pattern: <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">{controller=Home}/{action=Index}/{id?}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+</span><span style="color: rgba(0, 128, 128, 1)">45</span> <span style="color: rgba(0, 0, 0, 1)">            });
+</span><span style="color: rgba(0, 128, 128, 1)">46</span> <span style="color: rgba(0, 0, 0, 1)">        }
+</span><span style="color: rgba(0, 128, 128, 1)">47</span>     }</pre>
+</div>
+<span class="cnblogs_code_collapse">Startup.cs</span></div>
+<h3>&nbsp;3，运行项目，查看测试结果</h3>
+<p>我们可以看到UserModel 表已初始化数据完成</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011151428553-707516745.png" alt="" loading="lazy"></p>
+<p>&nbsp;我们转到Azure Portal 上查看 "<strong>CNBATEBLOGWEB</strong>" 数据库下多了叫 “<strong>UserContext</strong>” 的 Container 这里的可以理解成存放表的容器</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011151549546-770572929.png" alt="" loading="lazy"></p>
+<p>同时，我们可以看到 ”<strong>UserContext</strong>“ 下的 Item 多了两条 Usermodel 数据，我们分别进行查看，可以看到这两条数据就是刚刚生成的种子数据</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011151922295-923513553.png" alt="" loading="lazy"></p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011151942527-1483278652.png" alt="" loading="lazy"></p>
+<p>ok，今天的分享就到此，撒花是🎉🎉🎉🎉🎉</p>
+<p>-------------------我是分割线-------------------</p>
+<p>本来我想尝试直接可以通过VS 的 Cloud Explorer 进行查看 cosmosDB 中的数据，但是无奈每当点击 Container 下的更多的时候，VS 就进行报错</p>
+<p><img src="https://img2020.cnblogs.com/blog/1996262/202010/1996262-20201011153123582-292084275.png" alt="" loading="lazy"></p>
+<p>&nbsp;有知道怎么解决这个问题的朋友，还望告知一下。</p>
+<h2>三，结尾</h2>
+<p>今天我们先操作这么多，简单的使用 EF 对 Azure Cosmos DB 进程操作，生产种子数据，以及如何查看生成好的种子数据，下一篇继续讲解使用 EF 来操作操作Azure CosmosDB，并且对其中的数据库中的数据如何做增加，删除，修改，查询等操作。</p>
+<p>github：<a href="https://github.com/yunqian44/Azure.CosmosDB.git" target="_blank">https://github.com/yunqian44/Azure.CosmosDB.git</a></p>
+<p>作者：<a href="https://www.cnblogs.com/AllenMaster" target="_blank">Allen</a>&nbsp;</p>
+<p>版权：转载请在文章明显位置注明作者及出处。如发现错误，欢迎批评指正。</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 15:49</span>&nbsp;
+<a href="https://www.cnblogs.com/AllenMaster/">Grant_Allen</a>&nbsp;
+阅读(<span id="post_view_count">179</span>)&nbsp;
+评论(<span id="post_comment_count">8</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13786605" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13786605);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 593290, cb_blogApp = 'AllenMaster', cb_blogUserGuid = '98baf5bf-4a4c-4c43-c63a-08d7d7b4fe7b';
+    var cb_entryId = 13786605, cb_entryCreatedDate = '2020-10-11 15:49', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 Grant_Allen
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

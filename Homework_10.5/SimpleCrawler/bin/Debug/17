@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="关键术语介绍 为了方便开源库的快速上手，我们先来了解 excel 中的几个关键术语，如下图所示，①为sheet，也就是表格中的页签；②为row，代表 excel 中的一行；③为cell，代表 exce" />
+    <meta property="og:description" content="关键术语介绍 为了方便开源库的快速上手，我们先来了解 excel 中的几个关键术语，如下图所示，①为sheet，也就是表格中的页签；②为row，代表 excel 中的一行；③为cell，代表 exce" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Golang是如何操作excel的？ - 平也 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/custom/bundle-custom.min.css?v=1ssrnY3Il79Ok472qeVrpxlSprSXcHhYPgZC5S3wtVM" />
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/pingyeaa/custom.css?v=azx/j6vdtTOIIPgZLlR4nvVXMKU=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/custom/bundle-custom-mobile.min.css?v=KtAK50iXMDcU4jOl_mm1P0j3gXUtdRHDhFdu7YlsVVg" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/pingyeaa/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/pingyeaa/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/pingyeaa/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 453985;
+        var currentBlogApp = 'pingyeaa';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'Custom';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 08:47';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/pingyeaa/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/pingyeaa/">平也的技术博客</a>
+</h1>
+<h2>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/pingyeaa/">
+首页</a>
+</li>
+<li>
+
+
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%B9%B3%E4%B9%9F">
+联系</a></li>
+<li>
+
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+59&nbsp; </span>
+<span id="stats_article_count">文章 - 
+4&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+32</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/pingyeaa/p/13799207.html">
+    <span>Golang是如何操作excel的？</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h3 id="关键术语介绍">关键术语介绍</h3>
+<p>为了方便开源库的快速上手，我们先来了解 excel 中的几个关键术语，如下图所示，①为sheet，也就是表格中的页签；②为row，代表 excel 中的一行；③为cell，代表 excel 中的一个单元格。</p>
+<p><img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204628432-1650023338.png" alt="" loading="lazy"></p>
+<p>正常情况下，创建一个表格的基本流程是打开 wps 点击新建，这时会默认创建一个 sheet，然后在该 sheet 中的第一行填写表头，接下来根据表头逐行填充内容，最后将文件另存为到硬盘的某个位置。这与 Golang 开源库创建 excel 的流程基本相同，下面演示一个极简表格的创建。</p>
+<h3 id="创建表格">创建表格</h3>
+<p>创建表格前需要先引入 excel 库，我们以比较热门的 <strong>tealeg/xlsx</strong> 库为例。</p>
+<pre><code class="language-shell">go get github.com/tealeg/xlsx
+</code></pre>
+<p>首先创建一个空文件，拿到文件句柄。</p>
+<pre><code class="language-go">file := xlsx.NewFile()
+</code></pre>
+<p>创建一个名为<code>人员信息收集</code>的 sheet。</p>
+<pre><code class="language-go">sheet, err := file.AddSheet("人员信息收集")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>然后为该 sheet 创建一行，这行作为我们的表头。</p>
+<pre><code class="language-go">row := sheet.AddRow()
+</code></pre>
+<p>在该行中创建一个单元格。</p>
+<pre><code class="language-go">cell := row.AddCell()
+</code></pre>
+<p>现在给单元格填充内容，因为是表头，暂且叫<code>姓名</code>。</p>
+<pre><code class="language-go">cell.Value = "姓名"
+</code></pre>
+<p>如何创建第二个单元格呢？原理相同，此处 cell 变量已定义，再创建新单元格只需赋值即可。</p>
+<pre><code class="language-go">cell = row.AddCell()
+cell.Value = "性别"
+</code></pre>
+<p>表头已经设置好了，可以开始创建第二行来填充内容了，方式与上述无差别。</p>
+<pre><code class="language-go">row = sheet.AddRow()
+cell = row.AddCell()
+cell.Value = "张三"
+cell = row.AddCell()
+cell.Value = "男"
+</code></pre>
+<p>表格设置完成后，将该文件保存，文件名可自定义。</p>
+<pre><code class="language-go">err = file.Save("demo.xlsx")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>跑起来后，可以发现目录中多了一个 demo.xlsx 文件，打开预览内容如下，达到了预期效果。</p>
+<p><img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204628678-1224954298.png" alt="" loading="lazy"></p>
+<p><strong>文件源码</strong></p>
+<pre><code class="language-go">package main
+
+import "github.com/tealeg/xlsx"
+
+func main() {
+	file := xlsx.NewFile()
+	sheet, err := file.AddSheet("人员信息收集")
+	if err != nil {
+		panic(err.Error())
+	}
+	row := sheet.AddRow()
+	cell := row.AddCell()
+	cell.Value = "姓名"
+	cell = row.AddCell()
+	cell.Value = "性别"
+
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "张三"
+	cell = row.AddCell()
+	cell.Value = "男"
+
+	err = file.Save("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+}
+</code></pre>
+<h3 id="读取表格">读取表格</h3>
+<p>表格的读取比创建简单很多，依然以上文创建的文件为例。</p>
+<pre><code class="language-go">output, err := xlsx.FileToSlice("demo.xlsx")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>只需将文件路径传入上述方法，即可自动读取并返回一个三维切片，我们来读取第一个 sheet 的第二行中的第一个单元格。</p>
+<pre><code class="language-go">log.Println(output[0][1][1]) //Output: 男
+</code></pre>
+<p>由此一来就非常容易遍历了。</p>
+<pre><code class="language-go">for rowIndex, row := range output[0] {
+  for cellIndex, cell := range row {
+    log.Println(fmt.Sprintf("第%d行，第%d个单元格：%s", rowIndex+1, cellIndex+1, cell))
+  }
+}
+</code></pre>
+<pre><code class="language-go">2020/10/11 16:15:29 第1行，第1个单元格：姓名
+2020/10/11 16:15:29 第1行，第2个单元格：性别
+2020/10/11 16:15:29 第2行，第1个单元格：张三
+2020/10/11 16:15:29 第2行，第2个单元格：男
+</code></pre>
+<p><strong>文件源码</strong></p>
+<pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"github.com/tealeg/xlsx"
+	"log"
+)
+
+func main() {
+	output, err := xlsx.FileToSlice("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+	log.Println(output[0][1][1])
+	for rowIndex, row := range output[0] {
+		for cellIndex, cell := range row {
+			log.Println(fmt.Sprintf("第%d行，第%d个单元格：%s", rowIndex+1, cellIndex+1, cell))
+		}
+	}
+}
+</code></pre>
+<h3 id="修改表格">修改表格</h3>
+<p>只是读取表格内容可能在特定场景下无法满足需求，有时候需要对表格内容进行更改。</p>
+<pre><code class="language-go">file, err := xlsx.OpenFile("demo.xlsx")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>修改表格之前依然需要先读取文件，只是这次并没有直接将其转化为三维切片。拿到文件句柄后，可以直接修改某一行的内容。</p>
+<pre><code class="language-go">file.Sheets[0].Rows[1].Cells[0].Value = "李四"
+</code></pre>
+<p>上述代码将第二行的张三改为了李四，但这还没有结束，接下来需要将文件重新保存。</p>
+<pre><code class="language-go">err = file.Save("demo.xlsx")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>打开文件预览，可以看到已经成功将张三改为了李四。</p>
+<p><img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204628928-1755666489.png" alt="" loading="lazy"></p>
+<p><strong>文件源码</strong></p>
+<pre><code class="language-go">package main
+
+import "github.com/tealeg/xlsx"
+
+func main() {
+	file, err := xlsx.OpenFile("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+	file.Sheets[0].Rows[1].Cells[0].Value = "李四"
+	err = file.Save("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+}
+</code></pre>
+<h3 id="样式设置">样式设置</h3>
+<p>该开源库不仅支持内容的编辑，还支持表格的样式设置，样式统一由结构体 Style 来负责。</p>
+<pre><code class="language-go">type Style struct {
+	Border          Border
+	Fill            Fill
+	Font            Font
+	ApplyBorder     bool
+	ApplyFill       bool
+	ApplyFont       bool
+	ApplyAlignment  bool
+	Alignment       Alignment
+	NamedStyleIndex *int
+}
+</code></pre>
+<p>拿上述生成的文件为例，假如我要将姓名所在单元格居中，首先要实例化样式对象。</p>
+<pre><code class="language-go">style := xlsx.NewStyle()
+</code></pre>
+<p>赋值居中属性。</p>
+<pre><code class="language-go">style.Alignment = xlsx.Alignment{
+  Horizontal:   "center",
+  Vertical:     "center",
+}
+</code></pre>
+<p>给第一行第一个单元格设置样式。</p>
+<pre><code class="language-go">file.Sheets[0].Rows[0].Cells[0].SetStyle(style)
+</code></pre>
+<p>与修改表格处理逻辑相同，最后保存文件。</p>
+<pre><code class="language-go">err = file.Save("demo.xlsx")
+if err != nil {
+  panic(err.Error())
+}
+</code></pre>
+<p>打开预览，可以看到文字已经上下左右居中。</p>
+<p><img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204629113-945832799.png" alt="" loading="lazy"></p>
+<p>同理，可以修改文字颜色和背景，同样通过 style 的属性来设置。</p>
+<pre><code class="language-go">style.Font.Color = xlsx.RGB_Dark_Red
+style.Fill.BgColor = xlsx.RGB_Dark_Green
+</code></pre>
+<p><img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204629264-1467620929.png" alt="" loading="lazy"></p>
+<p>其他还有很多属性可以设置，比如合并单元格、字体、大小等等，大家可以自行测试。</p>
+<p><strong>文件源码</strong></p>
+<pre><code class="language-go">package main
+
+import "github.com/tealeg/xlsx"
+
+func main() {
+	file, err := xlsx.OpenFile("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+	style := xlsx.NewStyle()
+	style.Font.Color = xlsx.RGB_Dark_Red
+	style.Fill.BgColor = xlsx.RGB_Dark_Green
+	style.Alignment = xlsx.Alignment{
+		Horizontal:   "center",
+		Vertical:     "center",
+	}
+	file.Sheets[0].Rows[0].Cells[0].SetStyle(style)
+	err = file.Save("demo.xlsx")
+	if err != nil {
+		panic(err.Error())
+	}
+}
+</code></pre>
+<hr>
+<blockquote>
+<p>我是平也，这有一个专注Gopher技术成长的开源项目<a href="https://github.com/pingyeaa/go-home">「go home」</a></p>
+</blockquote>
+<hr>
+<p>感谢大家的观看，如果觉得文章对你有所帮助，欢迎关注公众号「平也」，聚焦Go语言与技术原理。<br>
+<img src="https://img2020.cnblogs.com/other/1471773/202010/1471773-20201011204720253-1965547147.png" alt="关注我" loading="lazy"></p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 20:47</span>&nbsp;
+<a href="https://www.cnblogs.com/pingyeaa/">平也</a>&nbsp;
+阅读(<span id="post_view_count">41</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13799207" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13799207);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 453985, cb_blogApp = 'pingyeaa', cb_blogUserGuid = 'dc6e1c00-3927-44fb-b3dd-08d6076592e1';
+    var cb_entryId = 13799207, cb_entryCreatedDate = '2020-10-11 20:47', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 平也
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

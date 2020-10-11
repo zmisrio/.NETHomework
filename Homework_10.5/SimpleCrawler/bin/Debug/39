@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上一篇文章中学习了ABP的仓储（Repository）功能，Repository对数据库进行增删改查操作。在这一篇文章中我们主要了解应用服务层。 应用服务用于将领域(业务)逻辑暴露给展现层。展现层通" />
+    <meta property="og:description" content="在上一篇文章中学习了ABP的仓储（Repository）功能，Repository对数据库进行增删改查操作。在这一篇文章中我们主要了解应用服务层。 应用服务用于将领域(业务)逻辑暴露给展现层。展现层通" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五） - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-06-21 05:05';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/11065667.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上一篇文章中学习了ABP的仓储（Repository）功能，Repository对数据库进行增删改查操作。在这一篇文章中我们主要了解应用服务层。 应用服务用于将领域(业务)逻辑暴露给展现层。展现层通过传入DTO(数据传输对象)参数来调用应用服务，而应用服务通过领域对象来执行相应的业务逻辑并且将DTO返回给展现层。因此，展现层和领域层将被完全隔离开来。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="color: rgba(0, 0, 255, 1); font-family: 仿宋; font-size: 16px"><span style="font-family: 仿宋; font-size: 18px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></span></h3>
+<p><span style="font-family: 宋体; font-size: 16px; color: rgba(0, 0, 255, 1)"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px; font-family: 宋体"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></p>
+<p><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></p>
+<p>&nbsp;</p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 在上一篇文章中学习了ABP的仓储（Repository）功能，Repository对数据库进行增删改查操作。在这一篇文章中我们主要了解应用服务层。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>一、解释下应用服务层</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 应用服务用于将领域(业务)逻辑暴露给展现层。展现层通过传入DTO(数据传输对象)参数来调用应用服务，而应用服务通过领域对象来执行相应的业务逻辑并且将DTO返回给展现层。因此，展现层和领域层将被完全隔离开来。</span><br><span style="font-size: 16px">
+以下几点，在创建应用服务时需要注意：</span></p>
+<ol start="1">
+<li><span style="font-size: 16px">在ABP中，一个应用服务需要实现IApplicationService接口，最好的实践是针对每个应用服务都创建相应继承自IApplicationService的接口。（通过继承该接口，ABP会自动帮助依赖注入）</span></li>
+<li><span style="font-size: 16px">ABP为IApplicationService提供了默认的实现ApplicationService，该基类提供了方便的日志记录和本地化功能。实现应用服务的时候继承自ApplicationService并实现定义的接口即可。</span></li>
+<li><span style="font-size: 16px">ABP中，一个应用服务方法默认是一个工作单元（Unit of Work）。ABP针对UOW模式自动进行数据库的连接及事务管理，且会自动保存数据修改。</span></li>
+
+
+
+
+
+</ol>
+<p align="left"><span style="font-size: 16px"><strong>二、定义应用服务接口需要用到的DTO</strong></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 1. 在Visual Studio 2017的“解决方案资源管理器”中，右键单击“ABP.TPLMS.Application”项目。
+选择“添加” &gt; “新建文件夹”。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2．将文件夹命名为“Modules”。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 3． 右键单击“Modules”文件夹，选择“添加” &gt; “新建文件夹”。将文件夹重命名为“Dto”。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/201906/10343-20190621165459662-1354908313.png" alt=""></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4． 右键单击“Dto”文件夹，然后选择“添加” &gt; “类”。
+将类命名为 ModuleDto，然后选择“添加”。代码如下。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.AutoMapper;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules.Dto
+{
+    [AutoMapFrom(</span><span style="color: rgba(0, 0, 255, 1)">typeof</span><span style="color: rgba(0, 0, 0, 1)">(Module))]
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> ModuleDto:EntityDto&lt;<span style="color: rgba(0, 0, 255, 1)">long</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+    {
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> DisplayName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Name { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }      
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Url { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }       
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> HotKey { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> ParentId { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> RequiresAuthentication { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> IsAutoExpand { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }       
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> IconName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> Status { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> ParentName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }    
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> RequiredPermissionName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> SortNo { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }   
+    }
+}</span></pre>
+</div>
+<ul>
+<li><span style="font-size: 16px">为了在页面上展示模块信息,Module<code>Dto</code>被用来将模块数据传递到基础设施层。</span></li>
+<li><span style="font-size: 16px">Module<code>Dto</code>继承自 <code>EntityDto&lt;long&gt;</code>.跟在领域层定义的Module类一样具有一些相同属性。</span></li>
+<li><span style="font-size: 16px"><code>[AutoMapFrom(typeof(Module))]</code>用来创建从Module类到Module<code>Dto</code>的映射.使用这种方法。你可以将Module对象自动转换成Module<code>Dto</code>对象(而不是手动复制所有的属性)。</span></li>
+</ul>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5． 右键单击“Dto”文件夹，然后选择“添加” &gt; “类”。 将类命名为 <span style="font-size: 16px">CreateUpdateModuleDto </span>，然后选择“添加”。代码如下。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.ComponentModel.DataAnnotations;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules.Dto
+{
+   </span><span style="color: rgba(0, 0, 255, 1)">public</span>  <span style="color: rgba(0, 0, 255, 1)">class</span> CreateUpdateModuleDto : EntityDto&lt;<span style="color: rgba(0, 0, 255, 1)">long</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+    {
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">const</span> <span style="color: rgba(0, 0, 255, 1)">int</span> MaxLength = <span style="color: rgba(128, 0, 128, 1)">255</span><span style="color: rgba(0, 0, 0, 1)">;
+
+        [Required]
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> DisplayName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [Required]
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Name { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [Required]
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> Url { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> HotKey { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> ParentId { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> RequiresAuthentication { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">bool</span> IsAutoExpand { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> IconName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> Status { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [Required]
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> ParentName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+
+        [StringLength(MaxLength)]
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">string</span> RequiredPermissionName { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">int</span> SortNo { <span style="color: rgba(0, 0, 255, 1)">get</span>; <span style="color: rgba(0, 0, 255, 1)">set</span><span style="color: rgba(0, 0, 0, 1)">; }    
+    }
+}</span></pre>
+</div>
+<ul>
+<li><span style="font-size: 16px">这个DTO类在创建和更新模块信息的时候被使用,用来从页面获取模块信息。</span></li>
+<li><span style="font-size: 16px">类中的属性定义了数据注解(如[Required])用来定义有效性验证。ABP会自动校验DTO的数据有效性。</span></li>
+</ul>
+<p align="left"><span style="font-size: 16px"><strong>&nbsp; 6.</strong><strong> 为什么需要通过dto进行数据传输？</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 一般来说，使用DTO进行数据传输具有以下好处。</span></p>
+<ul>
+<li><span style="font-size: 16px">数据隐藏</span></li>
+<li><span style="font-size: 16px">序列化和延迟加载问题</span></li>
+<li><span style="font-size: 16px">ABP对DTO提供了约定类以支持验证</span></li>
+<li><span style="font-size: 16px">参数或返回值改变，通过Dto方便扩展</span></li>
+<li><span style="font-size: 16px">DTO类被用来在 基础设施层 和 应用层 传递数据.</span></li>
+</ul>
+<p align="left"><span style="font-size: 16px">&nbsp; 7.<strong>Dto规范 （灵活应用）</strong></span></p>
+<ul>
+<li><span style="font-size: 16px">ABP建议命名输入/输出参数为：MethodNameInput和MethodNameOutput</span></li>
+<li><span style="font-size: 16px">并为每个应用服务方法定义单独的输入和输出DTO（如果为每个方法的输入输出都定义一个dto，那将有一个庞大的dto类需要定义维护。一般通过定义一个公用的dto进行共用）</span></li>
+<li><span style="font-size: 16px">即使你的方法只接受/返回一个参数，也最好是创建一个DTO类</span></li>
+<li><span style="font-size: 16px">一般会在对应实体的应用服务文件夹下新建Dtos文件夹来管理Dto类。</span></li>
+</ul>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 定义完DTO，是不是脑袋有个疑问，我在用DTO在展现层与应用服务层进行数据传输，但最终这些DTO都需要转换为实体才能与数据库直接打交道啊。如果每个dto都要自己手动去转换成对应实体，这个工作量也是不可小觑啊。</span><br><span style="font-size: 16px">
+聪明如你，你肯定会想肯定有什么方法来减少这个工作量。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>三、使用AutoMapper自动映射DTO与实体</strong></span></p>
+<p align="left"><span style="font-size: 16px"><strong>&nbsp;&nbsp;&nbsp; 1.</strong><strong>简要介绍AutoMapper</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 开始之前，如果对AutoMapper不是很了解，建议看下这篇文章<span style="color: rgba(0, 0, 255, 1)"><a href="http://www.cnblogs.com/jobs2/p/3503990.html"><span style="color: rgba(0, 0, 255, 1)">AutoMapper小结</span></a></span>。</span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; AutoMapper的使用步骤，简单总结下：</span></p>
+<ul>
+<li><span style="font-size: 16px">创建映射规则（Mapper.CreateMap&lt;source,
+     destination&gt;();）</span></li>
+<li><span style="font-size: 16px">类型映射转换（Mapper.Map&lt;source,destination&gt;(sourceModel)）</span></li>
+
+
+
+
+
+</ul>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 在Abp中有两种方式创建映射规则：</span></p>
+<ul>
+<li><span style="font-size: 16px">特性数据注解方式： </span></li>
+<ul>
+<li><span style="font-size: 16px">AutoMapFrom、AutoMapTo 特性创建单向映射</span></li>
+<li><span style="font-size: 16px">AutoMap 特性创建双向映射</span></li>
+
+
+
+
+
+</ul>
+<li><span style="font-size: 16px">代码创建映射规则： </span></li>
+<ul>
+<li><span style="font-size: 16px">Mapper.CreateMap&lt;source,
+      destination&gt;();</span></li>
+
+
+
+
+
+</ul>
+
+
+
+
+
+</ul>
+<p align="left"><span style="font-size: 16px"><strong>&nbsp;&nbsp;&nbsp;&nbsp; 2.</strong><strong>为Module实体相关的Dto定义映射规则</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ModuleDto、CreateUpdateModuleDto中的属性名与Module实体的属性命名一致，且只需要从Dto映射到实体，不需要反向映射。所以通过AutoMapTo创建单向映射即可。 <br></span></p>
+<div class="cnblogs_code">
+<pre>  [AutoMapTo(<span style="color: rgba(0, 0, 255, 1)">typeof</span>(Module))] <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">定义单向映射</span>
+    <span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span> ModuleDto:EntityDto&lt;<span style="color: rgba(0, 0, 255, 1)">long</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+{
+
+      ...
+
+}
+
+     [AutoMapTo(</span><span style="color: rgba(0, 0, 255, 1)">typeof</span>(Module))] <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">定义单向映射</span>
+    <span style="color: rgba(0, 0, 255, 1)">public</span>  <span style="color: rgba(0, 0, 255, 1)">class</span> CreateUpdateModuleDto : EntityDto&lt;<span style="color: rgba(0, 0, 255, 1)">long</span>&gt;<span style="color: rgba(0, 0, 0, 1)">
+    {
+
+      ...
+
+    }</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;</span></p>
+<p align="left"><span style="font-size: 16px"><strong>四、定义IModuleAppService接口</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp; 1． 右键单击“Dto”文件夹，然后选择“添加” &gt; “新建项”，在弹出对话框中选择“接口”。为应用服务定义一个名为 <code>IModuleAppService</code> 的接口。代码如下。</span></p>
+<div class="cnblogs_code">
+<pre> <span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules
+{
+
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">interface</span><span style="color: rgba(0, 0, 0, 1)"> IModuleAppService : IApplicationService
+    {
+
+        Task CreateAsync(CreateUpdateModuleDto input);
+        Task UpdateAsync(CreateUpdateModuleDto input);
+        Task</span>&lt;ListResultDto&lt;ModuleDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)"> GetAllAsync();
+        Task  DeleteAsync(</span><span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Id);
+        </span><span style="color: rgba(0, 0, 255, 1)">void</span> Delete(<span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Id);
+    }
+}</span></pre>
+</div>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 从上面的代码中我们仔细看一下方法的参数及返回值，大家可能会发现并未直接使用Module实体对象。这是为什么呢？因为展现层与应用服务层是通过Data Transfer Object（DTO）进行数据传输。</span></p>
+<p align="left"><span style="font-size: 16px"><strong>五、实现IModuleAppService</strong></span></p>
+<p align="left"><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 对于具体的业务来讲，只是简单的增删该查，实现起来就很简单了。代码如下：</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Application.Services.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> Abp.Domain.Repositories;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Entitys;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules.Dto;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> AutoMapper;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Collections.Generic;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Text;
+</span><span style="color: rgba(0, 0, 255, 1)">using</span><span style="color: rgba(0, 0, 0, 1)"> System.Threading.Tasks; 
+
+</span><span style="color: rgba(0, 0, 255, 1)">namespace</span><span style="color: rgba(0, 0, 0, 1)"> ABP.TPLMS.Modules
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> ModuleAppService : ApplicationService, IModuleAppService
+{
+
+        </span><span style="color: rgba(0, 0, 255, 1)">private</span> <span style="color: rgba(0, 0, 255, 1)">readonly</span> IRepository&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)"> _moduleRepository;
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> ModuleAppService(IRepository&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)"> moduleRepository)
+        {
+
+            _moduleRepository </span>=<span style="color: rgba(0, 0, 0, 1)"> moduleRepository;
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> Task CreateAsync(CreateUpdateModuleDto input)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> module =  Mapper.Map&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)">(input);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> _moduleRepository.InsertAsync(module);
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span><span style="color: rgba(0, 0, 0, 1)"> Task UpdateAsync(CreateUpdateModuleDto input)
+        {           
+           </span><span style="color: rgba(0, 0, 255, 1)">var</span> module = Mapper.Map&lt;Module&gt;<span style="color: rgba(0, 0, 0, 1)">(input);
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> _moduleRepository.UpdateAsync(module);
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task&lt;ListResultDto&lt;ModuleDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)"> GetAllAsync()
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> books = <span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _moduleRepository.GetAllListAsync();
+
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">new</span> ListResultDto&lt;ModuleDto&gt;(ObjectMapper.Map&lt;List&lt;ModuleDto&gt;&gt;<span style="color: rgba(0, 0, 0, 1)">(books));          
+
+        }
+
+       </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">async</span> Task DeleteAsync(<span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Id)
+        {
+             </span><span style="color: rgba(0, 0, 255, 1)">await</span><span style="color: rgba(0, 0, 0, 1)"> _moduleRepository.DeleteAsync(Id);         
+
+        }
+
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span>  <span style="color: rgba(0, 0, 255, 1)">void</span> Delete(<span style="color: rgba(0, 0, 255, 1)">int</span><span style="color: rgba(0, 0, 0, 1)"> Id)
+        {
+             _moduleRepository.Delete(Id);
+
+        }
+
+    }
+
+}</span></pre>
+</div>
+<p>&nbsp;</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-06-21 17:05</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">4284</span>)&nbsp;
+评论(<span id="post_comment_count">13</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=11065667" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(11065667);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 11065667, cb_entryCreatedDate = '2019-06-21 17:05', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

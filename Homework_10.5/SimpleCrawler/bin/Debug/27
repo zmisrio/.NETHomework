@@ -1,0 +1,378 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="Java安全之URLDNS链 0x00 前言 在学习Java的反序列化漏洞的时候，就不得不学习他的一个利用链。很多刚刚入门的对于利用链这个词可能比较陌生。那么这里先来了解一下Java反序列化和反序列化" />
+    <meta property="og:description" content="Java安全之URLDNS链 0x00 前言 在学习Java的反序列化漏洞的时候，就不得不学习他的一个利用链。很多刚刚入门的对于利用链这个词可能比较陌生。那么这里先来了解一下Java反序列化和反序列化" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Java安全之URLDNS链 - nice_0e3 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/nice0e3/custom.css?v=rpVRRg0n57gY&#x2B;Kw07PlwXX/emho=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/codinglife/bundle-codinglife-mobile.min.css?v=JtOonyglmq10yOLdtvmh-WsVtFwm8HRB8mR_g_TGArQ" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/nice0e3/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/nice0e3/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/nice0e3/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 592290;
+        var currentBlogApp = 'nice0e3';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'CodingLife';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-06 12:52';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/nice0e3/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>
+</h1>
+<h2>
+理想与热爱
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/nice0e3/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/nice_0e3">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/nice0e3/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+77&nbsp; </span>
+<span id="stats_article_count">文章 - 
+0&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+4</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/nice0e3/p/13772184.html">
+    <span>Java安全之URLDNS链</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+    <h1 id="java安全之urldns链">Java安全之URLDNS链</h1>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>在学习Java的反序列化漏洞的时候，就不得不学习他的一个利用链。很多刚刚入门的对于利用链这个词可能比较陌生。那么这里先来了解一下Java反序列化和反序列化漏洞的一个产生。</p>
+<p>文章首发：<a href="https://www.t00ls.net/thread-58172-1-1.html">Java安全之URLDNS链</a></p>
+<h2 id="0x01-java反序列化">0x01 Java反序列化</h2>
+<p>Java提供了一种对象序列化的机制，用一个字节序列表示一个对象，该字节包含对象的数据、对象的类型、对象的存储属性。字节序列写出到文件后，相当于可以持久报错了一个对象信息，这过程叫做序列化。序列化对象会通过<code>ObjectOutputStream </code>的<code>writeObject</code>方法将一个对象写入到文件中。</p>
+<p>而反序列化是使用了<code>readObject</code> 方法进行读取并还原成在序列化前的一个类。</p>
+<p>这一步骤并没有什么安全问题，但是如果反序列化的数据是可控的情况下，那么我们就可以从某个输入点，输入恶意代码，再去查找在哪个点，我们的输入会被一层一层的带去到我们的触发点去，而这一步叫做寻找利用链的步骤。</p>
+<h2 id="0x02-动态调试ysoserial">0x02 动态调试ysoserial</h2>
+<p>至于ysoserial就不多叙述了，自行百度。</p>
+<p>ysoserial项目地址：<a href="https://github.com/frohoff/ysoserial">ysoserial</a></p>
+<p>拉取项目源码，导入到IDEA中。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224228643-351391102.png" alt="" loading="lazy"></p>
+<p>看到pom.xml知道该项目是个maven的项目，点击pom.xml 进行刷新，将缺少的依赖给下载下来</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224237210-940348616.png" alt="" loading="lazy"></p>
+<p>下载完成，直到不爆红了后，就可以开始调试ysoserial了。</p>
+<p>先来查找一下该程序的入口点，点开pom.xml搜索mainclass就可以找到入口点的类</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224249732-1271204792.png" alt="" loading="lazy"></p>
+<p>ctrl+左键点击跟踪进去，运行测试一下。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224300595-2135607337.png" alt="" loading="lazy"></p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224310150-953694183.png" alt="" loading="lazy"></p>
+<p>运行发现爆了一些错误，这里是因为我们并没有去传入值。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224320026-1892883785.png" alt="" loading="lazy"></p>
+<p>点击Edit configurations，设置参数</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224337590-1705523014.png" alt="" loading="lazy"></p>
+<p>再次运行就可以看到成功执行了。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224349185-1961944419.png" alt="" loading="lazy"></p>
+<p>这样我们就获取到了一个序列化的数据。</p>
+<p>我们的ysoserial就能在idea里面去运行了。</p>
+<h2 id="0x03-urldns链分析">0x03 URLDNS链分析</h2>
+<p>URLDNS是ysoserial里面就简单的一条利用链，但URLDNS的利用效果是只能触发一次dns请求，而不能去执行命令。比较适用于漏洞验证这一块，而且URLDNS这条利用链并不依赖于第三方的类，而是JDK中内置的一些类和方法。</p>
+<p>在一些漏洞利用没有回显的时候，我们也可以使用到该链来验证漏洞是否存在，比如shiro反序列化就是使用dnslog来验证漏洞是否存在，（盲猜的，并没有去分析过，后面可以去分析一下）。</p>
+<p>下面先来使用ysoserial的URLDNS</p>
+<pre><code> java -jar .\ysoserial.jar URLDNS "http://2mdw9p.dnslog.cn"
+</code></pre>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224402767-1551469080.png" alt="" loading="lazy"></p>
+<p>得到序列化后的数据，如果需要执行，我们需要对其进行反序列化，这里先不执行。先来看看在ysoserial中，该数据是怎么获取的。</p>
+<p>打开<code>ysoserial/payloads/URLDNS.java</code>的源码</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224414781-117351788.png" alt="" loading="lazy"></p>
+<p>上面的注释也写明白了他的调用链</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224423556-1204906879.png" alt="" loading="lazy"></p>
+<p>具体怎么执行的我们还得去debug看。</p>
+<p>触发点在hashmap的put方法，我们在put地方打一个断点</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224435381-1514551164.png" alt="" loading="lazy"></p>
+<p>来到hashmap的readobject中看到</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224445992-1674306948.png" alt="" loading="lazy"></p>
+<p>这里使用了hash方法对key的值进行了处理，我们来跟踪一下hash这个方法看看他具体的实现</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224455513-1158283300.png" alt="" loading="lazy"></p>
+<p>这里的key的是java.net.URL的实例对象调用了key的hashcode。再跟进一下他的hashcode方法。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224504410-2058097383.png" alt="" loading="lazy"></p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224516155-1126176890.png" alt="" loading="lazy"></p>
+<p>在hashcode方法中还调用了handler的hashcode。先来跟踪一下hanler</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224536402-1965360307.png" alt="" loading="lazy"></p>
+<p>调用 URLStreamHandler 的hashcode。进行跟踪URLStreamHandler.hashcode。</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224546914-1375121936.png" alt="" loading="lazy"></p>
+<p>跟进一下getProtocol方法</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224554919-721653795.png" alt="" loading="lazy"></p>
+<p>在jdk的api文档里面写着该方法是用来获取协议的名称的</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224603088-1930468076.png" alt="" loading="lazy"></p>
+<p>回到刚刚的地方</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224612045-819662656.png" alt="" loading="lazy"></p>
+<p>再来跟踪一下getHostAddress</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224632707-2080751262.png" alt="" loading="lazy"></p>
+<p>来到这里后，可以发现会调用<code>getHost</code>、<code>getByName</code>这两个方法。</p>
+<p>JDKapi文档查看 InetAddress.getByName方法</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224640860-290030426.png" alt="" loading="lazy"></p>
+<p>该方法会使用远程请求，进行获取主机的ip，那么这时候就会触发一次请求，到了这里我们的dnslog平台，就可以收到响应了。这就是这个URLDNS链的一个触发点。</p>
+<h3 id="调用链：">调用链：</h3>
+<pre><code>HashMap.readObject() -&gt;  HashMap.putVal() -&gt; HashMap.hash() 
+-&gt; URL.hashCode()-&gt;URLStreamHandler.hashCode().getHostAddress
+-&gt;URLStreamHandler.hashCode().getHostAddress
+-&gt;URLStreamHandler.hashCode().getHostAddress.InetAddress.getByName
+</code></pre>
+<p>下面来测试一下</p>
+<pre><code>import java.io.*;
+
+public class main {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        FileInputStream fis = new FileInputStream("out.bin");
+        ObjectInputStream bit = new ObjectInputStream(fis);
+        bit.readObject();
+    }
+}
+</code></pre>
+<p>执行后再看我们的dnslog平台</p>
+<p><img src="https://img2020.cnblogs.com/blog/1993669/202009/1993669-20200926224652993-362764993.png" alt="" loading="lazy"></p>
+<blockquote>
+<p>在URLDNS里面其实导致反序列化的根本原因是因为hashmap重写了readobject反序列化方法，而重写后的readobject方法调用了putVal导致的一个利用链</p>
+</blockquote>
+<h3 id="参考文章">参考文章</h3>
+<pre><code>https://www.cnblogs.com/kuaile1314/p/13690210.html
+https://www.cnblogs.com/ph4nt0mer/p/11994384.html
+https://www.cnblogs.com/v1ntlyn/p/13549991.html
+https://zhuanlan.zhihu.com/p/30045174
+https://www.cnblogs.com/litlife/p/12596286.html
+</code></pre>
+<h2 id="0x04-结尾">0x04 结尾</h2>
+<p>其实调试URLDNS这条链相对来说是比较简单的，虽然前面也花了不少时间去摸索,参考了大量的文章。但是等明白了后，发现其实URLDNS链还是比较简单的。</p>
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-06 00:52</span>&nbsp;
+<a href="https://www.cnblogs.com/nice0e3/">nice_0e3</a>&nbsp;
+阅读(<span id="post_view_count">67</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13772184" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13772184);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 592290, cb_blogApp = 'nice0e3', cb_blogUserGuid = '2e2f5aaf-94f8-4be7-a83c-08d7d2f044e4';
+    var cb_entryId = 13772184, cb_entryCreatedDate = '2020-10-06 00:52', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 nice_0e3
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    <div id="page_end_html">
+        <div id="bottomProgressBar"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css">
+<div id="aplayer" class="aplayer" data-id="316722029" data-lrctype="0" data-server="netease" data-type="playlist" data-fixed="true" data-listfolded="true"></div>
+<div id="rightMenu"></div>
+    </div>
+</body>
+</html>

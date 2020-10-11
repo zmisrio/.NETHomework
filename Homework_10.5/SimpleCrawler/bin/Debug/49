@@ -1,0 +1,600 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之七(三十三) 的学习之后，我们知道了ABP自动帮助我们生成了WebA" />
+    <meta property="og:description" content="在上面文章abp(net core)&#x2B;easyui&#x2B;efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之七(三十三) 的学习之后，我们知道了ABP自动帮助我们生成了WebA" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四) - DotNet菜园 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/classicblue/bundle-classicblue.min.css?v=C_xOBodTdu7qViYoEOWb5uyE0XIl-SuwRkgFEwSDOCc" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/classicblue/bundle-classicblue-mobile.min.css?v=arJ4BmwdBcUZrSduKjIvQKPiliQ99OBUW7yasPqJtdY" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/chillsrc/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/chillsrc/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/chillsrc/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 13897;
+        var currentBlogApp = 'chillsrc';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'ClassicBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-01-09 09:47';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/chillsrc/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>
+</h1>
+<h2>
+专注所以专业,专业所以专注
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/chillsrc/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/DotNet%E8%8F%9C%E5%9B%AD">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/chillsrc/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+276&nbsp; </span>
+<span id="stats_article_count">文章 - 
+32&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+836</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/chillsrc/p/12173698.html">
+    <span>abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之八(三十四)</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+    <div id="cnblogs_post_description" style="display: none">
+        在上面文章abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之七(三十三) 的学习之后，我们知道了ABP自动帮助我们生成了WebAPI接口，接下我们通过修改脚本文件中的新增、更新与删除功能的脚本，通过这些WebAPI接口实现增删改功能，而不是通过Controller来实现。
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body">
+    <h3><span style="font-family: 仿宋; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11231284.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统目录</span></a></span></h3>
+<div><span style="font-family: 宋体; color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" href="https://www.cnblogs.com/chillsrc/p/10913047.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP总体介绍(一）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-family: 宋体; font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10944870.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——解决方案介绍(二)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/10980974.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——领域层创建实体(三)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11024357.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——定义仓储并实现 (四)</span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11065667.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——创建应用服务（五）</span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11096690.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之控制器（六）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11124614.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之列表视图（七）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11159642.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之增删改视图（八）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_0" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11195189.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——展现层实现增删改查之菜单与测试（九）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——多语言（十）</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a id="homepage1_HomePageDays_DaysList_ctl00_DayList_TitleUrl_1" class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11269737.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——使用 WEBAPI实现CURD (十一)</span></a></span></div>
+<div align="left"><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11448287.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——菜单-上 (十六) </span></a></span></div>
+<p align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11533414.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI前端页面框架 (十八) </span></a></span></p>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11573043.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理一 (十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11804797.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理七(二十五) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11842320.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——EasyUI之货物管理八(二十六) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px">&nbsp;<a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11899403.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之一(二十七) </span></a></span></div>
+<div align="left"><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11935424.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之二(二十八)</span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/11975823.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之三(二十九) </span></a></span></div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12048585.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之四(三十) </span></a></span></div>
+<div><span style="font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12072901.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之五(三十一) </span></a></span></div>
+<div>
+<div><span style="font-size: 16px; color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12116075.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之六(三十二) </span></a></span></div>
+<div>
+<div><span style="color: rgba(0, 0, 255, 1); font-size: 16px"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12142220.html"><span style="color: rgba(0, 0, 255, 1)"> abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之七(三十三) </span></a></span></div>
+<p><span style="font-size: 16px"><span style="font-family: 宋体">&nbsp;&nbsp;&nbsp; 在上面文章<span style="color: rgba(0, 0, 255, 1)"><a class="postTitle2" href="https://www.cnblogs.com/chillsrc/p/12142220.html"><span style="color: rgba(0, 0, 255, 1)">abp(net core)+easyui+efcore实现仓储管理系统——ABP WebAPI与EasyUI结合增删改查之七(三十三) </span></a></span>的学习之后，我们知道了</span>ABP自动帮助我们生成了WebAPI接口，接下我们<span style="font-family: 宋体">通过修改脚本文件中的新增、更新与删除功能的脚本，</span><span style="font-family: 宋体">通过这些</span>WebAPI接口实现增删改功能，而不是通过Controller来实现。</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="font-family: 宋体">十四、</span></strong><strong><span style="font-family: 宋体">修改新增、更新与删除</span></strong><strong><span style="font-family: 宋体">脚本</span></strong></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 1. 在Visual Studio 2017的“解决方案资源管理器”中，找到<span style="font-family: 宋体">领域层</span>“ABP.TPLMS.Web.Mvc”项目中的wwwroot目录下的view-resources\orgs目录中的找到Index.js文件<span style="font-family: 宋体">。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2. 在Index.js文件中，我们写入完整的脚本代码。代码如下： <br></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">------------------------组织管理--&gt;组织信息---------------------------------//</span><span style="color: rgba(0, 128, 0, 1)">
+//</span><span style="color: rgba(0, 128, 0, 1)">刷新数据</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> initable() {
+    $(</span>"#dgOrg"<span style="color: rgba(0, 0, 0, 1)">).treegrid({
+        url: </span>"/Orgs/List"<span style="color: rgba(0, 0, 0, 1)">,
+        title: </span>"组织管理"<span style="color: rgba(0, 0, 0, 1)">,
+        pagination: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        fit: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+        fitColumns: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        loadMsg: </span>"正在加载组织信息..."<span style="color: rgba(0, 0, 0, 1)">,
+        nowarp: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        border: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        idField: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortName: </span>"Id"<span style="color: rgba(0, 0, 0, 1)">,
+        sortOrder: </span>"asc"<span style="color: rgba(0, 0, 0, 1)">,
+        treeField: </span>"Name"<span style="color: rgba(0, 0, 0, 1)">,
+        frozenColumns: [[</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">冻结列</span>
+<span style="color: rgba(0, 0, 0, 1)">            {
+                field: </span>"chk", checkbox: <span style="color: rgba(0, 0, 255, 1)">true</span>, align: "left", width: 50<span style="color: rgba(0, 0, 0, 1)">
+            }           
+
+        ]],
+        columns: [[
+            { title: </span>"编号", field: "Id", width: 50, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"组织名称", field: "Name", width: 200, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"代码", field: "BizCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"海关代码", field: "CustomCode", width: 100, sortable: <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"状态", field: "Status", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"类型", field: "Type", width: 80, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>"父节点", field: "ParentName", width: 120, sortable: <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)"> },
+            { title: </span>'创建时间', field: 'CreationTime', width: 130, align: 'center'<span style="color: rgba(0, 0, 0, 1)"> }
+        ]]   
+ });
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span> reloaded() {   <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">reload</span>
+<span style="color: rgba(0, 0, 0, 1)">
+    $(</span>"#reload").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        $(</span>'#dgOrg').treegrid('reload'<span style="color: rgba(0, 0, 0, 1)">);
+    });
+} 
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">修改点击按钮事件</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> updOrgInfo() {   
+
+    $(</span>"#edit").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+BindTree();
+
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">判断选择的中</span>
+        <span style="color: rgba(0, 0, 255, 1)">var</span> row = $("#dgOrg").treegrid('getSelected'<span style="color: rgba(0, 0, 0, 1)">);       
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (row) {        
+
+            $.messager.confirm(</span>'编辑', '您想要编辑吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {                
+                    </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">先绑定                   </span>
+<span style="color: rgba(0, 0, 0, 1)">                    showOrg(row);                 
+
+                     </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">打开对话框编辑</span>
+                    $("#divAddUpdOrg"<span style="color: rgba(0, 0, 0, 1)">).dialog({
+                        closed: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+                        title: </span>"修改组织信息"<span style="color: rgba(0, 0, 0, 1)">,
+                        modal: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        width: </span>600<span style="color: rgba(0, 0, 0, 1)">,
+                        height: </span>450<span style="color: rgba(0, 0, 0, 1)">,
+                        collapsible: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        minimizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        maximizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                        resizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+                    });  
+                }        
+            });
+        } </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+            $.messager.alert(</span>'提示', ' 请选择要编辑的行！', 'warning'<span style="color: rgba(0, 0, 0, 1)">);
+
+        }
+    });   
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">删除</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> deleteOrg() {
+    $(</span>"#del").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> rows = $("#dgOrg").datagrid("getSelections"<span style="color: rgba(0, 0, 0, 1)">);
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (rows.length &gt; 0<span style="color: rgba(0, 0, 0, 1)">) {
+            $.messager.confirm(</span>"提示", "确定要删除吗?", <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (res) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (res) {
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> codes = []; <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">重要不是{}</span>
+                    <span style="color: rgba(0, 0, 255, 1)">for</span> (<span style="color: rgba(0, 0, 255, 1)">var</span> i = 0; i &lt; rows.length; i++<span style="color: rgba(0, 0, 0, 1)">) {
+                        codes.push(rows[i].Id);
+                        _orgService.</span><span style="color: rgba(0, 0, 255, 1)">delete</span><span style="color: rgba(0, 0, 0, 1)">({
+                            id: rows[i].Id
+                        }).done(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                            $.messager.alert(</span>"提示", "删除成功！"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>"#dgOrg").datagrid("clearChecked"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>"#dgOrg").datagrid("clearSelections"<span style="color: rgba(0, 0, 0, 1)">);
+                            $(</span>'#dgOrg').treegrid('reload'<span style="color: rgba(0, 0, 0, 1)">);
+                        });
+                    }   
+                }
+            });
+        }
+    })
+}
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">清空文本框</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> clearAll() {
+    $(</span>"#IDUpdate").val(""<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>"#UpdBizCode").val(""<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>"#NameUpdate").val(""<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>"#UpdCustomCode").val(""<span style="color: rgba(0, 0, 0, 1)">);
+    $(</span>':input[name]', <span style="color: rgba(0, 0, 255, 1)">this</span>).each(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            $(</span><span style="color: rgba(0, 0, 255, 1)">this</span>).val(""<span style="color: rgba(0, 0, 0, 1)">);
+        });
+
+}
+
+</span><span style="color: rgba(0, 0, 255, 1)">var</span> _orgService =<span style="color: rgba(0, 0, 0, 1)"> abp.services.app.org;
+</span><span style="color: rgba(0, 0, 255, 1)">var</span> _$modal = $("#divAddUpdOrg"<span style="color: rgba(0, 0, 0, 1)">).parent();
+</span><span style="color: rgba(0, 0, 255, 1)">var</span> _$form = _$modal.find('form'<span style="color: rgba(0, 0, 0, 1)">);
+
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">弹出 添加对话框</span>
+<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> showOrgDialog() {   
+
+    $(</span>"#add").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+        clearAll();    
+       BindTree();
+
+        $(</span>"#divAddUpdOrg"<span style="color: rgba(0, 0, 0, 1)">).dialog({
+            closed: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+            title: </span>"添加组织信息"<span style="color: rgba(0, 0, 0, 1)">,
+            modal: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            width: </span>600<span style="color: rgba(0, 0, 0, 1)">,
+            height: </span>450<span style="color: rgba(0, 0, 0, 1)">,
+            collapsible: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            minimizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            maximizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+            resizable: </span><span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">
+        });
+    });
+
+ 
+
+    $(</span>"#btnSave").click(<span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">保存</span>
+        <span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 0, 1)">_$form.valid()) {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+        }
+        </span><span style="color: rgba(0, 0, 255, 1)">var</span> id = $("#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val();
+        </span><span style="color: rgba(0, 0, 255, 1)">if</span> (id == "" || id == undefined || id=="0"<span style="color: rgba(0, 0, 0, 1)">) {
+            </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">验证</span>
+            $.messager.confirm('确认', '您确认要保存吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+                </span><span style="color: rgba(0, 0, 255, 1)">if</span><span style="color: rgba(0, 0, 0, 1)"> (r) {
+
+                    $(</span>"#IDUpdate").val("0"<span style="color: rgba(0, 0, 0, 1)">);
+                    </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData = _$form.serializeFormToObject(); <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">serializeFormToObject is defined in main.js</span>
+                    <span style="color: rgba(0, 0, 255, 1)">if</span> (postData == <span style="color: rgba(0, 0, 255, 1)">null</span> || postData == undefined || postData.Name == "" || postData.BizCode == ""<span style="color: rgba(0, 0, 0, 1)">) {
+                        $.messager.alert(</span>'提示', ' 请填写相关必填项！', 'warning'<span style="color: rgba(0, 0, 0, 1)">);
+
+                        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+                    }
+
+                    abp.ui.setBusy(_$modal);
+                    _orgService.create(postData).done(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {                                                               
+
+                        $.messager.alert(</span>"提示", "保存成功！"<span style="color: rgba(0, 0, 0, 1)">);
+                        $(</span>"#IDUpdate").val(""<span style="color: rgba(0, 0, 0, 1)">);
+                        _$modal.modal(</span>'hide'<span style="color: rgba(0, 0, 0, 1)">);
+                        $(</span>"#divAddUpdOrg").dialog("close"<span style="color: rgba(0, 0, 0, 1)">);
+                        initable(); </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">reload page to see new user!</span>
+<span style="color: rgba(0, 0, 0, 1)">
+                    }).always(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+                         abp.ui.clearBusy(_$modal);
+
+                        });
+                   }<br>            })
+        }
+        </span><span style="color: rgba(0, 0, 255, 1)">else</span><span style="color: rgba(0, 0, 0, 1)"> {
+            saveDetail();
+        }
+    });
+
+}
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> saveDetail() {
+    </span><span style="color: rgba(0, 0, 255, 1)">if</span> (!<span style="color: rgba(0, 0, 0, 1)">_$form.valid()) {
+        </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+    }
+    $.messager.confirm(</span>'确认', '您确认要修改吗？', <span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (r) {              
+
+            </span><span style="color: rgba(0, 0, 255, 1)">var</span> postData =<span style="color: rgba(0, 0, 0, 1)">  _$form.serializeFormToObject();
+            </span><span style="color: rgba(0, 0, 255, 1)">if</span> (postData==<span style="color: rgba(0, 0, 255, 1)">null</span> || postData==undefined || postData.BizCode == "" || postData.Name == ""<span style="color: rgba(0, 0, 0, 1)">) {
+                $.messager.alert(</span>'提示', ' 请填写相关必填项！', 'warning'<span style="color: rgba(0, 0, 0, 1)">);
+                </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)">;
+        }
+
+        abp.ui.setBusy(_$modal);
+        _orgService.update(postData).done(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            $.messager.alert(</span>"提示", "修改成功！"<span style="color: rgba(0, 0, 0, 1)">);         
+            _$modal.modal(</span>'hide'<span style="color: rgba(0, 0, 0, 1)">);
+            $(</span>"#divAddUpdOrg").dialog("close"<span style="color: rgba(0, 0, 0, 1)">);
+            initable(); </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">reload page to see new user!</span>
+<span style="color: rgba(0, 0, 0, 1)">
+        }).always(</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> () {
+            abp.ui.clearBusy(_$modal);
+        });       
+
+        })    
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> showOrg(row) {    
+    $(</span>"#IDUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Id);
+    $(</span>"#NameUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Name);
+    $(</span>"#UpdBizCode"<span style="color: rgba(0, 0, 0, 1)">).val(row.BizCode);   
+
+    $(</span>"#UpdType"<span style="color: rgba(0, 0, 0, 1)">).val(row.Type);
+    $(</span>"#UpdCustomCode"<span style="color: rgba(0, 0, 0, 1)">).val(row.CustomCode);
+    $(</span>"#UpdIsAutoExpand"<span style="color: rgba(0, 0, 0, 1)">).val(row.IsAutoExpand);
+
+    $(</span>"#UpdIsLeaf"<span style="color: rgba(0, 0, 0, 1)">).val(row.IsLeaf);
+    $(</span>"#UpdStatus"<span style="color: rgba(0, 0, 0, 1)">).val(row.Status);
+    $(</span>"#UpdHotKey"<span style="color: rgba(0, 0, 0, 1)">).val(row.HotKey);
+
+    $(</span>"#UpdIconName"<span style="color: rgba(0, 0, 0, 1)">).val(row.IconName);
+    $(</span>"#RemarkUpdate"<span style="color: rgba(0, 0, 0, 1)">).val(row.Remark);
+
+    $(</span>"#AddTree").combotree('setValue'<span style="color: rgba(0, 0, 0, 1)">, row.ParentId);
+    $(</span>"#AddTree").combotree('setText'<span style="color: rgba(0, 0, 0, 1)">, row.ParentName);
+     $(</span>'#UpdParentName'<span style="color: rgba(0, 0, 0, 1)">).val(row.ParentName);   
+
+} 
+
+</span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> BindTree() {
+    $(</span>'#AddTree'<span style="color: rgba(0, 0, 0, 1)">).combotree({
+        url: </span>'/Orgs/GetJsonTree'<span style="color: rgba(0, 0, 0, 1)">,
+        valueField: </span>'Id'<span style="color: rgba(0, 0, 0, 1)">,
+        textField: </span>'Name'<span style="color: rgba(0, 0, 0, 1)">,
+        multiple: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        editable: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        method: </span>'get'<span style="color: rgba(0, 0, 0, 1)">,
+        panelHeight: </span>'auto'<span style="color: rgba(0, 0, 0, 1)">,
+        checkbox: </span><span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+        </span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">required: true,</span>
+        <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">全部折叠</span>
+<span style="color: rgba(0, 0, 0, 1)">
+        onLoadSuccess: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (node, data) {
+            $(</span>'#AddTree').combotree('tree').tree("expandAll"); <span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">collapseAll</span><span style="color: rgba(0, 0, 0, 1)">
+        },
+        onSelect: </span><span style="color: rgba(0, 0, 255, 1)">function</span><span style="color: rgba(0, 0, 0, 1)"> (node) {
+            $(</span>'#UpdParentName'<span style="color: rgba(0, 0, 0, 1)">).val(node.text);            
+        }
+    });
+}
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">------------------------系统管理--&gt;组织信息结束------------------------------//</span></span></pre>
+</div>
+<span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 3. 在Visual Studio 2017的“解决方案资源管理器”中，找到“ABP.TPLMS.Web.Mvc”项目中的Views目录下的Org目录中的Index.cshtml文件。双击打开此文件，在文件的顶部写入以下代码，引用脚本。 <br></span>
+<div class="cnblogs_code">
+<pre><span style="font-size: 16px"><span style="color: rgba(0, 0, 0, 1)">@section scripts
+    {
+    </span><span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">script </span><span style="color: rgba(255, 0, 0, 1)">src</span><span style="color: rgba(0, 0, 255, 1)">="~/view-resources/Views/orgs/Index.js"</span><span style="color: rgba(255, 0, 0, 1)"> asp-append-version</span><span style="color: rgba(0, 0, 255, 1)">="true"</span><span style="color: rgba(0, 0, 255, 1)">&gt;&lt;/</span><span style="color: rgba(128, 0, 0, 1)">script</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span>
+    <span style="color: rgba(0, 0, 255, 1)">&lt;</span><span style="color: rgba(128, 0, 0, 1)">script </span><span style="color: rgba(255, 0, 0, 1)">type</span><span style="color: rgba(0, 0, 255, 1)">="text/javascript"</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="background-color: rgba(245, 245, 245, 1); color: rgba(0, 0, 0, 1)">
+    
+        $(</span><span style="background-color: rgba(245, 245, 245, 1); color: rgba(0, 0, 255, 1)">function</span><span style="background-color: rgba(245, 245, 245, 1); color: rgba(0, 0, 0, 1)"> () {
+            initable();
+            reloaded();
+            updOrgInfo();
+            showOrgDialog();
+            deleteOrg();
+
+        });
+    </span><span style="color: rgba(0, 0, 255, 1)">&lt;/</span><span style="color: rgba(128, 0, 0, 1)">script</span><span style="color: rgba(0, 0, 255, 1)">&gt;</span><span style="color: rgba(0, 0, 0, 1)">
+}
+
+  </span></span></pre>
+</div>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+<p><span style="font-size: 16px"><strong><span style="font-family: 宋体">十五、测试修改与删除组织部门信息</span></strong></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 1.在Visual Studio 2017的解决方案资源管理器中，按F5运行应用程序。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 2.在浏览器中的地址栏中输入“http://localhost:5000/”，然后输入管理员用户名进行登录。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 3.在主界面的菜单中，选择“Business-&gt;组织管理”菜单项，浏览器中呈现一个组织信息列表与四个按钮。</span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 4.然后在组织信息列表中选中一条货物信息，然后使用鼠标点击“修改”按钮，对组织信息进行修改。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/202001/10343-20200109214449344-1055988217.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 5.对于货物信息进行修改完成之后，点击“保存”按钮，弹出一个“您确认要修改吗？”对话框。点击对话框中的“确定”按钮。如下图。</span></p>
+<p><span style="font-size: 16px"><img src="https://img2018.cnblogs.com/blog/10343/202001/10343-20200109214535772-720978596.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp;&nbsp; 6.如果修改成功，会有一个“修改成功”的提示信息，同时更新组织信息列表。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/202001/10343-20200109214549755-176939599.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 7.<span style="font-family: 宋体">在组织信息列表中选中一条货物信息，然后使用鼠标点击</span>“删除”按钮。会<span style="font-family: 宋体">弹出一个</span>“您确认要删除吗？”对话框。点击对话框中的“确定”按钮。<span style="font-family: 宋体">如下图。</span></span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/202001/10343-20200109214558581-942945652.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;&nbsp;&nbsp; 8.<span style="font-family: 宋体">如果删除成功，会有一个</span>“删除成功！”的提示信息，同时更新组织信息列表。如下图。</span></p>
+<p><span style="font-size: 16px">&nbsp;<img src="https://img2018.cnblogs.com/blog/10343/202001/10343-20200109214609914-265634190.png" alt=""></span></p>
+<p><span style="font-size: 16px">&nbsp;</span></p>
+</div>
+</div>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-01-09 21:47</span>&nbsp;
+<a href="https://www.cnblogs.com/chillsrc/">DotNet菜园</a>&nbsp;
+阅读(<span id="post_view_count">870</span>)&nbsp;
+评论(<span id="post_comment_count">5</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=12173698" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(12173698);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 13897, cb_blogApp = 'chillsrc', cb_blogUserGuid = 'c642360b-63cf-dd11-9e4d-001cf0cd104b';
+    var cb_entryId = 12173698, cb_entryCreatedDate = '2020-01-09 21:47', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 DotNet菜园
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>

@@ -1,0 +1,443 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin" />
+    <meta name="description" content="BeetleX是TCP通讯应用组件，在它之上可以扩展任何基于TCP的应用通讯功能。FastHttpApi是组件扩展的一个Http/Https/Websocket服务组件，它提供的功能丰富，包括功能有:" />
+    <meta property="og:description" content="BeetleX是TCP通讯应用组件，在它之上可以扩展任何基于TCP的应用通讯功能。FastHttpApi是组件扩展的一个Http/Https/Websocket服务组件，它提供的功能丰富，包括功能有:" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>BeetleX之webapi使用入门 - beetlex - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=kXxbcm7tkkASG2_xwyD6Kw4CzHe0bT3mi0jyCb8YspQ" />
+    <link id="MainCss" rel="stylesheet" href="/skins/blacklowkey/bundle-blacklowkey.min.css?v=4KEmaEFoQ72fond65B4U2Zp59N9fvfGhFFxIzkSj97w" />
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/blacklowkey/bundle-blacklowkey-mobile.min.css?v=cX_jltB7Us4Tw2n_S08_lsTU6B1YdJoNGzly3o8GZ-8" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/smark/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/smark/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/smark/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 98880;
+        var currentBlogApp = 'smark';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'BlackLowKey';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-10-11 09:17';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=fLUEwRea4WeqlJe_CLnNunLQZl_ViJFLgKpcNDuKptI"></script>
+    
+    
+    
+</head>
+<body>
+    <a name="top"></a>
+    <div id="top_nav" class="navbar">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding">
+                    <a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a>
+                </li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=oS4PkibyMjZ9rGD5XAcLt99uW_s76Javy2up4dbnZNY" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signin/?returnUrl=https://www.cnblogs.com/">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/smark/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/smark/"></a>
+</h1>
+<h2>
+<p style="color:#c2c2c2;font-size:30pt;padding-bottom:10px;font-weight:bold">
+<a style="color:#fff" href="http://beetlex.io/" target="_blank">beetlex.io</a>
+</p>
+
+</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/smark/">
+首页</a>
+</li>
+<li>
+
+
+</li>
+<li>
+</li>
+<li>
+
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			
+			<span id="stats_post_count">随笔 - 
+248&nbsp; </span>
+<span id="stats_article_count">文章 - 
+24&nbsp; </span>
+<span id="stats-comment_count">评论 - 
+1417</span>
+
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/smark/p/13799402.html">
+    <span>BeetleX之webapi使用入门</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">&nbsp; &nbsp; &nbsp; &nbsp; BeetleX是TCP通讯应用组件，在它之上可以扩展任何基于TCP的应用通讯功能。<strong>FastHttpApi</strong>是组件扩展的一个Http/Https/Websocket服务组件，它提供的功能丰富，包括功能有:静态文件，动态数据控制器和Websocket等相关功能支持;实际在上还在FastHttpApi基础扩展了Http/Https/Websocket网关应用组件(更直观上来说<strong>https://beetlex.io</strong>网站上的所有服务内容都是基于BeetleX构建)。</span></p>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">&nbsp; &nbsp; &nbsp; &nbsp; 在现有前后分离的Web开发应用模式中，编写Webapi作为数据服务通讯交互是比较普遍的。接下来介绍如何使用组件快速地构建一个Webapi服务。</span></p>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>控制器定义</strong></span></h2>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="font-size: 15px">&nbsp; &nbsp; &nbsp; &nbsp; 组件在定义Webapi控制器并没有什么特别的要求，只需要根据实际应用情况定义类和相关方法即可。</span><strong><br></strong></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 0, 1)">    [Controller]
+    </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Webapi
+    {
+        </span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">object</span> Hello(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> name)
+        {
+            </span><span style="color: rgba(0, 0, 255, 1)">return</span> $<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">hello {name}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        }
+    }</span></span></pre>
+</div>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">以上定义一个对象并带有Hello方法，只要在类上标记[Controller]即可被组件加载成Webapi服务访问路径为/Hello ；方法可以通过post/get进行访问，即使是传统的form post或json post都同时兼容，无须在参数上添加任何描述型的标签(这也是组件使用方便性的地方)。</span></p>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>启动服务</strong></span></h2>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="font-size: 15px">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="font-size: 15px">当Webapi控制器编写完成后就可以写服务启动它。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 255, 1)">class</span><span style="color: rgba(0, 0, 0, 1)"> Program
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">static</span> <span style="color: rgba(0, 0, 255, 1)">void</span> Main(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)">[] args)
+    {
+        HttpApiServer server </span>= <span style="color: rgba(0, 0, 255, 1)">new</span><span style="color: rgba(0, 0, 0, 1)"> HttpApiServer();
+        server.Register(</span><span style="color: rgba(0, 0, 255, 1)">typeof</span><span style="color: rgba(0, 0, 0, 1)">(Webapi).Assembly);
+        server.Options.Port </span>= <span style="color: rgba(128, 0, 128, 1)">80</span><span style="color: rgba(0, 0, 0, 1)">;
+        server.Options.LogLevel </span>=<span style="color: rgba(0, 0, 0, 1)"> EventArgs.LogType.Info;
+        server.Options.LogToConsole </span>= <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">;
+        server.Options.SSL </span>= <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">;
+        server.Options.CertificateFile </span>= <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">ssl.pfx</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        server.Options.CertificatePassword </span>= <span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">123456</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+        server.Open();
+        System.Threading.Thread.Sleep(</span>-<span style="color: rgba(128, 0, 128, 1)">1</span><span style="color: rgba(0, 0, 0, 1)">);
+    }
+}</span></span></pre>
+</div>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">只需要创建一个HttpApiServer对象，通过Register方法把存在控制器的程序集注册即可，如果有多个程序集则可以传入多个。接下来的工作就是配置端口和SSL信息；最后通过Open方法启动对应的Http/Https服务。</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><img src="https://img2020.cnblogs.com/blog/254151/202010/254151-20201011210847382-462856895.png" alt="" loading="lazy"></span></p>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">通过以上日志可以查看服务启动情况。</span></p>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>服务访问</strong></span></h2>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">服务启动后就可以通过浏览器对它进行访问</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><img src="https://img2020.cnblogs.com/blog/254151/202010/254151-20201011210948338-2141514789.png" alt="" loading="lazy">&nbsp;</span></p>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">组件为了更好配合自己有的js组件库调用，所以默认返回一个针对性的结构体。在实际应用中可以需要制定自己的返回结构，这个时候可以制定自己的IResult返回对象</span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">object</span> Hello(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> name)
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span> <span style="color: rgba(0, 0, 255, 1)">new</span> JsonResult($<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">hello {name}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">);
+}
+</span><span style="color: rgba(0, 128, 0, 1)">//</span><span style="color: rgba(0, 128, 0, 1)">或者</span>
+<span style="color: rgba(0, 0, 0, 1)">[DefaultJsonResultFilter]
+</span><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">object</span> Hello(<span style="color: rgba(0, 0, 255, 1)">string</span><span style="color: rgba(0, 0, 0, 1)"> name)
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span> $<span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(128, 0, 0, 1)">hello {name}</span><span style="color: rgba(128, 0, 0, 1)">"</span><span style="color: rgba(0, 0, 0, 1)">;
+}</span></span></pre>
+</div>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">以上两种情况是定义一个默认返回的Json结构体，不附加任何其他信息成员。</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><img src="https://img2020.cnblogs.com/blog/254151/202010/254151-20201011211029275-2047841135.png" alt="" loading="lazy">&nbsp;</span></p>
+<p><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;">实际应用中也可以针对自己的需求来制定不同的IResult.</span></p>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>请求上下文</strong></span></h2>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="font-size: 15px">在控制器中有时间不仅仅获取请求数据，有时候还需要获取和设置请求头和Cookie等；这个时候就需要访问组针对Http信息关联的详细信息。组件提供了一个IHttpContext的接口来访问相关信息，这个对象只要参数中定义即可以由组件自动提供。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 255, 1)">public</span> <span style="color: rgba(0, 0, 255, 1)">object</span><span style="color: rgba(0, 0, 0, 1)"> GetContext(IHttpContext context)
+{
+    </span><span style="color: rgba(0, 0, 255, 1)">return</span><span style="color: rgba(0, 0, 0, 1)"> context.Request.Header.Copy();
+}</span></span></pre>
+</div>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;">可以访问GetContext方法获取当前请求的头信息</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><img src="https://img2020.cnblogs.com/blog/254151/202010/254151-20201011211113331-1909602799.png" alt="" loading="lazy"></span></p>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>配置文件</strong></span></h2>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="font-size: 15px">&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="font-size: 15px">有很多时候希望通过文件配置来更改监听的端口和对应的SSL配置信息等；组件默认会读取当前运行目录下的HttpConfig.json配置文件，如果目录下没有这个文件则是组件内部默认配置。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 0, 1)">{
+  </span>"HttpConfig"<span style="color: rgba(0, 0, 0, 1)">: {
+    </span>"SameSite": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"ServerTag": "beetlex.io"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"OutputServerTag": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"IPRpsLimit": 0<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"IPRpsLimitDisableTime": 1800000<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"MaxWaitQueue": 1000<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"BufferPoolSize": 10<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"BufferPoolGroups": 4<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"IOQueues": 1<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SyncAccept": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"ManageApiEnabled": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Statistical": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"IOQueueEnabled": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CacheLogMaxSize": 1000<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CacheLogFilter": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"MaxrpsSettings"<span style="color: rgba(0, 0, 0, 1)">: [],
+    </span>"Settings"<span style="color: rgba(0, 0, 0, 1)">: [],
+    </span>"AccessKey": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"AutoGzip": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"StaticResurceCacheTime": 0<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"BufferPoolMaxMemory": 500<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SessionTimeOut": 600<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"UseIPv6": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Virtuals"<span style="color: rgba(0, 0, 0, 1)">: [],
+    </span>"PacketCombined": 0<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"FileManager": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"FileManagerPath": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"LogToConsole": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"NotLoadFolder": "\\Files;\\Images;\\Data"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CacheFiles": "html;htm;js;css"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CacheFileSize": 500<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"LogLevel": 16<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"WebSocketMaxRPS": 30<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"BufferSize": 8192<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"NoGzipFiles": "jpg;jpeg;png;gif;png;ico;zip;rar;bmp"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"MaxConnections": 2000<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Manager": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"ManagerPWD": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"WriteLog": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Host": ""<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Debug": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"FixedConverter": <span style="color: rgba(0, 0, 255, 1)">false</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"AgentRewrite": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"RewriteIgnoreCase": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"RewriteCachedSize": 500000<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"Port": 80<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SSL": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SSLPort": 443<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CertificateFile": "beetlex.pfx"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CertificatePassword": "******"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"MaxBodyLength": 2097152<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"OutputStackTrace": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"StaticResurceType": "woff2;js;rar;xml;woff;css;jpg;gif;map;zip;jpeg;svg;txt;ico;ttf;htm;png;html"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"DefaultPage": "index.html;index.htm"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"StaticResourcePath": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">
+  }
+}</span></span></pre>
+</div>
+<p class="code-snippet__js" data-lang="json"><span style="font-size: 15px; font-family: &quot;Microsoft YaHei&quot;"><code><span class="code-snippet_outer">由于组件涉及到很多方面的配置，如：url重写，线程队列，缓冲区和静态资源支持等等；一般情况下只需要针对以下几项配置过行调整即可。</span></code></span></p>
+<div class="cnblogs_code">
+<pre><span style="font-family: &quot;Microsoft YaHei&quot;"><span style="color: rgba(0, 0, 0, 1)">{
+  </span>"HttpConfig"<span style="color: rgba(0, 0, 0, 1)">: {
+    </span>"SameSite": <span style="color: rgba(0, 0, 255, 1)">null</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"ServerTag": "beetlex.io"<span style="color: rgba(0, 0, 0, 1)">,</span>"Port": 80<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SSL": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"SSLPort": 443<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CertificateFile": "beetlex.pfx"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"CertificatePassword": "******"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"MaxBodyLength": 2097152<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"OutputStackTrace": <span style="color: rgba(0, 0, 255, 1)">true</span><span style="color: rgba(0, 0, 0, 1)">,
+    </span>"StaticResurceType": "woff2;js;rar;xml;woff;css;jpg;gif;map;zip;jpeg;svg;txt;ico;ttf;htm;png;html"<span style="color: rgba(0, 0, 0, 1)">,
+    </span>"DefaultPage": "index.html;index.htm"<span style="color: rgba(0, 0, 0, 1)">
+  }
+}</span></span></pre>
+</div>
+<h2><span style="font-family: &quot;Microsoft YaHei&quot;"><strong>下载示例&nbsp;</strong></span></h2>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;; font-size: 15px">链接：https://pan.baidu.com/s/10Ct0jJQfKRnc-jXI4JoGig</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;; font-size: 15px">提取码：xywc</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;">
+
+
+
+
+
+
+
+
+
+
+
+</span></p>
+<p><span style="font-family: &quot;Microsoft YaHei&quot;">
+
+
+</span></p>
+
+
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-10-11 21:17</span>&nbsp;
+<a href="https://www.cnblogs.com/smark/">beetlex</a>&nbsp;
+阅读(<span id="post_view_count">12</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=13799402" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(13799402);return false;">收藏</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="https://common.cnblogs.com/highlight/9.12.0/highlight.min.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 98880, cb_blogApp = 'smark', cb_blogUserGuid = '763f02d1-2610-e011-ac81-842b2b196315';
+    var cb_entryId = 13799402, cb_entryCreatedDate = '2020-10-11 21:17', cb_postType = 1;
+    loadViewCount(cb_entryId);
+</script><a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<script>
+    var commentManager = new blogCommentManager();
+    commentManager.renderComments(0);
+</script>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="c_ad_block">
+        <div id='div-gpt-ad-1592365906576-0' style='width: 300px; height: 250px;'></div>
+    </div>
+    <div id="under_post_news"></div>
+    <div id="cnblogs_c2" class="c_ad_block">
+        <div id='div-gpt-ad-1592366332455-0' style='width: 468px; height: 60px;'></div>
+    </div>
+    <div id="under_post_kb"></div>
+    <div id="HistoryToday" class="c_ad_block"></div>
+    <script type="text/javascript">
+        fixPostBody();
+        deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);        deliverT2();
+        deliverC1C2();
+        loadNewsAndKb();
+        loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);        LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+        GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+        loadOptUnderPost();
+        GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+
+<div id="sidebar_ad"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2020 beetlex
+<br /><span id="poweredby">Powered by .NET Core on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+</body>
+</html>
